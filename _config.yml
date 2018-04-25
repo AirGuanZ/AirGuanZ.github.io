@@ -45,7 +45,7 @@ timezone: Asia/Shanghai #see https://en.wikipedia.org/wiki/List_of_tz_database_t
 author:
   name: AirGuanZ
   email: 248283056@qq.com
-  github: https://github.com/AirGuanZ
+  github: AirGuanZ
 
 ## TOC
 toc:
