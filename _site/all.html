@@ -244,9 +244,12 @@
   <ul>
     <li>
       <button type="button" class="js-article-tag js-tag-show-all all pill-button inactive" data-encode="">
-        Show All<div class="tag-count">1</div>
+        Show All<div class="tag-count">2</div>
       </button>
-    </li><li><button type="button" class="js-article-tag tag-1 pill-button inactive" data-encode="Test">
+    </li><li><button type="button" class="js-article-tag tag-1 pill-button inactive" data-encode="OS">
+          <span>OS</span><div class="tag-count">1</div>
+        </button>
+      </li><li><button type="button" class="js-article-tag tag-1 pill-button inactive" data-encode="Test">
           <span>Test</span><div class="tag-count">1</div>
         </button>
       </li></ul>
@@ -387,7 +390,7 @@
     };
   })();
 
-  var data = initData('{"2018":[{"key":"1","title":"Test","tags":["Test"],"url":"%2F2018%2F04%2F26%2Ftest.html","date":"Apr 26"}]}');
+  var data = initData('{"2018":[{"key":"1","title":"OS+kernel%E5%AE%9E%E7%8E%B0%E6%97%A5%E8%AE%B0%EF%BC%88%E4%B8%80%EF%BC%89","tags":["OS"],"url":"%2F2018%2F04%2F26%2Fkernel-note-01.html","date":"Apr 26"},{"key":"2","title":"Test","tags":["Test"],"url":"%2F2018%2F04%2F25%2Ftest.html","date":"Apr 25"}]}');
 
   var searchByTag = memorize(function(tag) {
     var i, j, cur, _tags, _tag, _data = {};
