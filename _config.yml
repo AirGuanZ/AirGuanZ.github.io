@@ -49,7 +49,7 @@ author:
 
 ## TOC
 toc:
-  # selectors: 'h1,h2,h3'
+  selectors: 'h1,h2,h3'
 
 ## Comment system (Disqus) ##
 disqus:
@@ -85,7 +85,7 @@ paginate_path: /page:num
 
 ## Post excerpts ##
 excerpt_separator: <!--more-->
-excerpt_type: text # text | html
+excerpt_type: html # text | html
 
 ## Sources ##
 # sources: bootcss #eg: bootcss | unpkg
