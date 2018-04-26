@@ -44,7 +44,6 @@ TinyOS是一个以学习为目的创建的、运行在x86单核计算机上的�
 
 AGZParserGen是一个基于LR(1)算法的语法分析器生成器。
 AGZParserGen基于C++实现，可通过模板参数定制词法单元流的类型和数据，
-支持直接从文法脚本构建Parser，也可将构建的Parser导出为不同语言的代码，
-比现有的yacc更为灵活。
+支持直接从文法脚本构建Parser，也可将构建的Parser导出为不同语言的代码。
 
 [项目地址](https://github.com/AirGuanZ/AGZParserGen)
