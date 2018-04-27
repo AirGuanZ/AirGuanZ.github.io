@@ -2,6 +2,8 @@ source 'https://rubygems.org/'
 
 gemspec
 
+gem 'pygments.rb'
+
 # For dev under windows, I know that yikes....
 
 # gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw]
