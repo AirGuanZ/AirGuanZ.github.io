@@ -33,13 +33,13 @@ LAST_UPDATED:
   zh-Hans: "更新于"
   zh-Hant: "更新於"
 
-PREVIOUS:
+NEXT:
   en:      "PREVIOUS"
   zh:      "上篇"
   zh-Hans: "上篇"
   zh-Hant: "上篇"
 
-NEXT:
+PREVIOUS:
   en:      "NEXT"
   zh:      "下篇"
   zh-Hans: "下篇"

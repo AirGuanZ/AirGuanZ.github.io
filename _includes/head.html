@@ -29,6 +29,9 @@
 {%- assign __path = '/assets/images/logo/icon-192x192.png' -%}
 {%- include snippets/prepend-baseurl.html -%}
 <link rel="icon" sizes="192x192" href="{{ __return }}">
+
+<!--link media="all" rel="stylesheet" type="text/css" href="../assets/css/pygments.css" /-->
+
 <!-- for Edge on Windows 10 https://msdn.microsoft.com/en-us/library/dn255024(v=vs.85).aspx -->
 {%- assign __path = '/assets/images/logo/icon-144x144.png' -%}
 {%- include snippets/prepend-baseurl.html -%}
@@ -46,3 +49,13 @@
 {%- include snippets/prepend-baseurl.html -%}
 <meta name="msapplication-square70x70logo" content="{{ __return }}">
 <meta name="msapplication-TileColor" content="#eeeeee">
+
+<script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" type="text/javascript"></script>
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+      inlineMath: [['$','$']]
+    }
+  });
+</script>

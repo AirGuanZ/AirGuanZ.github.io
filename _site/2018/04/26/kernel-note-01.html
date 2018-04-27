@@ -7,8 +7,22 @@
 <!-- for Safari on iOS https://developer.apple.com/ios/human-interface-guidelines/icons-and-images/app-icon/ --><link rel="apple-touch-icon" sizes="180x180" href="/assets/images/logo/icon-180x180.png"><link rel="apple-touch-icon" sizes="167x167" href="/assets/images/logo/icon-167x167.png"><link rel="apple-touch-icon" sizes="152x152" href="/assets/images/logo/icon-152x152.png"><link rel="apple-touch-icon" sizes="120x120" href="/assets/images/logo/icon-120x120.png"><link rel="shortcut icon" href="/assets/images/logo/icon-120x120.png">
 <!-- for Chrome on Android https://developer.chrome.com/multidevice/android/installtohomescreen -->
 <meta name="mobile-web-app-capable" content="yes"><link rel="icon" sizes="192x192" href="/assets/images/logo/icon-192x192.png">
+
+<!--link media="all" rel="stylesheet" type="text/css" href="../assets/css/pygments.css" /-->
+
 <!-- for Edge on Windows 10 https://msdn.microsoft.com/en-us/library/dn255024(v=vs.85).aspx --><meta name="msapplication-TileImage" content="/assets/images/logo/icon-144x144.png"><meta name="msapplication-square310x310logo" content="/assets/images/logo/icon-310x310.png"><meta name="msapplication-wide310x150logo" content="/assets/images/logo/icon-310x150.png"><meta name="msapplication-square150x150logo" content="/assets/images/logo/icon-150x150.png"><meta name="msapplication-square70x70logo" content="/assets/images/logo/icon-70x70.png">
-<meta name="msapplication-TileColor" content="#eeeeee"><link rel="stylesheet" href="/assets/css/blog.css">
+<meta name="msapplication-TileColor" content="#eeeeee">
+
+<script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" type="text/javascript"></script>
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+      inlineMath: [['$','$']]
+    }
+  });
+</script>
+<link rel="stylesheet" href="/assets/css/blog.css">
     <script>(function() {
   var Set = (function() {
     var add = function(item) {
@@ -214,14 +228,13 @@
     <div class="m-page-stage js-page-stage">
       <div class="m-page-content"><header class="m-page-header">
   <div class="main clearfix">
-    <div class='site-logo'><svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
-	 width="24px" height="24px" viewBox="0 0 24 24">
-<style type="text/css">
-	.st0{fill:#666666;}
-</style>
-<path class="st0" d="M1.7,22.3c5.7-5.7,11.3-5.7,17,0c3.3-3.3,3.5-5.3,0.8-6c2.7,0.7,3.5-1.1,2.3-5.6s-3.3-5.2-6.3-2.1
-	c3-3,2.3-5.2-2.1-6.3S7,1.8,7.7,4.6C7,1.8,5,2.1,1.7,5.3C7.3,11,7.3,16.7,1.7,22.3"/>
-</svg><a title="AirGuanZ's personal homepage
+    <div class='site-logo'><svg version="1.1" x="0px" xmlns="http://www.w3.org/2000/svg" y="0px"
+     width="24px" height="24px" viewBox="0 0 24 24">
+  <text fill="#666" font-size="26.3" stroke="none" stroke-linecap="butt" stroke-linejoin="miter" stroke-width="1" x="3.1" y="20.7">
+    A
+  </text>
+</svg>
+<a title="AirGuanZ's personal homepage
 " href="/">AirGuanZ</a></div>
     <nav>
       <ul><li><a href="/">Home</a></li><li><a href="/all.html">Archive</a></li><li><a href="/about.html">About</a></li><li><a type="application/rss+xml" href="/feed.xml">RSS</a></li>
@@ -329,13 +342,13 @@
 
     <p>这4MB空间用途如下：</p>
 
-    <p>$\text{0x00000000} \Rightarrow \text{0x000fffff}$和实模式下的用处相同，为内核代码和显存区域</p>
+    <p>$\text{0x00000000} \sim \text{0x000fffff}$和实模式下的用处相同，为内核代码和显存区域</p>
 
-    <p>$\text{0x00100000} \Rightarrow \text{0x001fffff}$为内核栈区域，即内核进程所使用的栈（挺奢侈的）</p>
+    <p>$\text{0x00100000} \sim \text{0x001fffff}$为内核栈区域，即内核进程所使用的栈（挺奢侈的）</p>
 
-    <p>$\text{0x00200000} \Rightarrow \text{0x002fffff}$为内核虚拟地址空间的页目录以及前255个页表</p>
+    <p>$\text{0x00200000} \sim \text{0x002fffff}$为内核虚拟地址空间的页目录以及前255个页表</p>
 
-    <p>$\text{0x00300000} \Rightarrow \text{0x003fffff}$为内核保留区域</p>
+    <p>$\text{0x00300000} \sim \text{0x003fffff}$为内核保留区域</p>
   </li>
   <li>
     <p>之前提到，系统内核文件kernel.bootbin是ELF32格式的，因此bootloader需要将其执行视图的各个段装载到虚拟地址空间中正确的位置，并跳转到内核的入口地址处执行。</p>
@@ -343,7 +356,6 @@
 </ol>
 
 <p>从进入内核开始，绝大部分的功能就能用C语言编写了。我原本就对x86汇编不熟悉，编写MBR和bootloader时寸步难行，东拼西凑，几乎就要在内核门口放弃了。可是如今看来，种种艰辛却又不足道也，大概受苦都是这样吧。也正因如此，才有人说得出“年轻人就要多吃苦”这样的鬼话来。</p>
-
 </div>
 				<footer><meta itemprop="dateModified" content="2018-04-26T00:00:00+08:00"><div class="article-license"><div class="m-license"><div class="clearfix"><p>This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/">CC-BY-NC-4.0</a> license.</p><a class="license" rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/">
       <img alt="Creative Commons License" src="/assets/images/license-cc4.png" />
@@ -352,7 +364,7 @@
 </div></div>
 				</footer>
 			</article>
-			<div class="article-previous-next clearfix"><div class="article-next"><span>NEXT</span><a href="/2018/04/25/test.html">Test</a></div></div></div>
+			<div class="article-previous-next clearfix"><div class="article-previous"><span>NEXT</span><a href="/2018/04/27/kernel-note-02.html">OS kernel实现日记（二）</a></div></div></div>
 	</div>
 </div></div>
       </div>
@@ -696,10 +708,5 @@
       });
     }, 1000);
   });
-})();</script><script type="text/x-mathjax-config">
-	var _config = { tex2jax: {
-		inlineMath: [['$','$'], ['\\(','\\)']]
-	}};MathJax.Hub.Config(_config);
-</script>
-<script type="text/javascript" src="https://cdn.bootcss.com/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML" async></script></body>
+})();</script></body>
 </html>
