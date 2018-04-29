@@ -543,6 +543,283 @@ _out_byte_to_port(0xa1, 0x01);
 
 TinyOS的系统调用机制模仿了Linux——使用0x80号中断实现。通常，系统调用由用户进程发起，且往往涉及到比用户进程特权级更高的操作，而发起中断就是最简单的提升特权级的方法之一。系统调用通常涉及到一个或多个参数传递，在TinyOS中采用约定的寄存器进行传参。总而言之，用户程序只需要将特定寄存器设置为要传入的参数，然后执行指令`int 0x80`即可。
 
-作为系统调用入口的中断处理函数与普通的中断处理函数入口并无太大不同，唯一的区别就是把约定好的寄存器值压入栈中作为系统调用函数实现的参数。中断处理函数入口和系统调用入口均实现在`kernel/interrupt/interrupt.s`中，就不在这里赘述过多的技术细节了。
+作为系统调用入口的中断处理函数与普通的中断处理函数入口并无太大不同，唯一的区别就是把约定好的寄存器值压入栈中作为被调用函数的参数。中断处理函数入口和系统调用入口均实现在`kernel/interrupt/interrupt.s`中，这里就不赘述过多的技术细节了。
 
+## 进程和线程
 
+### TCB和PCB
+
+TinyOS中，线程指的是内核调度器的调度单位，是一个CPU的执行流；进程则是一个运行的程序，包含了该程序占有的所有资源以及该程序的全部线程。TinyOS用PCB（Process Control Block）来描述进程资源，用TCB（Thread Control Block，并不是Task Control Block）来描述线程。显然，每个PCB应该维护一个TC表格，而每个TCB应当持有一个PCB指针。
+
+到目前为止，TinyOS的线程调度还仅仅是一个简单的框架，采用公平分时调度策略。在该策略下，调度器维护一个全局的就绪线程队列，不断从队列头部取出TCB调度执行，同时把被取代执行的线程push到队列尾部。之前已经提到过，每个TCB都持有一个PCB指针；当进行线程切换时，只需要检查切换前后TCB持有的PCB是否发生了变化，就能够判断是否发生了进程间的切换、是否需要更换页目录等。
+
+TinyOS采用的TCB和PCB结构如下：
+
+{% highlight c %}
+/* In include/kernel/process/thread.h */
+struct TCB
+{
+    // 每个线程都持有一个内核栈
+    // 在“低特权级 -> 高特权级”以及刚进入线程时会用到
+    void *ker_stack;
+
+    // 初始内核栈
+    void *init_ker_stack;
+
+    enum thread_state state;
+
+    struct PCB *pcb;
+
+    // 一个线程可能被阻塞在某个信号量上
+    struct semaphore *blocked_sph;
+
+    // 各种侵入式链表的节点
+
+    struct ilist_node ready_block_threads_node;   //就绪线程队列、信号量阻塞队列
+    struct ilist_node threads_in_proc_node;       // 每个进程的线程表
+};
+
+/* In include/kernel/process/process.h */
+struct PCB
+{
+    char name[PROCESS_NAME_MAX_LENGTH + 1];
+
+    // 虚拟地址空间句柄
+    vir_addr_space *addr_space;
+
+    // 包含哪些线程
+    ilist threads_list;
+
+    // 进程空间是否已经初始化
+    bool addr_space_inited;
+
+    // 进程编号，初始为0，其他从1开始计
+    uint32_t pid;
+
+    // 是否是内核进程，即特权级是否是0
+    bool is_PL_0;
+
+    // 内核消息队列
+    struct sysmsg_queue sys_msgs;
+
+    // 一个进程可以选择某个线程阻塞在消息队列处
+    // 若该值非空，则新消息来临时会唤醒该线程，并将该值置为NULL
+    struct TCB *sysmsg_blocked_tcb;
+
+    // 内核消息源
+    struct sysmsg_source_list sys_msg_srcs;
+
+    // 各种侵入式链表节点
+
+    struct ilist_node processes_node; // 所有进程的链表
+};
+{% endhighlight %}
+
+由于TCB和PCB关系到OS的许多方面，其中包含了许多用于支持进程/线程管理以外的功能的数据，这里不必在意它们。此外，我在写下TCB和PCB结构体定义时也没有省内存的心思，所以没有使用最佳的内存布局，也没有压缩状态字。反正意思到了就行，（逃……
+
+注意到上面的TCB/PCB结构体中有很多`ilist_node`，它们是侵入式链表的节点。很久以前我在学C语言的时候，就听说过Linux内核链表定义了一个功能大概如下的宏：
+
+{% highlight c %}
+#define GET_STRUCT_FROM_MEMBER(STU, MEM, p_mem) \
+    ((STU*)((char*)(p_mem) - (char*)(&((STU*)0)->MEM)))
+{% endhighlight %}
+
+其含义是：给定结构体名字`STU`和其某个成员变量名字`MEM`，以及某个成员变量实例的地址`p_mem`，返回包含`p_mem`的结构体实例的指针。当时我百思不得其解，不知道这东西有何妙用。如今我才知道，由于链表在操作系统中被广泛地使用，一个结构体（譬如说TCB）实例的指针可能处于多个链表中，而每个链表的节点都需要分配空间，且结构体本身被销毁时还需要从所有持有它指针的链表中将它的节点销毁。这些分配和销毁在操作系统层面上都是非常麻烦的，因为操作系统不能无所顾忌地使用`malloc/free`这样的东西，而到处给链表节点开内存池又太过麻烦，于是就出现了内嵌式链表节点——把链表节点作为结构体的成员，通过链表来访问结构体实例时用上面的宏完成从节点地址到实例地址的转换，销毁结构体实例时把它内部的节点挨个从双向链表中摘除即可（双向链表节点的摘除是$O(1)$的）。TinyOS内核广泛地使用了内嵌式链表。
+
+### 线程调度
+
+TinyOS采用四状态线程，状态类型定义如下：
+
+{% highlight c %}
+enum thread_state
+{
+    thread_state_running,
+    thread_state_ready,
+    thread_state_blocked,
+    thread_state_killed
+};
+{% endhighlight %}
+
+其中，`thread_state_running`在除了调度器正在运行时以外的任意时刻都只由一个线程持有；`thread_state_ready`状态的线程都处在一个就绪线程队列中；`thread_state_blocked`为阻塞态线程，它们由不同的阻塞源维护；`thread_state_killed`则是被标记为将要销毁的线程。通常销毁线程时，直接将其TCB从各种线程链表中摘除，然后释放TCB即可，但当一个线程调用销毁自己的函数时，就不能直接释放其各类资源（否则下一次调度发生时会出错）。因此这种状态下其状态会被设置为`thread_state_killed`，然后由调度器来完成销毁工作。
+
+调度器实现简单粗暴，大概分为以下几个步骤：
+
+1. 若当前线程并非`killed`状态，入就绪线程队列
+2. 从就绪线程队列中出队一个进程，称为目标线程
+3. 检查前后线程是否属于不同进程，即是否需要切换虚拟地址空间等进程资源
+4. 若当前线程处于`killed`状态，释放其资源
+5. 转移至目标线程执行
+
+上述步骤的C语言实现：
+
+{% highlight c linenos %}
+static void thread_scheduler(void)
+{
+    // 从src线程切换至dst线程
+    // 其实就是备份寄存器，然后修改栈指针
+    // 在thread.s中实现
+    extern void switch_to_thread(struct TCB *src, struct TCB *dst);
+    // 直接跳到dst线程执行，不保存原线程现场
+    // 在thread.s中实现
+    extern void jmp_to_thread(struct TCB *dst);
+    
+    if(cur_running_TCB->state == thread_state_running)
+    {
+        push_back_ilist(&ready_threads, &cur_running_TCB->ready_block_threads_node);
+        cur_running_TCB->state = thread_state_ready;
+    }
+
+    ASSERT_S(!is_ilist_empty(&ready_threads));
+
+    struct TCB *last = cur_running_TCB;
+    cur_running_TCB = GET_STRUCT_FROM_MEMBER(struct TCB, ready_block_threads_node,
+                                             pop_front_ilist(&ready_threads));
+    cur_running_TCB->state = thread_state_running;
+
+    if(last->pcb != cur_running_TCB->pcb)
+    {
+        set_current_vir_addr_space(cur_running_TCB->pcb->addr_space);
+        if(!cur_running_TCB->pcb->is_PL_0)
+            _set_tss_esp0((uint32_t)(cur_running_TCB->init_ker_stack));
+    }
+
+    if(last->state == thread_state_killed)
+    {
+        erase_thread_in_process(last);
+        jmp_to_thread(cur_running_TCB);
+    }
+    else
+    {
+        switch_to_thread(last, cur_running_TCB);
+    }
+}
+{% endhighlight %}
+
+### 线程调用栈和内核栈
+
+每个线程都有自己的调用栈，而该栈必定会占用进程虚拟地址空间中的一片区域。TinyOS将用户地址空间(0~3GB)中的最后32MB用作进程各线程的栈，每个栈大小为1MB，因此每个进程最多同时拥有32个线程。
+
+x86要求在执行特权级发生转换的时候，使用的栈也要发生转换。譬如，特权级为3的用户级线程发起系统调用会使得特权级变为0，这时CPU会自动把调用栈转换到一个预先设置好的地址。因此，每个线程除了有基本的调用栈外，还需要一个用于高特权级执行的内核栈。TinyOS为每个线程分配一个内核页作为它的内核栈。内核栈比调用栈小得多，但它只在特权级升高时使用，不必担心空间过小。
+
+### 线程创建和自降特权级
+
+线程的创建本身非常简单，只需要准备好调用栈，将调用栈顶部初始化为调度器保存现场的格式，然后放进就绪线程队列即可。这样一来，当调度器遇到该线程时，就会认为它是之前被换下的线程，从调用栈中取出执行信息继续执行。事实上，跟据GCC采用的调用约定，调度器手动保存的现场只包括`ebx, ebp, esi, edi`四个寄存器，因而只需要把调用栈顶端初始化为以下结构即可——
+
+{% highlight c %}
+struct thread_init_stack
+{
+    // 由callee保持的寄存器
+    uint32_t ebp, ebx, edi, esi;
+
+    // 函数入口
+    uint32_t eip;
+
+    // 占位，因为需要一个返回地址的空间
+    uint32_t dummy_addr;
+
+    // 线程入口及参数
+    thread_exec_func func;
+    void *func_param;
+};
+{% endhighlight %}
+
+在调度器看来，这里的`ebp, ebx, edi, esi`是之前调度时保存的，而`eip, dummy_addr`等则是发生时钟中断时对中断入口函数的调用保存的。需要声明的是，这一结构依赖于编译器使用的调用约定，并不具有很好的可移植性。TinyOS使用的调度器执行的最后一段代码是：
+
+{% highlight asm linenos %}
+    mov eax, [esp + 24]
+    mov esp, [eax]
+
+    pop ebp
+    pop ebx
+    pop edi
+    pop esi
+
+    ret
+{% endhighlight %}
+
+前两行代码将栈指针设置为下一个要执行的线程的栈指针，然后从栈中恢复以前保存的现场，最后的`ret`指令将执行流转移到上次被换下时的指令处。`struct thread_init_stack`中的`eip, dummy_addr`等成员以及其在内存中的布局正是针对这条`ret`指令设计的。
+
+每当一个用户线程刚刚被创建时，由于创建它的线程是0级，必然会有特权级别降低的过程。然而x86在原则上不提供任何自降特权级的操作（不明所以），因此TinyOS采用了一个“邪道”，即通过伪造一个中断处理函数返回的上下文来让CPU误以为自己是在从中断处理函数返回到用户函数，进而允许特权级的降低。由于中断处理上下文过长（保存现场时将一大堆寄存器值压栈），这里就不放上其结构了。
+
+### 进程和线程的销毁
+
+TinyOS同时提供销毁进程和销毁线程的功能，其实现逻辑如下：
+
+```
+function destroy_process(PCB p)
+    for each thread t(except current thread) in p
+        destroy_thread(t)
+    if current_thread is in p.thread_list
+        destroy(current_thread)
+
+function destroy_thread(TCB t)
+    erase t from t.PCB.thread_list
+    if t != current_thread
+        if t.PCB.thread_list.is_empty() == true
+            release resources(except vir_addr_space) of t.PCB
+            L.push_back(t.PCB.vir_addr_space)
+        release resources of t
+    else
+        t.state = thread_state_killed
+        thread_scheduler()
+
+function release_vir_addr_space
+    while true
+        while L.is_empty() == false
+            v = L.pop_front()
+            release v
+        yield_CPU()
+```
+
+上面的伪代码中，`destroy_process`是通过销毁其中的全部线程来实现的；`destroy_thread`则会检查被销毁的线程是否是其进程的最后一个线程，若是，则释放进程资源。
+
+值得注意的是，释放进程资源的时候并未立即将进程的虚拟地址空间销毁，而是将其加入一个全据链表`L`，由一个内核进程`release_vir_addr_space`销毁`L`中的元素。这是因为如果被销毁的虚拟地址空间正在被使用，那么将其销毁可能导致严重的错误，故这里用一个专门的进程来负责销毁无用的虚拟地址空间。类似地，销毁线程时若被销毁者正在运行，则将其状态置为`thread_state_killed`，由调度器来完成其销毁工作。
+
+### 信号量
+
+TinyOS的信号量实现得极其暴力——关中断。事实上我确实没想到不关中断的做法，因为在对信号量进行`wait`操作时可能会导致其被阻塞，阻塞操作需要修改就绪线程队列，该修改必须关闭中断进行；类似地，`signal`可能导致线程被唤醒，其对就绪线程队列的修改要求关中断进行。
+
+按照信号量的标准定义，它包含一个值和一个阻塞线程队列——
+
+{% highlight c %}
+struct semaphore
+{
+    volatile int32_t val;
+    rlist blocked_threads;
+};
+{% endhighlight %}
+
+`wait`和`signal`操作也没什么神秘的，我都不想放代码了——
+
+{% highlight c %}
+void semaphore_wait(struct semaphore *s)
+{
+    intr_state intr_s = fetch_and_disable_intr();
+
+    if(--s->val < 0)
+    {
+        struct TCB *tcb = get_cur_TCB();
+        push_back_rlist(&s->blocked_threads, tcb,
+                        kernel_resident_rlist_node_alloc);
+        tcb->blocked_sph = s;
+        block_cur_thread();
+    }
+
+    set_intr_state(intr_s);
+}
+
+void semaphore_signal(struct semaphore *s)
+{
+    intr_state intr_s = fetch_and_disable_intr();
+
+    if(++s->val <= 0 && !is_rlist_empty(&s->blocked_threads))
+    {
+        struct TCB *th = pop_front_rlist(&s->blocked_threads,
+                kernel_resident_rlist_node_dealloc);
+        th->blocked_sph = NULL;
+        awake_thread(th);
+    }
+
+    set_intr_state(intr_s);
+}
+{% endhighlight %}
