@@ -114,7 +114,7 @@ void free_phy_page(uint32_t page_phy_addr);
 
 TinyOS采用位图记录物理页框的使用情况，一个位为1表明其对应的物理页是空闲的。设想一开始的空闲页框下标范围为`[B, E)`，则需要`ceil((E-B)/32)`个`uint32_t`位图记录其可用性，这一堆位图称为L3位图。然而，分配页框时线性查找这些位图中的可用位可能会极为低效，因此在L3基础上增加一层位图，对每个L3位图均用一个位来记录其是否还有空闲空间，这一层位图需要`ceil(ceil((E-B)/32)/32)`个`uint32_t`。以此类推，可以定义出L1位图和L0位图。容易证明，即使可用物理内存达到32位地址线的极限——4GB，也只需要1个`uint32_t`类型的L0位图。多级位图示意图如下：
 
-![]({{site.url}}/postpics/multi-level-bitmap.png){:align=center}
+![]({{site.url}}/postpics/multi-level-bitmap.png){: width="70%"}
 
 TinyOS的位图索引是以`uint32_t`为单位进行的，这意味着每一曾查询都需要找到32个位中的某个为1的位（为1表示可用），而线性扫描所有位来完成这件事可能浪费大量时间。一种软件解决方案是二分地在一个`uint32_t`中查找为1的位，硬件解决方案则是使用`bsr/bsf`这样的特殊指令来获得目标位的位置。由于x86上的指令周期在不同的实现上极不稳定，TinyOS暂且采用第二种方案（至少在我的i74700MQ上，这两条指令相当高效），同时保留使用第一种方案的可能。
 
@@ -130,6 +130,7 @@ Li[n] = ((Lj[32 * n + 0]  != 0) << 0) |
 综上所述，TinyOS用来管理物理内存的数据结构定义为：
 
 {% highlight c linenos %}
+/* In kernel/memory/phy_mem_man.h */
 struct mem_page_pool
 {
     // mem_page_pool是个变长结构体，所以大小记一下
@@ -190,6 +191,7 @@ static struct mem_page_pool *phy_mem_page_pool;
 找到空闲物理页后，需要将其对应的L3位图中的位置0,并更新可能因此而改变的L0~L2位图。综上所述，物理页分配的C语言实现如下：
 
 {% highlight c linenos %}
+/* In kernel/memory/phy_mem_man.h */
 uint32_t alloc_phy_page(bool resident)
 {
     // 现在是没了物理页直接挂掉
@@ -233,6 +235,7 @@ uint32_t alloc_phy_page(bool resident)
 类似地，释放物理页只需要将其L3位图中的对应位设置为1（表示可用），并更新L0~L2位图即可：
 
 {% highlight c linenos %}
+/* In kernel/memory/phy_mem_man.h */
 void free_phy_page(uint32_t page_phy_addr)
 {
     size_t page_idx = (page_phy_addr >> 12) - phy_mem_page_pool->begin;
@@ -264,7 +267,7 @@ void free_phy_page(uint32_t page_phy_addr)
 
 自从bootloader开启了分页机制以来，内核就一直运行在自己的虚拟地址空间中。这里复述一下，初始的页表和页目录是这样安排的：
 
-![]({{site.url}}/postpics/init-PDE-PTE.png){:align=center}
+![]({{site.url}}/postpics/init-PDE-PTE.png){: width="90%"}
 
 可以看到，在初始化分页机制时，页目录的高255项就被指向了255个页表，尽管实际映射了物理页的只有首个页表，这么做算是个伏笔。众所周知，32位linux将0~3GB地址空间分配给进程使用，每个进程都独占自己0~3GB的虚拟地址空间；而3GB~4GB空间则被所有进程共享，是内核占用的地址空间。这一共享在x86上的实现方式就是共享页表——3GB~4GB空间对应于页目录的第768~1023项，于是我干脆预先分配了255个页表，以后所有进程页目录的第768~1022项都指向这255个页表，这样就实现了高地址空间的共享。
 
@@ -335,6 +338,7 @@ x86 CPU有一个名为`cr3`的寄存器，它存放的是当前使用的页目�
 由于访问页目录项必须通过虚拟地址来完成，而设置`cr3`寄存器又要用到它的物理地址，因此TinyOS用一个二元组`(页目录虚拟地址，页目录物理地址)`来作为一个虚拟地址空间的`handle`：
 
 {% highlight c %}
+/* In kernel/memory/vir_mem_man.h */
 struct PDE_struct
 {
     uint32_t PTE[1024];
@@ -361,6 +365,8 @@ typedef struct _vir_addr_space vir_addr_space;
     这里的empty_usr_addr_space_rec是一个用来存放尚可用的 struct _vir_addr_space 的自由链表
     TinyOS预先分配好了固定数量的 struct _vir_addr_space 空间，需要的时候从其中取走即可，写起来方便（逃
     当然，这样的设计也浪费了一些空闲空间，且限制了页目录的最大数量
+
+    In kernel/memory/vir_mem_man.h
 */
 static vir_addr_space *new_empty_usr_addr_space(void)
 {
@@ -439,6 +445,7 @@ void set_current_vir_addr_space(vir_addr_space *addr_space)
 x86中导致缺页中断的虚拟地址会被存放到`cr2`寄存器中。万事俱备，缺页终端处理的C语言实现如下：
 
 {% highlight c %}
+/* In kernel/memory/vir_mem_man.h */
 void page_fault_handler(void)
 {
     // 取得cr2寄存器内容，即引发pagefault的虚拟地址
@@ -474,3 +481,68 @@ void page_fault_handler(void)
     _refresh_vir_addr_in_TLB(cr2);
 }
 {% endhighlight %}
+
+## 中断和系统调用
+
+### 中断描述符表
+
+x86规定使用中断描述符表（Interrupt Descriptor Table，IDT）来描述中断处理函数的入口，中断描述符表是以中断描述符为元素类型的数组，我们只需要在内存中填充好IDT，然后使用`lidt`指令告知机器IDT的位置和大小即可。
+
+每个中断描述符占64字节，包含了以下信息：
+
+1. 中断处理函数所处的段
+2. 中断处理函数的段内偏移
+3. 中断处理函数的访问属性，如DPL特权级等
+
+假设已经准备好了一个IDT数组，那么`IDT[0]`就给出了0号中断处理函数的入口，`IDT[1]`给出了1号中断处理函数，以此类推。x86规定了一部分中断号的含义，其他中断号则留给操作系统分配——
+
+```
+中断号   中断类型
+    0   除0异常
+    1   DEBUG
+    2   NMI致命错误
+    3   断点
+    ......
+   13   GP保护错误
+   14   缺页
+    ......
+   31   保留
+```
+
+可以看到，0～31号中断已经有了自己的含义，TinyOS按照其类型安排合适的中断处理函数，譬如`IDT[14]`就应该描述缺页中断处理函数的入口。
+
+### 8259A
+
+8259A芯片并不是x86 CPU的一部分，几乎所有的外部设备中断都是经由它处理后发送给CPU的。在这里我不打算讨论其引脚映射和多个8259A的级联，只需要知道：可以通过向特定的端口发送数据来设置8259A向CPU发送的中断号范围。譬如，下面的代码将8259A发送的中断号设置为从32开始：
+
+{% highlight c %}
+// 主片
+_out_byte_to_port(0x20, 0x11);
+_out_byte_to_port(0x21, 0x20);
+_out_byte_to_port(0x21, 0x04);
+_out_byte_to_port(0x21, 0x01);
+// 从片
+_out_byte_to_port(0xa0, 0x11);
+_out_byte_to_port(0xa1, 0x28);
+_out_byte_to_port(0xa1, 0x02);
+_out_byte_to_port(0xa1, 0x01);
+{% endhighlight %}
+
+此时8259A覆盖的中断号范围为32~47：
+
+```
+中断号   中断类型
+   32   时钟
+   33   键盘
+    ......
+   46   硬盘
+   47   保留
+```
+
+### 系统调用
+
+TinyOS的系统调用机制模仿了Linux——使用0x80号中断实现。通常，系统调用由用户进程发起，且往往涉及到比用户进程特权级更高的操作，而发起中断就是最简单的提升特权级的方法之一。系统调用通常涉及到一个或多个参数传递，在TinyOS中采用约定的寄存器进行传参。总而言之，用户程序只需要将特定寄存器设置为要传入的参数，然后执行指令`int 0x80`即可。
+
+作为系统调用入口的中断处理函数与普通的中断处理函数入口并无太大不同，唯一的区别就是把约定好的寄存器值压入栈中作为系统调用函数实现的参数。中断处理函数入口和系统调用入口均实现在`kernel/interrupt/interrupt.s`中，就不在这里赘述过多的技术细节了。
+
+
