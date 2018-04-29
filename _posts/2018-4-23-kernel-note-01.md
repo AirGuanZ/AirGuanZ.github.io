@@ -615,8 +615,6 @@ struct PCB
 };
 {% endhighlight %}
 
-由于TCB和PCB关系到OS的许多方面，其中包含了许多用于支持进程/线程管理以外的功能的数据，这里不必在意它们。此外，我在写下TCB和PCB结构体定义时也没有省内存的心思，所以没有使用最佳的内存布局，也没有压缩状态字。反正意思到了就行，（逃……
-
 注意到上面的TCB/PCB结构体中有很多`ilist_node`，它们是侵入式链表的节点。很久以前我在学C语言的时候，就听说过Linux内核链表定义了一个功能大概如下的宏：
 
 {% highlight c %}
@@ -640,7 +638,7 @@ enum thread_state
 };
 {% endhighlight %}
 
-其中，`thread_state_running`在除了调度器正在运行时以外的任意时刻都只由一个线程持有；`thread_state_ready`状态的线程都处在一个就绪线程队列中；`thread_state_blocked`为阻塞态线程，它们由不同的阻塞源维护；`thread_state_killed`则是被标记为将要销毁的线程。通常销毁线程时，直接将其TCB从各种线程链表中摘除，然后释放TCB即可，但当一个线程调用销毁自己的函数时，就不能直接释放其各类资源（否则下一次调度发生时会出错）。因此这种状态下其状态会被设置为`thread_state_killed`，然后由调度器来完成销毁工作。
+其中，`thread_state_running`在除了调度器正在运行时以外的任意时刻都只由一个线程持有；`thread_state_ready`状态的线程都处在就绪线程队列中；`thread_state_blocked`为阻塞态线程，由各自的阻塞源维护；`thread_state_killed`则是被标记为将要销毁的线程。通常销毁线程时，可以直接将其TCB从各种相应的链表中摘除，然后释放TCB空间即可，但当一个线程调用销毁自己的函数时，就不能直接释放其资源（否则下一次调度时会出错）。这种情况下其状态会被设置为`thread_state_killed`，然后由调度器来完成销毁工作。
 
 调度器实现简单粗暴，大概分为以下几个步骤：
 
@@ -789,7 +787,7 @@ struct semaphore
 };
 {% endhighlight %}
 
-`wait`和`signal`操作也没什么神秘的，我都不想放代码了——
+`wait`和`signal`操作也没什么神秘的——
 
 {% highlight c %}
 void semaphore_wait(struct semaphore *s)
@@ -823,3 +821,12 @@ void semaphore_signal(struct semaphore *s)
     set_intr_state(intr_s);
 }
 {% endhighlight %}
+
+## 内核消息队列
+
+进程往往需要获取许多系统事件的相关信息，比如键盘输入。TinyOS为每个进程提供一个消息队列，且允许每个进程中有一个线程阻塞在消息队列上，在有消息到来时被唤醒。
+
+一个进程并不会天然地接收系统中所有消息源的消息，它必须通过系统调用来注册自己要接收的消息类型。譬如，一个进程要想收到键盘按键消息，就必须向键盘管理器（一个公开的消息源）表述这一意愿。这实质上是把它的PCB加入键盘管理器的一个接收者链表(receiver list)中。TinyOS通过一个共享节点式十字链表维护这一多对多关系，当一个进程被销毁时，其PCB会自动从所有已注册的消息源摘除；当一个消息源被销毁时，也会自动从所有注册了该类型消息的进程的消息源列表中将它删除。
+
+![]({{site.url}}/postpics/sysmsg-cross-list.png){: width="70%"}
+
