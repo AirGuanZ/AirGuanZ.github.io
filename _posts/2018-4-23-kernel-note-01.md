@@ -822,11 +822,53 @@ void semaphore_signal(struct semaphore *s)
 }
 {% endhighlight %}
 
-## 内核消息队列
+## 内核消息
+
+### 消息队列
 
 进程往往需要获取许多系统事件的相关信息，比如键盘输入。TinyOS为每个进程提供一个消息队列，且允许每个进程中有一个线程阻塞在消息队列上，在有消息到来时被唤醒。
+
+内核消息队列并不是拿来进行大规模数据传输的，因而每条消息能够携带的信息量非常有限，除了类型标志外，只剩下12个字节的参数区域——
+
+{% highlight c %}
+#define SYSMSG_PARAM_SIZE 12
+
+struct sysmsg
+{
+    sysmsg_type type;
+    uint8_t params[SYSMSG_PARAM_SIZE];
+};
+{% endhighlight %}
+
+参数区域的含义由每个类型的消息自行规定。譬如，由键盘驱动模块定义的按键按下/释放消息具有一下形式：
+
+{% highlight c %}
+/*
+    msg参数含义:
+    struct
+    {
+        uint32_t key
+        uint32_t flags
+        uint32_t reserved
+    }
+    flags0 down/up
+*/
+struct kbmsg_struct
+{
+    sysmsg_type type; // 为SYSMSG_TYPE_KEYBOARD
+    uint32_t key;
+    uint32_t flags;
+    uint32_t reserved;
+};
+{% endhighlight %}
+
+如果进程不及时处理消息导致消息队列被填满，多出来的新消息会被直接丢弃。如果想容纳比默认消息队列大小更多的消息，每个进程可以专门开辟一个线程，它不断将消息队列中的内容迁移到进程自己准备的、足够大的缓冲区中。这样一来，只要在该线程的两次相邻调度期间消息队列没有被填满（这几乎不可能发生），就一定不会发生消息丢失。
+
+### 消息源和接收者
 
 一个进程并不会天然地接收系统中所有消息源的消息，它必须通过系统调用来注册自己要接收的消息类型。譬如，一个进程要想收到键盘按键消息，就必须向键盘管理器（一个公开的消息源）表述这一意愿。这实质上是把它的PCB加入键盘管理器的一个接收者链表(receiver list)中。TinyOS通过一个共享节点式十字链表维护这一多对多关系，当一个进程被销毁时，其PCB会自动从所有已注册的消息源摘除；当一个消息源被销毁时，也会自动从所有注册了该类型消息的进程的消息源列表中将它删除。
 
 ![]({{site.url}}/postpics/sysmsg-cross-list.png){: width="70%"}
+
+为此，TinyOS提供了`sysmsg_receiver_list`和`sysmsg_source_list`两个结构体（`include/kernel/sysmsg/sysmsg_src.h`），前者由消息源持有，后者由每个进程持有。任何一个接收者列表/消息源列表被销毁时，它都会自动地维护所有相关列表的一致性，不会出现某个进程被销毁了之后还留存在别的接收者列表中的情况。
 
