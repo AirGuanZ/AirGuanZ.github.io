@@ -15,7 +15,7 @@ text_color_theme: dark #eg: default | dark | forest | ocean | chocolate | orange
 ## Base settings ##
 # url:  #the base hostname & protocol for your site e.g. https://www.someone.com
 baseurl: /
-title: AirGuanZ
+title: Automorphism
 description: > #this means to ignore newlines until "nav_lists:"
   AirGuanZ's personal homepage
 
