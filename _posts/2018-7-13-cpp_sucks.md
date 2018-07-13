@@ -57,10 +57,8 @@ AGZ_FORCE_INLINE bool ApproxEq(const Vec4<T> &lhs, const Vec4<T> &rhs, T epsilon
 > utils\src\math\mat4.inl(153): error C2039: “Self”: 不是“`global namespace'”的成员
 > utils\src\math\mat4.inl(153): fatal error C1003: 错误计数超过 100；正在停止编译
 
-所有的错误都出现在和我写错的地方毫无关联的地方，换成gcc或者clang也好不到哪去。VS贴心地为我将错误排了序，以至于编译器给出的
-首个错误被藏在一大票胡言乱语之间。
+所有的错误都出现在和我写错的地方毫无关联的地方，换成gcc或者clang也好不到哪去。VS贴心地为我将错误排了序，以至于编译器给出的首个错误被藏在一大票胡言乱语之间。
 
-且不提模板元编程，这只是个普普通通、毫无技巧的模板类，就给我搞出这种幺蛾子，更别提一个未定义`operator<`的'A'和`std::set<A>`一起
-就能搞出超过500行的错误提示了。
+且不提模板元编程，这只是个普普通通、毫无技巧的模板类，就给我搞出这种幺蛾子，更别提一个未定义`operator<`的类和`std::set`一起就能搞出超过500行的错误提示了。
 
 Concept跳票到C++20，等同于编译期duck typing模板完全就是灾难，真该好好看看隔壁Rust的泛型。
