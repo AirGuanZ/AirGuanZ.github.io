@@ -33,29 +33,31 @@ AGZ_FORCE_INLINE bool ApproxEq(const Vec4<T> &lhs, const Vec4<T> &rhs, T epsilon
 
 而万恶的MSVC是这样的：
 
-> utils\src\math\mat4.inl(9): error C2039: “Mat4”: 不是“`global namespace'”的成员
-> utils\src\math\mat4.inl(10): error C2143: 语法错误: 缺少“;”(在“{”的前面)
-> utils\src\math\mat4.inl(10): error C2447: “{”: 缺少函数标题(是否是老式的形式表?)
-> utils\src\math\mat4.inl(19): error C2988: 不可识别的模板声明/定义
-> utils\src\math\mat4.inl(19): error C2143: 语法错误: 缺少“;”(在“<”的前面)
-> utils\src\math\mat4.inl(19): error C4430: 缺少类型说明符 - 假定为 int。注意: C++ 不支持默认 int
-> utils\src\math\mat4.inl(19): error C2374: “AGZ::Math::Mat4”: 重定义；多次初始化
-> utils\src\math\mat4.inl(9): note: 参见“AGZ::Math::Mat4”的声明
-> utils\src\math\mat4.inl(19): error C2059: 语法错误:“<”
-> utils\src\math\mat4.inl(19): error C2039: “Mat4”: 不是“`global namespace'”的成员
-> utils\src\math\mat4.inl(19): error C2039: “Data”: 不是“`global namespace'”的成员
-> ...... 此处省略数十行和出错的地方风马牛不相及的东西 ......
-> utils\src\math\mat4.inl(121): error C2923: “AGZ::Math::Vec3”: 对于参数“T”，“T”不是有效的 模板 类型变量
-> utils\src\math\mat4.inl(122): error C2143: 语法错误: 缺少“;”(在“{”的前面)
-> utils\src\math\mat4.inl(122): error C2447: “{”: 缺少函数标题(是否是老式的形式表?)
-> utils\src\math\mat4.inl(153): error C2988: 不可识别的模板声明/定义
-> utils\src\math\mat4.inl(153): error C2143: 语法错误: 缺少“;”(在“<”的前面)
-> utils\src\math\mat4.inl(153): error C4430: 缺少类型说明符 - 假定为 int。注意: C++ 不支持默认 int
-> utils\src\math\mat4.inl(153): error C2374: “AGZ::Math::Mat4”: 重定义；多次初始化
-> utils\src\math\mat4.inl(9): note: 参见“AGZ::Math::Mat4”的声明
-> utils\src\math\mat4.inl(153): error C2059: 语法错误:“<”
-> utils\src\math\mat4.inl(153): error C2039: “Self”: 不是“`global namespace'”的成员
-> utils\src\math\mat4.inl(153): fatal error C1003: 错误计数超过 100；正在停止编译
+```
+utils\src\math\mat4.inl(9): error C2039: “Mat4”: 不是“`global namespace'”的成员
+utils\src\math\mat4.inl(10): error C2143: 语法错误: 缺少“;”(在“{”的前面)
+utils\src\math\mat4.inl(10): error C2447: “{”: 缺少函数标题(是否是老式的形式表?)
+utils\src\math\mat4.inl(19): error C2988: 不可识别的模板声明/定义
+utils\src\math\mat4.inl(19): error C2143: 语法错误: 缺少“;”(在“<”的前面)
+utils\src\math\mat4.inl(19): error C4430: 缺少类型说明符 - 假定为 int。注意: C++ 不支持默认 int
+utils\src\math\mat4.inl(19): error C2374: “AGZ::Math::Mat4”: 重定义；多次初始化
+utils\src\math\mat4.inl(9): note: 参见“AGZ::Math::Mat4”的声明
+utils\src\math\mat4.inl(19): error C2059: 语法错误:“<”
+utils\src\math\mat4.inl(19): error C2039: “Mat4”: 不是“`global namespace'”的成员
+utils\src\math\mat4.inl(19): error C2039: “Data”: 不是“`global namespace'”的成员
+...... 此处省略数十行和出错的地方风马牛不相及的东西 ......
+utils\src\math\mat4.inl(121): error C2923: “AGZ::Math::Vec3”: 对于参数“T”，“T”不是有效的 模板 类型变量
+utils\src\math\mat4.inl(122): error C2143: 语法错误: 缺少“;”(在“{”的前面)
+utils\src\math\mat4.inl(122): error C2447: “{”: 缺少函数标题(是否是老式的形式表?)
+utils\src\math\mat4.inl(153): error C2988: 不可识别的模板声明/定义
+utils\src\math\mat4.inl(153): error C2143: 语法错误: 缺少“;”(在“<”的前面)
+utils\src\math\mat4.inl(153): error C4430: 缺少类型说明符 - 假定为 int。注意: C++ 不支持默认 int
+utils\src\math\mat4.inl(153): error C2374: “AGZ::Math::Mat4”: 重定义；多次初始化
+utils\src\math\mat4.inl(9): note: 参见“AGZ::Math::Mat4”的声明
+utils\src\math\mat4.inl(153): error C2059: 语法错误:“<”
+utils\src\math\mat4.inl(153): error C2039: “Self”: 不是“`global namespace'”的成员
+utils\src\math\mat4.inl(153): fatal error C1003: 错误计数超过 100；正在停止编译
+```
 
 所有的错误都出现在和我写错的地方毫无关联的地方，换成gcc或者clang也好不到哪去。VS贴心地为我将错误排了序，以至于编译器给出的首个错误被藏在一大票胡言乱语之间。
 
