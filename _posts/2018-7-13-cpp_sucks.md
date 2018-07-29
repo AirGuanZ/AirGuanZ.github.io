@@ -3,7 +3,8 @@ layout: post
 title: 为什么要学Rust
 key: 20180713
 tags:
-  - C++ 吐槽
+  - C++
+  - 吐槽
 ---
 
 C++真是混乱邪恶的语言。
