@@ -21,10 +21,6 @@ Coherence的正确性很简单：cache对一切软件透明。我们除了能通
 Consistency correctness则会真真切切地影响软件的行为，它决定了程序所观测到的许多内存操作的结果。我曾经在看[folly](github.com/facebook/folly)源代码时看到以下代码：
 
 {% highlight c++ %}
-static size_t refs(Char * p) {
-  return fromData(p)->refCount_.load(std::memory_order_acquire);
-}
-
 static void incrementRefs(Char * p) {
   fromData(p)->refCount_.fetch_add(1, std::memory_order_acq_rel);
 }
@@ -39,7 +35,7 @@ static void decrementRefs(Char * p) {
 }
 {% endhighlight %}
 
-显然这是某个跨线程引用计数类的成员函数，我过去都是直接拿`std::atomic<int>`怼的。可是这个`std::memory_order_acquire`还有下面的`std::memory_order_acq_rel`是些啥玩意儿？我隐约记得自己在看前半本《C++ concurrency in action》的时候遇到过它们，当时就没怎么看懂。事实上，这一套东西就是内存一致性模型在C++中的体现，编译器会根据用户所指定使用的模式，结合目标平台所使用的一致性模型，生成尽可能优化的、符合用户期望行为的代码。当然，如果心里没数（像我这样），老老实实用锁也是可以的。
+显然这是某个跨线程引用计数类的成员函数，我过去都是直接拿`std::atomic<int>`怼的。可是`std::memory_order_acquire`还有下面的`std::memory_order_acq_rel`是些啥玩意儿？我隐约记得自己在看前半本《C++ concurrency in action》的时候遇到过它们，当时就没怎么看懂。事实上，这一套东西就是内存一致性模型在C++中的体现，编译器会根据用户所指定使用的模式，结合目标平台所使用的一致性模型，生成尽可能优化的、符合用户期望行为的代码。
 
 ## Basic Coherence
 
@@ -53,7 +49,7 @@ static void decrementRefs(Char * p) {
 
 ## Sequential Consistency
 
-Coherence和consistency在理论上是可以没什么关系的，即存在这么一个系统，它满足特定的consistency，却不满足cache coherence。但在现实中，cache coherence基本都是实现了的，因此在下面对consistency的讨论中，若非指明，均假设系统满足coherence。
+Coherence和consistency在理论上是可以没什么关系的，即一个系统可以满足特定的consistency，却不满足cache coherence。但在现实中，cache coherence基本都是实现了的，因此在下面对consistency的讨论中，若非指明，均假设系统满足coherence。
 
 考虑下面的程序：
 
@@ -89,3 +85,39 @@ $$
 除此之外，atomic read-modify-write（RMW）操作要求在它的load和store之间不能有任何别的内存操作插进来（即使操作地址不同）。这就是SC模型的全部约束了。
 
 当然，一个好的SC实现还应该避免starvation和尽量保证fairness，不过这不在模型的讨论范围内。
+
+## Total Store Order
+
+SC对编程人员很友好，但对硬件设计不怎么友好。考虑一个带write buffer的单核处理器，它对某地址A的store操作先进入write buffer，然后在合适的时机写入cache/主存。如果在该操作仍位于write buffer中时又来了个load from A的操作，可以这么解决：
+
+1. 给core一个stalling，直到store完成后才执行load。
+2. 引入bypassing机制，直接从write buffer把值取给load。
+
+在把这套机制推广到多核时，每个core都应该有自己的write buffer，显而易见而又理所当然。但是问题来了，考虑下面的程序：
+
+```
+Core 1:
+    set x = 1
+    load r1 = y
+Core 2:
+    set y = 1
+    load r2 = x
+```
+
+其中x和y的初值均为0。如果按下面的顺序执行：
+
+1. Core 1和Core 2各自把store操作提交到write buffer中。
+2. Core 1和Core 2各自从y和x中读出0来。
+3. Core 1和Core 2的write buffer把store的值写入内存。
+
+这样一来，r1和r2的值都为0，这是违背SC模型的。要解决这个问题，要么会极大地增加设计复杂性，要么会降低处理器执行效率。结果，SPARC和x86设计者索性舍弃了SC，并采用了新的模型——Total Store Order（TSO）。在TSO模型下，r1和r2均为0是合法的。
+
+TSO的idea很简单——删除SC的Store-Load约束。这样一来，每个core就都可以简单地拥有自己的write buffer了。值得注意的是仍然保留的Store-Store约束要求这个write buffer必须是FIFO的。
+
+如果程序员不希望一个Store-Load操作被重排，可以使用一种被称为FENCE（内存屏障）的指令。在Core i上执行一条FENCE指令，意味着Core i中program order意义上所有FENCE前的内存操作在memory order意义上都先于program order意义上所有FENCE后的内存操作，即对Core i而言——
+
+$$
+A <_p \text{FENCE} <_p B \Rightarrow A <_m B
+$$
+
+大部分情况下TSO都“does the right thing”，因此FENCE在这里并不常用。
