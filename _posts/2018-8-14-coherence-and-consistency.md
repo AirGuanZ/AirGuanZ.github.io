@@ -18,7 +18,7 @@ Coherence和consistency是对shared memory correctness的人为划分，我暂�
 
 Coherence的正确性很简单：cache对一切软件透明。我们除了能通过一些性能测试来估计cache的性质（比如CSAPP中那个著名的存储器山）外，无法从语义的层面获知关于cache的任何信息，只需要当它不存在就行了。
 
-Consistency correctness则会真真切切地影响软件的行为，它决定了程序所观测到的许多内存操作的结果。我曾经在看[folly](github.com/facebook/folly)源代码时看到以下代码：
+Consistency correctness则会真真切切地影响软件的行为，它决定了程序所观测到的许多内存操作的结果，对程序员是可见的。举个简单的例子，Facebook开源的C++基础类库[folly](github.com/facebook/folly)中有以下代码：
 
 {% highlight c++ %}
 static void incrementRefs(Char * p) {
@@ -35,7 +35,7 @@ static void decrementRefs(Char * p) {
 }
 {% endhighlight %}
 
-显然这是某个跨线程引用计数类的成员函数，我过去都是直接拿`std::atomic<int>`怼的。可是`std::memory_order_acquire`还有下面的`std::memory_order_acq_rel`是些啥玩意儿？我隐约记得自己在看前半本《C++ concurrency in action》的时候遇到过它们，当时就没怎么看懂。事实上，这一套东西就是内存一致性模型在C++中的体现，编译器会根据用户所指定使用的模式，结合目标平台所使用的一致性模型，生成尽可能优化的、符合用户期望行为的代码。
+显然这是某个跨线程用引用计数类进行资源管理的函数，这种事我过去都是直接拿`std::atomic<unsigned>`怼的。可是`std::memory_order_acquire`还和`std::memory_order_acq_rel`是些啥玩意儿？我隐约记得自己在读前半本《C++ Concurrency in Action》的时候遇到过它们，当时没怎么看懂。事实上，这一套东西就是内存一致性模型在C++中的体现，编译器会根据用户所指定使用的模式，结合目标平台所使用的一致性模型，生成尽可能优化的、符合用户期望行为的代码。
 
 ## Basic Coherence
 
@@ -93,7 +93,7 @@ SC对编程人员很友好，但对硬件设计不怎么友好。考虑一个带
 1. 给core一个stalling，直到store完成后才执行load。
 2. 引入bypassing机制，直接从write buffer把值取给load。
 
-在把这套机制推广到多核时，每个core都应该有自己的write buffer，显而易见而又理所当然。但是问题来了，考虑下面的程序：
+在把这套机制推广到多核时，每个core都应该有自己的write buffer，显而易见而又理所当然。但是问题来了，试看下面的程序：
 
 ```
 Core 1:
@@ -121,3 +121,44 @@ A <_p \text{FENCE} <_p B \Rightarrow A <_m B
 $$
 
 大部分情况下TSO都“does the right thing”，因此FENCE在这里并不常用。
+
+现在考虑下面的程序：
+
+```
+Core 1:
+    set x = 1
+    load r1 = x
+    load r2 = y
+Core 2:
+    set y = 1
+    load r3 = y
+    load r4 = x
+```
+
+其中x和y初值均为0。由于Store-Load可以被重排，程序运行是可能导致r2和r4均为0的。在这种情况下，大多数人会期许r1和r3也为0，因为：
+
+$$
+\begin{aligned}
+L(r_1) <_p L(r_2) &\Rightarrow L(r_1) <_m L(r_2) \\
+L(r_1) <_m L(r_2) &\wedge L(r_2) <_m S(x) \Rightarrow L(r_1) <_m S(x) \\
+L(r_3) <_p L(r_4) &\Rightarrow L(r_3) <_m L(r_4) \\
+L(r_3) <_m L(r_4) &\wedge L(r_4) <_m S(y) \Rightarrow L(r_3) <_m S(y)
+\end{aligned}
+$$
+
+然而事实上，这并不是强制的。在TSO实现中，由于load r1和set x都在Core 1上执行，load的结果完全可以通过bypassing从Core 1的write buffer中取得。看起来这违背了TSO模型的约束？其实不然，TSO不仅修改了program order对memory order的约束，还修改了value of load的概念。是时候搬出TSO的形式化定义了：
+
+$$
+\begin{aligned}
+& L(a) <_p L(b) \Rightarrow L(b) <_m L(b) \\
+& L(a) <_p S(b) \Rightarrow L(b) <_m S(b) \\
+& S(a) <_p S(b) \Rightarrow S(a) <_m S(b) \\
+& \text{ValueOf}(L(a)) = \text{ValueOf}(\max_{<_m}\{ S(a) \mid S(a) <_m L(a) \vee S(a) <_p L(a) \})
+\end{aligned}
+$$
+
+没错，$\text{ValueOf}(L(a))$的修改基本就是为了允许bypassing。
+
+FENCE的定义我就懒得放了，它和任何指令的memory order都直接约束它们俩的memory order。
+
+在历史上，x86的设计并没有显式地采用TSO。之所以在这里说它用了TSO，只是由于标题那本书的作者提到x86的模型（for normal cacheable memory and normal instructions）和TSO一致而已。
