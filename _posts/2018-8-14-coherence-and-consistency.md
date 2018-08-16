@@ -35,7 +35,7 @@ static void decrementRefs(Char * p) {
 }
 {% endhighlight %}
 
-显然这是某个跨线程用引用计数类进行资源管理的函数，这种事我过去都是直接拿`std::atomic<unsigned>`怼的。可是`std::memory_order_acquire`还和`std::memory_order_acq_rel`是些啥玩意儿？我隐约记得自己在读前半本《C++ Concurrency in Action》的时候遇到过它们，当时没怎么看懂。事实上，这一套东西就是内存一致性模型在C++中的体现，编译器会根据用户所指定使用的模式，结合目标平台所使用的一致性模型，生成尽可能优化的、符合用户期望行为的代码。
+显然这是某个跨线程用引用计数类进行资源管理的函数，这种事我过去都是直接拿`std::atomic<unsigned>`怼的。可是`std::memory_order_acq_rel`是啥玩意儿？我隐约记得自己在读前半本《C++ Concurrency in Action》的时候遇到过它，当时没怎么看懂。事实上，这一套东西就是内存一致性模型在C++中的体现，编译器会根据用户所指定使用的模式，结合目标平台所使用的一致性模型，生成尽可能优化的、符合用户期望行为的代码。
 
 ## Basic Coherence
 
@@ -139,10 +139,10 @@ Core 2:
 
 $$
 \begin{aligned}
-L(r_1) <_p L(r_2) &\Rightarrow L(r_1) <_m L(r_2) \\
-L(r_1) <_m L(r_2) &\wedge L(r_2) <_m S(x) \Rightarrow L(r_1) <_m S(x) \\
-L(r_3) <_p L(r_4) &\Rightarrow L(r_3) <_m L(r_4) \\
-L(r_3) <_m L(r_4) &\wedge L(r_4) <_m S(y) \Rightarrow L(r_3) <_m S(y)
+&L(r_1) <_p L(r_2) \Rightarrow L(r_1) <_m L(r_2) \\
+&L(r_1) <_m L(r_2) \wedge L(r_2) <_m S(x) \Rightarrow L(r_1) <_m S(x) \\
+&L(r_3) <_p L(r_4) \Rightarrow L(r_3) <_m L(r_4) \\
+&L(r_3) <_m L(r_4) \wedge L(r_4) <_m S(y) \Rightarrow L(r_3) <_m S(y)
 \end{aligned}
 $$
 
@@ -157,8 +157,16 @@ $$
 \end{aligned}
 $$
 
-没错，$\text{ValueOf}(L(a))$的修改基本就是为了允许bypassing。
+$\text{ValueOf}(L(a))$的修改基本就是为了允许bypassing。
 
-FENCE的定义我就懒得放了，它和任何指令的memory order都直接约束它们俩的memory order。
-
-在历史上，x86的设计并没有显式地采用TSO。之所以在这里说它用了TSO，只是由于标题那本书的作者提到x86的模型（for normal cacheable memory and normal instructions）和TSO一致而已。
+最后是FENCE的定义，emm，这里面废话蛮多的：
+$$
+\begin{aligned}
+& L(a) <_p \mathrm{FENCE} \Rightarrow L(a) <_m \mathrm{FENCE} \\
+& S(a) <_p \mathrm{FENCE} \Rightarrow S(a) <_m \mathrm{FENCE} \\
+& \mathrm{FENCE} <_p \mathrm{FENCE} \Rightarrow \mathrm{FENCE} <_m \mathrm{FENCE} \\
+& \mathrm{FENCE} <_p L(a) \Rightarrow \mathrm{FENCE} <_m L(a) \\
+& \mathrm{FENCE} <_p S(a) \Rightarrow \mathrm{FENCE} <_m S(a)
+\end{aligned}
+$$
+在历史上，x86的设计并没有显式地采用TSO。按照这本书作者的说法，目前似乎并没有x86内存模型的形式化描述，因此这一论断没有被严格证明，而是基于观察给出的。
