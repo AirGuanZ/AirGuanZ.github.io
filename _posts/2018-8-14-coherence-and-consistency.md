@@ -160,6 +160,7 @@ $$
 $\text{ValueOf}(L(a))$的修改基本就是为了允许bypassing。
 
 最后是FENCE的定义，emm，这里面废话蛮多的：
+
 $$
 \begin{aligned}
 & L(a) <_p \mathrm{FENCE} \Rightarrow L(a) <_m \mathrm{FENCE} \\
@@ -169,4 +170,5 @@ $$
 & \mathrm{FENCE} <_p S(a) \Rightarrow \mathrm{FENCE} <_m S(a)
 \end{aligned}
 $$
+
 在历史上，x86的设计并没有显式地采用TSO。按照这本书作者的说法，目前似乎并没有x86内存模型的形式化描述，因此这一论断没有被严格证明，而是基于观察给出的。
