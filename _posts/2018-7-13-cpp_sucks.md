@@ -3,7 +3,7 @@ layout: post
 title: 为什么要学Rust
 key: 20180713
 tags:
-  - C++
+  - C/C++
   - 吐槽
 ---
 

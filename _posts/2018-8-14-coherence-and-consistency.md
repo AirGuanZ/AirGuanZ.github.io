@@ -3,7 +3,7 @@ layout: post
 title: 读书笔记：A Primer on Memory Consistency and Cache Coherence
 key: 20180814
 tags:
-  - 体系结构
+  - Architecture
 ---
 
 一直对存储一致性方面的东西一知半解，拖下去也不是办法，索性系统地学一学。此为读书笔记。
