@@ -12,7 +12,7 @@ Advanced Global Illuminations第四章内容。
 
 ## 渲染方程
 
-简要地复习一下渲染方程，首先是原味版：
+简要地复习一下渲染方程，首先是原版：
 
 $$
 L(x \to \Theta) = L_e(x \to \Theta) + \int_{\Omega_x}f_r(x, \Psi \leftrightarrow \Theta)L(x \leftarrow \Psi)\cos(N_x, \Psi)d\omega_\Psi
@@ -43,7 +43,7 @@ $$
 
 其中$G(x, y) = \cos(N_x, \Psi)\cos(N_y, -\Psi)/r^2_{xy}$为场景中任两个表面点间的几何因子。
 
-这些是exitant，也可以写出incident形式：
+这些公式都是出射的，也可以写出入射形式：
 
 $$
 L(x \leftarrow \Theta) = L_e(x \leftarrow \Theta) + \int_{\Omega_y}f_r(y, \Psi \leftrightarrow -\Theta)L(y \leftarrow \Psi)\cos(N_y, \Psi)d\omega_\Psi
@@ -90,15 +90,15 @@ $$
 \end{aligned}
 $$
 
-其中$z = r(x, \Theta)$。重要性函数值仅与场景的几何特征和材料特征有关，传递方式与辐射亮度的传播相似。
+其中$z = r(x, \Theta)$。重要性函数值仅与场景的几何和材质特征有关，传递方式与辐射亮度的传播相似。
 
-由于重要性函数的定义形式和incident版本的渲染方程一模一样，于是可以对照着定义一个exitant版（可以理解为某种“重要性发射器”）。令$W(x \to \Theta) = W(r(x, \Theta) \leftarrow -\Theta)$，容易证明：
+由于重要性函数的定义形式和入射版本的渲染方程一模一样，于是可以对照着定义一个出射版（可以理解为某种“重要性发射器”）。令$W(x \to \Theta) = W(r(x, \Theta) \leftarrow -\Theta)$，容易证明：
 
 $$
 W(x \to \Theta) = W_e(x \to \Theta) + \int_{\Omega_x}f_r(x, \Psi \leftrightarrow \Theta)W(x \leftarrow \Psi)\cos(N_x, \Psi)d\omega_\Psi
 $$
 
-有了重要性函数，在实际计算辐射通量的时候，只有光源处会真正地作出贡献，它们发出的光经反射造成的贡献都被重要习性函数纳入怀中了，因此有下面四个等价的公式：
+有了重要性函数，在实际计算辐射通量的时候，间接传播所作的贡献都被重要性函数纳入怀中了，因此有下面两个等价的公式：
 
 $$
 \begin{aligned}
@@ -108,3 +108,72 @@ $$
 &\Phi(S) = \int_A\int_{\Omega_x}L(x \leftarrow \Theta)W_e(x \to \Theta)\cos(N_x, \Theta)d\omega_\Theta dA_x
 \end{aligned}
 $$
+
+这样一来，我们就有了两种计算全局照明的思路：从$S$出发按照渲染方程“寻找”光源，或是从光源出发，计算光源对$S$的重要性函数。
+
+## 伴随方程
+
+首先引入两个线形算子：
+
+$$
+\begin{aligned}
+\mathcal TL(x \to \Theta) = \int_{\Omega_x}f_r(x, \Psi \leftrightarrow \Theta)L(r(x, \Theta) \to -\Psi)\cos(N_x, \Psi)d\omega_\Psi \\
+\mathcal QW(x \leftarrow \Theta) = \int_{\Omega_{r(x, \Theta)}}f_r(r(x, \Theta), \Psi \leftrightarrow -\Theta)W(r(x, \Theta) \leftarrow \Psi)\cos(N_{r(x, \Theta)}, \Psi)d\omega_\Psi
+\end{aligned}
+$$
+
+设$L^\rightarrow$表示出射辐射亮度，$L^\leftarrow$表示入射辐射亮度，$W^\rightarrow, W^\leftarrow$类似，则有：
+
+$$
+\begin{aligned}
+& L^\rightarrow = L^\rightarrow_e + \mathcal TL^\rightarrow \\
+& L^\leftarrow = L^\leftarrow_e + \mathcal QL^\leftarrow \\
+& W^\rightarrow = W^\rightarrow_e + \mathcal TW^\rightarrow \\
+& W^\leftarrow = W^\leftarrow_e + \mathcal QW^\leftarrow
+\end{aligned}
+$$
+
+现定义$A \times \Omega$上的出射函数和入射函数间的内积为：
+
+$$
+\langle F^\rightarrow, G^\leftarrow \rangle = \int_A\int_\Omega F(x \to \Theta)G(x \leftarrow \Theta)\cos(N_x, \Theta)d\omega_\Theta dA_x
+$$
+
+则：
+
+$$
+\begin{aligned}
+& \Phi(S) = \langle L^\rightarrow, W_e^\leftarrow \rangle \\
+& \Phi(S) = \langle L_e^\rightarrow, W^\leftarrow \rangle \\
+& \Phi(S) = \langle L^\leftarrow, W_e^\rightarrow \rangle \\
+& \Phi(S) = \langle L_e^\leftarrow, W^\rightarrow \rangle
+\end{aligned}
+$$
+
+容易验证$\mathcal T = \mathcal Q^*$，即$\mathcal T$是$\mathcal Q$的伴随算子，于是乎：
+
+$$
+\begin{aligned}
+& L^\leftarrow = L_e^\leftarrow + \mathcal T^*L^\leftarrow \\
+& W^\leftarrow = W^e^\leftarrow + \mathcal T^*W^\leftarrow
+\end{aligned}
+$$
+
+## 全局反射分布
+
+一切$L$都来自于$L_e$，这一关系由辐射亮度的传输方程给出。但是传输方程给出的式子是递归的，接下来给出一个非递归版本，称为全局反射分布函数（GRDF），记作$G_r(x\leftarrow\Theta, y\rightarrow\Psi)$。GRDF描述了场景中任意两处之间的光照传输属性，它满足：
+
+$$
+L(y \to \Psi) = \int_A\int_{\Omega_x}L_e(x \to \Theta)G_r(x \leftarrow \Theta, y \to \Psi)\cos(N_x, \Theta)d\omega_\Theta dA_x
+$$
+
+上式两边微分可得：
+
+$$
+G_r(x \leftarrow \Theta, y \rightarrow \Psi) =
+\dfrac
+{d^2L(y \to \Psi)}
+{L_e(x \to \Theta)\cos(N_x, \Theta)d\omega_\Theta dA_x}
+$$
+
+BRDF可以被看作GRDF的一种特例。
