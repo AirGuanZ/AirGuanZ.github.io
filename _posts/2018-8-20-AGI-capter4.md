@@ -23,11 +23,11 @@ $$
 $$
 f_r(x, \Psi \to \Theta) =
 \dfrac
-{dL(x \to \Psi)}
+{dL(x \to \Theta)}
 {L(x \leftarrow \Psi)\cos(N_x, \Psi)d\omega_\Psi}
 $$
 
-通常，BRDF函数对它的两个方向参数是对称的，所以也可以写做$\Psi \leftarrow \Theta$甚至$\Psi \leftrightarrow \Theta$。
+通常，BRDF函数的两个方向参数是对称的，所以也可以写做$\Psi \leftarrow \Theta$甚至$\Psi \leftrightarrow \Theta$。
 
 令$r(x, \Psi)$表示从$x$处向$\Psi$方向发射射线所获得的最近交点，$y = r(x, \Psi)$，则有：
 
@@ -117,8 +117,8 @@ $$
 
 $$
 \begin{aligned}
-\mathcal TL(x \to \Theta) = \int_{\Omega_x}f_r(x, \Psi \leftrightarrow \Theta)L(r(x, \Theta) \to -\Psi)\cos(N_x, \Psi)d\omega_\Psi \\
-\mathcal QW(x \leftarrow \Theta) = \int_{\Omega_{r(x, \Theta)}}f_r(r(x, \Theta), \Psi \leftrightarrow -\Theta)W(r(x, \Theta) \leftarrow \Psi)\cos(N_{r(x, \Theta)}, \Psi)d\omega_\Psi
+& \mathcal TL(x \to \Theta) = \int_{\Omega_x}f_r(x, \Psi \leftrightarrow \Theta)L(r(x, \Theta) \to -\Psi)\cos(N_x, \Psi)d\omega_\Psi \\
+& \mathcal QW(x \leftarrow \Theta) = \int_{\Omega_{r(x, \Theta)}}f_r(r(x, \Theta), \Psi \leftrightarrow -\Theta)W(r(x, \Theta) \leftarrow \Psi)\cos(N_{r(x, \Theta)}, \Psi)d\omega_\Psi
 \end{aligned}
 $$
 
@@ -155,7 +155,7 @@ $$
 $$
 \begin{aligned}
 & L^\leftarrow = L_e^\leftarrow + \mathcal T^*L^\leftarrow \\
-& W^\leftarrow = W^e^\leftarrow + \mathcal T^*W^\leftarrow
+& W^\leftarrow = W_e^\leftarrow + \mathcal T^*W^\leftarrow
 \end{aligned}
 $$
 
@@ -176,4 +176,12 @@ G_r(x \leftarrow \Theta, y \rightarrow \Psi) =
 {L_e(x \to \Theta)\cos(N_x, \Theta)d\omega_\Theta dA_x}
 $$
 
-BRDF可以被看作GRDF的一种特例。
+事实上，BRDF可以被看作GRDF的一种特例。
+
+有了GRDF过后，辐射通量可以这样计算：
+
+$$
+\Phi(S) = \int_A\int_{\Omega_x}\int_A\int_{\Omega_y}L_e(x \to \Omega)G_r(x \leftarrow \Theta, y \to \Psi)W_e(y \leftarrow \Psi)\times\cos(N_x, \Theta)\cos(N_y, \Psi)d\omega_\Psi dA_yd\omega_\Theta dA_x
+$$
+
+GRDF的好处在于，它提供的光照传输描述仅仅依赖于场景几何与材质。尽管重要性函数也具有这一特征，但它依赖于特定的$S$。话虽如此，由于参数空间维度太高，很难直接计算GRDF，而多采用蒙特卡罗之类的方法来估计。著名的双向路径追踪算法就可以被认为是基于GRDF的。
