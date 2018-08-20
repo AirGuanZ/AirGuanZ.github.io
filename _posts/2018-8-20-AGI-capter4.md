@@ -15,7 +15,7 @@ Advanced Global Illuminations第四章内容。
 简要地复习一下渲染方程，首先是原味版：
 
 $$
-L(x \to \Theta) = L_e(x \to \Theta) + \int_{\Omega_x}f_r(x, \Psi \leftrigharrow \Theta)L(x \leftarrow \Psi)\cos(N_x, \Psi)d\omega_\Psi
+L(x \to \Theta) = L_e(x \to \Theta) + \int_{\Omega_x}f_r(x, \Psi \leftrighrarrow \Theta)L(x \leftarrow \Psi)\cos(N_x, \Psi)d\omega_\Psi
 $$
 
 这是个第二类Fredholm积分方程，其中$L(x \to \Theta)$表示从位置$x$向$\Theta$发射的辐射亮度；$L_e$是自发光项；$N_x$是$x$处法线；$\Omega_x$是以$N_x$为中心的半球立体角；$f_r(x, \Psi \leftrightarrow \Theta)$是BRDF，其形式化定义为：
@@ -24,7 +24,7 @@ $$
 f_r(x, \Psi \to \Theta) =
 \dfrac
 {dL(x \to \Psi)}
-{L(x \leftarriw \Psi)\cos(N_x, \Psi)d\omega_\Psi}
+{L(x \leftarrow \Psi)\cos(N_x, \Psi)d\omega_\Psi}
 $$
 
 通常，BRDF函数对它的两个方向参数是对称的，所以也可以写做$\Psi \leftarrow \Theta$甚至$\Psi \leftrightarrow \Theta$。
@@ -55,7 +55,7 @@ $$
 L(x \leftarrow \Theta) = L_e(x \leftarrow y) + \int_Af_r(y, \Psi \leftrightarrow \overrightarrow{yz})L(y \leftarrow \overrightarrow{yz})V(y, z)G(y, z)dA_z
 $$
 
-由于无法无限精确地表示场景中所有点朝所有方向的辐射亮度，几乎所有的照明算法都是在计算一些点集朝一些方向的辐射亮度均值。设$S = A_s \times \Omega_s$表示希望计算的、局部的表面点集和方向，则
+由于无法无限精确地表示场景中所有点朝所有方向的辐射亮度，几乎所有的照明算法都是在计算一些点集朝一些方向的辐射亮度均值。设$S = A_s \times \Omega_s$表示希望纳入计算的、局部的表面点集和方向，则
 
 $$
 \Phi(S) = \int_{A_s}\int_{\Omega_s}L(x \to \Theta)\cos(N_x, \Theta)d\omega_\Theta dA_x
@@ -64,7 +64,7 @@ $$
 若定义基本重要性函数
 
 $$
-W_e(x \leftarriw \Theta) = \begin{cases}
+W_e(x \leftarrow \Theta) = \begin{cases}
 1, (x, \Theta) \in S \\
 0, (x, \Theta) \notin S
 \end{cases}
@@ -74,6 +74,20 @@ $$
 
 $$
 L_\text{avg} = \dfrac
-{\int_A\int_\OmegaL(x \to \Theta)W_e(x \leftarrow \Theta)\cos(N_x, \Theta)d\omega_\Theta dA_x}
-{\int_A\int_\OmegaW_e(x \leftarrow \Theta)\cos(N_x, \Theta)d\omega_\Theta dA_x}
+{\int_A\int_\Omega L(x \to \Theta)W_e(x \leftarrow \Theta)\cos(N_x, \Theta)d\omega_\Theta dA_x}
+{\int_A\int_\Omega W_e(x \leftarrow \Theta)\cos(N_x, \Theta)d\omega_\Theta dA_x}
 $$
+
+这个Importance函数的意义是什么呢？给定场景中某个感兴趣的集合$S$，除去所有光源，若将某单个的$L(x \to \Theta)$放置在场景的某个表面点上，它会对$\Phi(S)$产生的贡献可以用来量度$x \to \Theta$在$S$中的“重要程度”。形式化地，可以将$W(x \leftarrow \Theta)$定义如下：
+
+$$
+\begin{aligned}
+& W_e(x \leftarrow \Theta) = \begin{cases}
+1, (x, \Theta) \in S \\
+0, (x, \Theta) \notin S
+\end{cases} \\
+& W(x \leftarrow \Theta) = W_e(x \leftarrow \Theta) + \int_{\Omega_z}f_r(z, \Psi \leftrightarrow -\Theta)W(z \leftarrow \Psi)\cos(N_{r(x, \Theta)}, \Psi)d\omega_\Psi
+\end{aligned}
+$$
+
+其中$z = r(x, \Theta)$。可以看到，重要性函数值仅与场景的几何特征和材料特征有关，且传递方式与辐射亮度的传播非常相似。
