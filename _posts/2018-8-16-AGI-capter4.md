@@ -1,12 +1,12 @@
 ---
 layout: post
-title: 读书笔记：Strategies for computing light transport
-key: 20180820
+title: 读书笔记：光照传输杂项
+key: 20180816
 tags:
   - Graphics
 ---
 
-Advanced Global Illuminations第四章内容。
+主要是Advanced Global Illuminations第四章的内容。
 
 <!--more-->
 
