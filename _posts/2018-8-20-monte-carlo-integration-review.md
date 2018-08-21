@@ -98,7 +98,17 @@ $$
 对无偏估值器而言，其MSE就等于方差。于是，对某个无偏估值器$Y$，设$Y_1, Y_2, \ldots, Y_N$是其$N$个独立采样值，则：
 
 $$
-\hat V[F_N] = \dfrac 1 {N - 1}\left{\left(\dfrac 1 N\sum_{i=1}^NY_i^2\right) - \left(\dfrac 1 N\sum_{i=1}^NY_i\right)^2\right}
+\hat V[F_N] = \dfrac 1 {N - 1}
+\left\{
+    \left(
+        \dfrac 1 N
+        \sum_{i=1}^N Y_i^2
+    \right) -
+    \left(
+        \dfrac 1 N
+        \sum_{i=1}^N Y_i
+    \right)^2
+\right\}
 $$
 
 是无偏估值器
@@ -195,10 +205,10 @@ $$
 $P$是一堆采样点，$\mathcal B$则是一堆有个角位于原点的轴对齐盒子。在（不存在的）理想情况下，对每个体积为$\lambda(B)$的$B \in \mathcal B$，$B$中都恰好包含着$\lambda(B)N$个点。于是，可以把这个理想和现实的差距定义为差异度：
 
 $$
-D_N^*(P) = \sup_{B \in \mathcal B^*}\left|\dfrac{#\{P\cap B\}}{N} - \lambda(B)\right|
+D_N^*(P) = \sup_{B \in \mathcal B^*}\left|\dfrac{\#\{P\cap B\}}{N} - \lambda(B)\right|
 $$
 
-其中$#\{P\cap B\}$是$P$中位于$B$内的点的数量。
+其中$\#\{P\cap B\}$是$P$中位于$B$内的点的数量。
 
 **低差异度序列**：称点列$x_1, x_2, \ldots$是一个低差异度序列，当且仅当对其任意前缀$P = \{x_1, \ldots, x_N\}$均有：
 
