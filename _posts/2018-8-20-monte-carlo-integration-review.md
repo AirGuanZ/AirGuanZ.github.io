@@ -36,9 +36,7 @@ $$
 
 **Bakhvalow's Theorem**. 任给$s$维求积规则，存在具有$r$阶有界连续导数的函数$f$，$f$在该规则下的误差是$O(N^{-r/s})$。
 
-## 蒙特卡罗积分
-
-### 估值器
+## 估值器
 
 给定积分：
 
@@ -64,7 +62,7 @@ $$
 
 可见$F_N$的收敛速度是$O(\sqrt N)$。即使$V[f(X)/p(X)]$是无穷，只要$E[f(X)/p(X)]$存在，根据强大数定律$F_N$也一定会收敛（只不过要慢一些）。
 
-### 随机变量采样
+## 随机变量采样
 
 1. 已知分布函数$P$，令$U$是$[0, 1]$上的均匀随机变量，$X = P^{-1}(U)$，则$X$符合分布$P$。
 2. 已知概率密度函数$p$，若存在概率密度函数$q$和常量$M$使得$p(x) \le Mq(x)$，则可先按$q$采样得到一个$X_i$，然后在$[0, 1]$内均匀采样得到一个$U_i$，若
@@ -73,3 +71,106 @@ $$
     $$
     则令采样结果为$X_i$，否则重来一遍。这样得到的采样点符合$p$。
 3. Metropolis方法，这里不详述。
+
+设$F_N$是某个量$\mathcal Q$的一个估值器，则$F_N - \mathcal Q$称为误差，误差的期望值称为偏差：
+
+$$
+\beta[F_N] = E[F_N - \mathcal Q]
+$$
+
+偏差为0的估值器被称为是无偏的（unbiased）。另一方面，一个估值器是一致的（consistent）当且仅当误差随$N$的增大以概率1收敛到0，即：
+
+$$
+Pr\left\{\lim_{N \to \infty}F_N = \mathcal Q\right\} = 1
+$$
+
+定义均方误差$MSE[F] = E[(F - \mathcal Q)^2]$，则：
+
+$$
+\begin{aligned}
+MSE[F] &= E[(F - \mathcal Q)^2] = (E[F^2] - 2E^2[F] + E^2[F]) + (E^2[F] - 2E[F]\mathcal Q + \mathcal Q^2) \\
+&= E\left[(F^2 - 2FE[F] + E^2[F])\right] + E\left[(E^2[F] - 2E[F]\mathcal Q + \mathcal Q^2)\right] \\
+&= E[(F - E[F])^2] + (E[F] - \mathcal Q)^2 \\
+&= V[F] + \beta^2[F]
+\end{aligned}
+$$
+
+对无偏估值器而言，其MSE就等于方差。于是，对某个无偏估值器$Y$，设$Y_1, Y_2, \ldots, Y_N$是其$N$个独立采样值，则：
+
+$$
+\hat V[F_N] = \dfrac 1 {N - 1}\left{\left(\dfrac 1 N\sum_{i=1}^NY_i^2\right) - \left(\dfrac 1 N\sum_{i=1}^N_i\right)^2\right}
+$$
+
+是无偏估值器
+
+$$
+F_N = \dfrac 1 N\sum_{i=1}^NY_i
+$$
+
+的方差的无偏估值器。
+
+一些常见的减小方差的方法：
+
+### 用期望值降维
+
+若能计算出：
+
+$$
+f(X) = \int f(x, y)dy~~~~p(x) = \int p(x, y)dy
+$$
+
+则可作以下替换：
+
+$$
+F = \dfrac{f(X, Y)}{p(X, Y)} \Rightarrow F' = \dfrac{f(X)}{p(X)}
+$$
+
+这是因为：
+
+$$
+\begin{aligned}
+E_Y\left[\dfrac{f(X, Y)}{p(X, Y)}\right]
+&= \int \dfrac{f(X, y)}{p(X, y)}p(y\mid X)dy \\
+&= \int \dfrac{f(X, y)}{p(X, y)}\dfrac{p(X, y)}{\int p(X, y')dy'}dy \\
+&= \dfrac{f(X)}{p(X)}
+\end{aligned}
+$$
+
+即$F'(X) = E_Y[F(X, Y)]$。又注意到对随机变量$G$：
+
+$$
+\begin{aligned}
+V[G] &= E[G^2] - E^2[G] \\
+&= E_X[E_Y[G^2]] - (E_X[E_Y[G]])^2 \\
+&= E_X\left[E_Y[G^2] - E_Y^2[G]\right] + \left(E_X[E_Y^2[G]] - (E_X[E_Y[G]])^2\right) \\
+&= E_X[V_Y[G]] + V_X[E_Y[G]]
+\end{aligned}
+$$
+
+于是$V[F] - V[F'] = E_X[V_Y[F]]$，可见这一变换消去了$Y$带来的方差。
+
+### 重要性采样
+
+如果采样所使用的概率密度函数和被积函数只差一个常数因子，那么方差甚至可以是0。然而要做到这一点需要事先知道积分结果，因此不具有实践意义。尽管如此，概率密度函数和被积函数形态还是越相似越好。一种常见的方法是随便拿什么拟合一下被积函数（比方说，分段线性），然后用归一化的拟合函数作为采样的概率密度。
+
+### Control Variates
+
+这个翻译过来就是控制变量？总觉得怪怪的。若能找到一个形态与被积函数$f$相似但可以积出解析结果的函数$g$，则可以把原积分改写为：
+
+$$
+I = \int_\Omega f(x)d\mu(x) = \int_\Omega g(x)d\mu(x) + \int_\Omega (f(x) - g(x))d\mu(x)
+$$
+
+估值器也就变成了：
+
+$$
+F = \int_\Omega g(x)d\mu(x) + \dfrac 1 N \sum_{i=1}^N\dfrac{f(X_i) - g(X_i)}{p(X_i)}
+$$
+
+这或许能有效地降低方差：
+
+$$
+V\left[\dfrac{f(X_i) - g(X_i)}{p(X_i)}\right] \le V\left[\dfrac{f(X_i)}{p(X_i)}\right]
+$$
+
+事实上这个方法和重要性采样作用的途径相仿，因此在有了一个之后再用另一个往往效果不佳。Control variates可能在$f$严格非负的情况下带来负样本值，还有一些别的毛病，因此在图形学中没什么存在感。
