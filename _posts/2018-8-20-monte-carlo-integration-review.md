@@ -98,7 +98,7 @@ $$
 对无偏估值器而言，其MSE就等于方差。于是，对某个无偏估值器$Y$，设$Y_1, Y_2, \ldots, Y_N$是其$N$个独立采样值，则：
 
 $$
-\hat V[F_N] = \dfrac 1 {N - 1}\left{\left(\dfrac 1 N\sum_{i=1}^NY_i^2\right) - \left(\dfrac 1 N\sum_{i=1}^N_i\right)^2\right}
+\hat V[F_N] = \dfrac 1 {N - 1}\left{\left(\dfrac 1 N\sum_{i=1}^NY_i^2\right) - \left(\dfrac 1 N\sum_{i=1}^NY_i\right)^2\right}
 $$
 
 是无偏估值器
@@ -111,7 +111,7 @@ $$
 
 一些常见的减小方差的方法：
 
-### 用期望值降维
+### 用条件期望降维
 
 若能计算出：
 
@@ -174,3 +174,62 @@ V\left[\dfrac{f(X_i) - g(X_i)}{p(X_i)}\right] \le V\left[\dfrac{f(X_i)}{p(X_i)}\
 $$
 
 事实上这个方法和重要性采样作用的途径相仿，因此在有了一个之后再用另一个往往效果不佳。Control variates可能在$f$严格非负的情况下带来负样本值，还有一些别的毛病，因此在图形学中没什么存在感。
+
+### 分块采样
+
+将积分域分成多块，每块分别估值，最后合起来。这东西不适合被积函数有奇异点或变化剧烈的情形，因而也在图形学中没什么存在感。
+
+### Quasi-Monte Carlo
+
+想办法把采样点均匀地散布开来，这就是耳熟能详的QMC方法。
+
+首先定义一个衡量采样方案好坏的标准：差异度（Discrepancy）。令：
+
+$$
+\begin{aligned}
+P &= \{x_1, \ldots, x_N\} \subset [0, 1]^s \\
+\mathcal B^* &= \{[0, u_1]\times\ldots[0, u_s] \mid 0 \le u_i \le 1\}
+\end{aligned}
+$$
+
+$P$是一堆采样点，$\mathcal B$则是一堆有个角位于原点的轴对齐盒子。在（不存在的）理想情况下，对每个体积为$\lambda(B)$的$B \in \mathcal B$，$B$中都恰好包含着$\lambda(B)N$个点。于是，可以把这个理想和现实的差距定义为差异度：
+
+$$
+D_N^*(P) = \sup_{B \in \mathcal B^*}\left|\dfrac{#\{P\cap B\}}{N} - \lambda(B)\right|
+$$
+
+其中$#\{P\cap B\}$是$P$中位于$B$内的点的数量。
+
+**低差异度序列**：称点列$x_1, x_2, \ldots$是一个低差异度序列，当且仅当对其任意前缀$P = \{x_1, \ldots, x_N\}$均有：
+
+$$
+D^*_N(P) = O\left(\dfrac{\log^sN}{N}\right)
+$$
+
+可以证明使用低差异度序列的蒙特卡罗积分的误差为$O(\log^sN / N)$。尽管这看起来并不是很突出（$\log^sN$可能会很大，只有在$N$极大的时候才有优势），但QMC在实践中表现非常优秀，这大概是因为图形学的被积函数对QMC而言性质良好。
+
+Halton序列：设$i$的$b$进制展开形式为
+
+$$
+i = \sum_{k \ge 0}d_{i, k}b^k
+$$
+
+将$\phi_b(i)$定义为
+
+$$
+\phi_b(i) = \sum_{k \ge 0}d_{i, k}b^{-1-k}
+$$
+
+称序列：
+
+$$
+\{x_i\} = \{(\phi_{b_1}(i), \phi_{b_2}(i), \ldots, \phi_{b_s}(i))\}
+$$
+
+为Halton序列，其中$b_1, \ldots, b_s$两两互质（最常用的就是前$s$个素数）。特别地，若$N$在一开始就是已知的，则点集：
+
+$$
+\{x_i\} = \{(i/N, \phi_2(i), \phi_3(i), \ldots, \phi_{p_{s-1}}(i))\}
+$$
+
+被称做Hammersley点集，其差异度为$O(\log^{s-1}N/N)$。
