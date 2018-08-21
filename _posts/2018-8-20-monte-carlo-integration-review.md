@@ -208,8 +208,6 @@ $$
 D_N^*(P) = \sup_{B \in \mathcal B^*}\left|\dfrac{\#\{P\cap B\}}{N} - \lambda(B)\right|
 $$
 
-其中$\#\{P\cap B\}$是$P$中位于$B$内的点的数量。
-
 **低差异度序列**：称点列$x_1, x_2, \ldots$是一个低差异度序列，当且仅当对其任意前缀$P = \{x_1, \ldots, x_N\}$均有：
 
 $$
