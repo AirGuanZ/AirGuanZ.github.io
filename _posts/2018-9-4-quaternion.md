@@ -41,32 +41,46 @@ $$
 
 ## 绕任意轴的三维旋转公式
 
-现需要在右手系下将向量$\vec a$绕轴$\vec d$旋转$\theta$度，显然$\vec a$可以被分解为平行于$\vec d$和垂直于$\vec d$的两个分量，其中前者无需修改：
+现需要在右手系下将向量$\vec a$绕单位向量$\vec d$旋转$\theta$度，显然$\vec a$可以被分解为平行于$\vec d$和垂直于$\vec d$的两个分量，其中前者无需修改：
 
 $$
 \begin{aligned}
 & \vec a = \vec a_{\perp} + \vec a_{\parallel} \\
-& \vec a_{\prep} = \vec a - \vec a_{\parallel} \\
+& \vec a_{\perp} = \vec a - \vec a_{\parallel} \\
 & \vec a_{\parallel} = \mathrm{Proj}_{\vec d}\vec a
 \end{aligned}
 $$
 
-若将$\vec e_{\vec a_{\prep}}$视为$x'$轴，将$\vec e_{\vec d}$视为$z'$轴，则求它们的叉积即可得到$y'$轴。此时只需要将经典的二维旋转变换应用到$x'y'z'$坐标系中的$x'y'$平面上，即可求出旋转后的$\vec a_{\prep}'$，也就求出了$\vec a' = \vec a_{\prep}' + \vec a_{\parallel}$。设$L_p = \vert{\vec a_{\prep}}$，则$\vec a_{\prep}$在$x'y'z'$中的坐标为$(L_p, 0, 0)$，此时在$x'y'$平面上进行旋转变换，得到：
+若将$\vec e_{\vec a_{\perp}}$视为$x'$轴，将$\vec d$视为$z'$轴，则求它们的叉积即可得到$y'$轴。此时只需要将经典的二维旋转变换应用到$x'y'z'$坐标系中的$x'y'$平面上，即可求出旋转后的$\vec a_{\perp}'$，也就求出了$\vec a' = \vec a_{\perp}' + \vec a_{\parallel}$。设$L_p = \vert{\vec a_{\perp}}$，则$\vec a_{\perp}$在$x'y'z'$中的坐标为$(L_p, 0, 0)$，此时在$x'y'$平面上进行旋转变换，得到：
 
 $$
-\vec a_{\prep}' =
-\left[\begin{matrix}
-    \vec e_{x'} & \vec e_{y'}
-\end{matrix}\right]
-\left(
-\left[\begin{matrix}
-    \cos\theta & -\sin\theta \\
-    \sin\theta & \cos\theta
-\end{matrix}\right]
-\left[\begin{matrix}
-    L_p \\ 0
-\end{matrix}\right]
-\right)
+\begin{aligned}
+    \vec a_{\perp}'
+    &=
+    \left[
+        \vec e_{x'}, \vec e_{y'}
+    \right]
+    \left(
+    \left[\begin{matrix}
+        \cos\theta & -\sin\theta \\
+        \sin\theta & \cos\theta
+    \end{matrix}\right]
+    \left[\begin{matrix}
+        L_p \\ 0
+    \end{matrix}\right]
+    \right) \\
+    &=
+    \cos\theta \vec a_{\perp} + \sin\theta\left(\vec d \times \vec a_{\perp}\right) \\
+    &= \cos\theta\vec a_{\perp} + \sin\theta\left(\vec d \times \vec a\right)
+\end{aligned}
+$$
+
+从而旋转后的$\vec a'$为
+
+$$
+\vec a'
+= \vec a_{\perp} + \vec a_{\parallel}
+= (1 - \cos\theta)(\vec a\dot \vec d)\vec d + \cos\theta\vec a + \sin\theta(\vec d \times \vec a)
 $$
 
 待续……
