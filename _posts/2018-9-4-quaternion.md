@@ -51,7 +51,7 @@ $$
 \end{aligned}
 $$
 
-若将$\vec e_{\vec a_{\perp}}$视为$x'$轴，将$\vec d$视为$z'$轴，则求它们的叉积即可得到$y'$轴。此时只需要将经典的二维旋转变换应用到$x'y'z'$坐标系中的$x'y'$平面上，即可求出旋转后的$\vec a_{\perp}'$，也就求出了$\vec a' = \vec a_{\perp}' + \vec a_{\parallel}$。设$L_p = \vert{\vec a_{\perp}}$，则$\vec a_{\perp}$在$x'y'z'$中的坐标为$(L_p, 0, 0)$，此时在$x'y'$平面上进行旋转变换，得到：
+若将$\vec e_{\vec a_{\perp}}$视为$x'$轴，将$\vec d$视为$z'$轴，则求它们的叉积即可得到$y'$轴。此时只需要将经典的二维旋转变换应用到$x'y'z'$坐标系中的$x'y'$平面上，即可求出旋转后的$\vec a_{\perp}'$，也就求出了$\vec a' = \vec a_{\perp}' + \vec a_{\parallel}$。设$L_p = \vert\vec a_{\perp}\vert$，则$\vec a_{\perp}$在$x'y'z'$中的坐标为$(L_p, 0, 0)$，此时在$x'y'$平面上进行旋转变换，得到：
 
 $$
 \begin{aligned}
