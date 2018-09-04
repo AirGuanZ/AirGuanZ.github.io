@@ -79,8 +79,8 @@ $$
 
 $$
 \vec a'
-= \vec a_{\perp} + \vec a_{\parallel}
-= (1 - \cos\theta)(\vec a\dot \vec d)\vec d + \cos\theta\vec a + \sin\theta(\vec d \times \vec a)
+= \vec a_{\perp} + \vec a_{\parallel}'
+= (1 - \cos\theta)(\vec a\cdot \vec d)\vec d + \cos\theta\vec a + \sin\theta(\vec d \times \vec a)
 $$
 
 待续……
