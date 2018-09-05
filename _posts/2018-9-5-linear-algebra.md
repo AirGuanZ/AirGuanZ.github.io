@@ -209,4 +209,38 @@ $$
 
 ## 行列式
 
+**Definition**. 对任意方阵$A$，令$A_{ij}$表示通过划掉$A$中第$i$行和第$j$列得到的子矩阵。现定义一阶方阵$A$的值为它包含的唯一一个标量值；而当$n \ge 2$时，定义$n$阶方阵$A$的行列式为：
 
+$$
+\mathrm{det}~A = \sum_{j=1}^n(-1)^{1+j}a_{1j}\mathrm{det}~A_{1j}
+$$
+
+若令$C_{ij} = (-1)^{i+j}\mathrm{det}~A_{ij}$，则：
+
+$$
+\mathrm{det}~A = a_{11}C_{11} + a_{12}C_{12} + \cdots + a_{1n}C_{1n}
+$$
+
+该公式称为按$A$的第一行的余因子展开式。可以证明，$n$阶方阵$A$的行列式可以按照任意行或任意列的余因子展开式来计算。
+
+**Theorem**. 若矩阵$A$时三角阵，则$\mathrm{det}~A$等于$A$的主对角线上元素的乘积。
+
+**Theorem**. [行变换] 设$A$是一个方阵，则：
+
+1. 若$A$的某一行的倍数加到另一行上得到了$B$，则$A, B$行列式值相同;
+2. 若$A$的两行互换得到了$B$，则$A, B$行列式值互为相反数；
+3. 若$A$的某一行所有元素乘以$k$倍得到了$B$，则$\mathrm{det}~B = k\mathrm{det}~A$。
+
+**Theorem**. 方阵$A$是可逆的当且仅当$\mathrm{det}~A \ne 0$。
+
+**Theorem**. 转置一个方阵不改变其行列式的值。
+
+**Theorem**. 方阵乘积的行列式等于其各自行列式的乘积。
+
+**Theorem**. [克拉默法则] 设$A$是一个可逆$n$阶方阵， 则对任意$\boldsymbol b \in \mathbb R^n$，方程$A\boldsymbol x = \boldsymbol b$的唯一解可由下式给出：
+
+$$
+x_i = \frac{\mathrm{det}~A_i(\boldsymbol b)}{\mathrm{det}~A}, i = 1, 2, \ldots, n
+$$
+
+其中$A_i(\boldsymbol b)$是将$A$的第$i$列替换为$\boldsymbol b$后得到的矩阵。
