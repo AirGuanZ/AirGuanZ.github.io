@@ -4,6 +4,7 @@ title: 读书笔记：光照传输杂项
 key: 20180816
 tags:
   - Graphics
+  - Notes
 ---
 
 主要是Advanced Global Illuminations第四章的内容。

@@ -4,6 +4,7 @@ title: Monte Carlo Integration in Graphics
 key: 20180820
 tags:
   - Graphics
+  - Mathematics
 ---
 
 最近脑子都快生锈了，复习一下基本方法。

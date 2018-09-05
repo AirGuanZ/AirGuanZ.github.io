@@ -1,0 +1,166 @@
+---
+layout: post
+title: 线性代数复习
+key: 20180905
+tags:
+  - Mathematics
+---
+
+参考《Linear Algebra and Its Applications》 by David C. Lay。
+
+<!--more-->
+
+## 矩阵和线性方程组
+
+**Definition**. 行初等变换：
+
+1. [倍加变换] 把某一行换成它本身与另一行的倍数的和；
+2. [对换变换] 把两行对换；
+3. [倍乘变换] 把某一行所有元素乘以同一个非零数。
+
+**Definition**. 称两个矩阵时行等价的，当且仅当其中一个矩阵可以经过一系列行初等变换称为另一个矩阵。
+
+**Theorem**. 若两个线性方程组的增广矩阵是行等价的，则它们具有相同的解集。
+
+**Definition**. 一个矩阵被称为阶梯型（或行阶梯型），当且仅当它满足：
+
+1. 每一非零行都在零行之上；
+2. 某一行的先导元素（最左边的非零元素）所在列位于前一行先导元素之后；
+3. 先导元素所在列下方元素都是零。
+
+特别地，若一阶梯型矩阵还满足下面两个性质，就称它是简化阶梯型（或简化行阶梯型）：
+
+4. 每一非零行的先导元素均为一；
+5. 每一先导元素一时该元素所在列的唯一非零元素。
+
+**Theorem**. 每个矩阵行等价于唯一的简化阶梯型矩阵。
+
+**Definition**. 矩阵$A$中的主元位置是$A$中对应于它的阶梯型中先导元素的位置；主元列则是$A$中包含主元位置的列。若$A$是某线性方程组的增广矩阵，则对应主元列的变量称为基本变量，其他变量称为自由变量。
+
+**Theorem**. [存在与唯一性定理] 线性方程组相容的充要条件是增广矩阵的最右列不是主元列。对一个相容的线性方程组，若无自由变量，则有唯一解，否则有无穷多解。
+
+**Definition**. 若$A$是$m\times n$矩阵，$\bm x \in \mathbb R^n$，则$A$与$\bm x$的积$A\bm x$为：
+
+$$
+A\bm x =
+\left[\begin{matrix}
+    \bm a_1 & \bm a_2 & \cdots & \bm a_n
+\end{matrix}\right]
+\left[\begin{matrix}
+    x_1 \\ x_2 \\ \vdots \\ x_n
+\end{matrix}\right]
+= x_1\bm a_1 + x_2\bm a_2 + \cdots + x_n\bm a_n
+$$
+
+**Theorem**. 方程$A\bm x = \bm x$有解当且仅当$\bm b$是$A$各列的线性组合。
+
+**Theorem**. 设$A$是$m\times n$矩阵，下列命题等价：
+
+1. $\forall \bm b \in \mathbb R^m$，$A\bm x = \bm b$有解。
+2. $\forall \bm b \in \mathbb R^m$，$\bm b$是$A$各列的一个线性组合。
+3. $A$的各列生成$\mathbb R^m$。
+4. $A$在每一行都有一个主元位置。
+
+**Theorem**. 齐次方程$A\bm x = \bm 0$有非平凡解，当且仅当方程至少含有一个自由变量。
+
+**Theorem**. 设$A\bm x = \bm b$相容，$\bm p$是一个特解，则$A\bm x = \bm b$的解集是：
+
+$$
+\{\bm w = \bm p + \bm v_h \mid A\bm v_h = \bm 0\}
+$$
+
+**Theorem**. 称一组向量$\{\bm v_1, \ldots, \bm v_p\}$是线性无关的，当且仅当向量方程
+
+$$
+x_1\bm v_1 + x_2\bm v_2 + \cdots + x_p\bm v_p = \bm 0
+$$
+
+仅有平凡解。反之，称该向量组是线性相关的。
+
+**Theorem**. 矩阵$A$各列线性无关，当且仅当$A\bm x = \bm 0$仅有平凡解。
+
+**Definitioni**. [变换] 由$\mathbb R^n$到$\mathbb R^m$的一个变换（或称函数、映射）$T$是一个规则，它把$\mathbb R^n$中的每个向量$\bm x$对应以$\mathbb R^m$中的一个向量$T(\bm x)$。$\mathbb R^n$称为定义域，$\mathbb R^m$称为余定义域（或称取值空间）。$T(\bm x)$称为$\bm x$的像，所有像$T(\bm x)$的集合称为$T$的值域。
+
+**Definition**. 称变换$T$是线性的，当且仅当：
+
+1. $\forall \bm u, \bm v \in \mathrm{Dom}(T)$，有$T(\bm u + \bm v) = T(\bm u) + T(\bm v)$。
+2. $\forall u \in \mathrm{Dom}(T) \forall c \in \mathbb R$，有$T(c\bm u) = cT(\bm u)$。
+
+**Theorem**. 设$T: \mathbb R^n \to \mathbb R^m$是线性变换，则存在唯一矩阵$A$使得：
+
+$$
+\forall \bm x \in \mathbb R^n, T(\bm x) = A\bm x
+$$
+
+事实上可以证明：
+
+$$
+A =
+\left[\begin{matrix}
+    T(\bm e_1) & T(\bm e_2) & \cdots & T(\bm e_n)
+\end{matrix}\right]
+$$
+
+在这里，$A$被称作线性变换$T$的标准矩阵。
+
+## 矩阵代数
+
+**Definition**. 若$A$是$m\times n$矩阵，$B$是$n \times p$矩阵，$B$的列是$\bm b_1, \bm b_2, \ldots, \bm b_p$，则乘积$AB$是$m\times p$矩阵：
+
+$$
+AB = \left[\begin{matrix}
+    A\bm b_1 & A\bm b_2 & \cdots & A\bm b_p
+\end{matrix}\right]
+$$
+
+**Theorem**. $(AB)_{ij} = a_{i1}b_{1j} + a_{i2}b_{2j} + \cdots + a_{in}b_{nj}$。
+
+**Theorem**. 设$A$是$m \times n$矩阵，其相关乘法满足以下性质：
+
+1. $A(BC) = (AB)C$；
+2. $A(B + C) = AB + AC$；
+3. $(B + C)A = BA + CA$；
+4. $r(AB) = (rA)B = A(rB)$；
+5. $I_mA = A = AI_n$。
+
+**Definition**. $m \times n$矩阵$A$的转置是一个$n \times m$矩阵，其列由$A$的相关行构成。
+
+**Theorem**. 转置满足以下性质：
+
+1. $(A^T)^T = A$；
+2. $(A + B)^T = A^T + B^T$；
+3. $(rA)^T = rA^T$；
+4. $(AB)^T = B^TA^T$。
+
+**Definition**. 称$n$阶方阵$A$是可逆的，当且仅当存在一个$n$阶方阵$C$满足：
+
+$$
+CA = AC = I
+$$
+
+称$C$为$A$的逆矩阵，记作$C = A^{-1}$。容易证明可逆矩阵的逆是唯一的。
+
+**Theorem**. 逆矩阵具有以下性质：
+
+1. $(A^{-1})^{-1} = A$；
+2. $(AB)^{-1} = B^{-1}A^{-1}$；
+3. $(A^T)^{-1} = (A^{-1})^T$。
+
+**Algorithm**. [求$A^{-1}$] 将$A$与$I$排在一起构成增广矩阵$[A~I]$，然后用一系列行初等变换将其中的$A$变为$I$，此时原本的$I$将被变为$A^{-1}$。若变换过程不成功，则$A$不可逆。
+
+**Theorem**. 设$A$是$n$阶方阵，则下列命题等价：
+
+1. $A$可逆；
+2. $A$等价于$I_n$；
+3. $A$有$n$个主元位置；
+4. $A\bm x = \bm 0$仅有平凡解；
+5. $A$各列线性无关；
+6. $\bm x \mapsto A\bm x$是单射；
+7. $\forall \bm b \in \mathbb R^n$，方程$A\bm x = \bm b$至少有一个解；
+8. $A$的各列生成$\mathbb R^n$；
+9. $\bm x \mapsto A\bm x$是满射；
+10. 存在$n$阶方阵$C$使得$CA = I$；
+11. 存在$n$阶方阵$D$使得$AD = I$；
+12. $A^T$可逆。
+
+**Theorem**. 若$A, B​$都是$n​$阶方阵且$AB = I​$，则$A = B^{-1}, B = A^{-1}​$。
