@@ -184,7 +184,7 @@ $$
 
 **Definition**. 矩阵$A$的秩$\mathrm{rank}~A$是$A$的列空间的维数。
 
-**Theorem**. 若矩阵$A$有$n$l列，则$\mathrm{rank}~A + \mathrm{dim}~\mathrm{Nul}~A = n$。
+**Theorem**. 若矩阵$A$有$n$列，则$\mathrm{rank}~A + \mathrm{dim}~\mathrm{Nul}~A = n$。
 
 **Theorem**. 设$A$是$n$阶方阵，则下列命题等价：
 
@@ -223,7 +223,7 @@ $$
 
 该公式称为按$A$的第一行的余因子展开式。可以证明，$n$阶方阵$A$的行列式可以按照任意行或任意列的余因子展开式来计算。
 
-**Theorem**. 若矩阵$A$时三角阵，则$\mathrm{det}~A$等于$A$的主对角线上元素的乘积。
+**Theorem**. 若矩阵$A$是三角阵，则$\mathrm{det}~A$等于$A$的主对角线上元素的乘积。
 
 **Theorem**. [行变换] 设$A$是一个方阵，则：
 
@@ -237,7 +237,7 @@ $$
 
 **Theorem**. 方阵乘积的行列式等于其各自行列式的乘积。
 
-**Theorem**. [克拉默法则] 设$A$是一个可逆$n$阶方阵， 则对任意$\boldsymbol b \in \mathbb R^n$，方程$A\boldsymbol x = \boldsymbol b$的唯一解可由下式给出：
+**Theorem**. [克拉默法则] 设$A$是一个可逆$n$阶方阵，则对任意$\boldsymbol b \in \mathbb R^n$，方程$A\boldsymbol x = \boldsymbol b$的唯一解可由下式给出：
 
 $$
 x_i = \frac{\mathrm{det}~A_i(\boldsymbol b)}{\mathrm{det}~A}, i = 1, 2, \ldots, n
