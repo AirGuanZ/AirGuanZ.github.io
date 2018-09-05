@@ -39,57 +39,57 @@ tags:
 
 **Theorem**. [存在与唯一性定理] 线性方程组相容的充要条件是增广矩阵的最右列不是主元列。对一个相容的线性方程组，若无自由变量，则有唯一解，否则有无穷多解。
 
-**Definition**. 若$A$是$m\times n$矩阵，$\bm x \in \mathbb R^n$，则$A$与$\bm x$的积$A\bm x$为：
+**Definition**. 若$A$是$m\times n$矩阵，$\boldsymbol x \in \mathbb R^n$，则$A$与$\boldsymbol x$的积$A\boldsymbol x$为：
 
 $$
-A\bm x =
+A\boldsymbol x =
 \left[\begin{matrix}
-    \bm a_1 & \bm a_2 & \cdots & \bm a_n
+    \boldsymbol a_1 & \boldsymbol a_2 & \cdots & \boldsymbol a_n
 \end{matrix}\right]
 \left[\begin{matrix}
     x_1 \\ x_2 \\ \vdots \\ x_n
 \end{matrix}\right]
-= x_1\bm a_1 + x_2\bm a_2 + \cdots + x_n\bm a_n
+= x_1\boldsymbol a_1 + x_2\boldsymbol a_2 + \cdots + x_n\boldsymbol a_n
 $$
 
-**Theorem**. 方程$A\bm x = \bm x$有解当且仅当$\bm b$是$A$各列的线性组合。
+**Theorem**. 方程$A\boldsymbol x = \boldsymbol x$有解当且仅当$\boldsymbol b$是$A$各列的线性组合。
 
 **Theorem**. 设$A$是$m\times n$矩阵，下列命题等价：
 
-1. $\forall \bm b \in \mathbb R^m$，$A\bm x = \bm b$有解。
-2. $\forall \bm b \in \mathbb R^m$，$\bm b$是$A$各列的一个线性组合。
+1. $\forall \boldsymbol b \in \mathbb R^m$，$A\boldsymbol x = \boldsymbol b$有解。
+2. $\forall \boldsymbol b \in \mathbb R^m$，$\boldsymbol b$是$A$各列的一个线性组合。
 3. $A$的各列生成$\mathbb R^m$。
 4. $A$在每一行都有一个主元位置。
 
-**Theorem**. 齐次方程$A\bm x = \bm 0$有非平凡解，当且仅当方程至少含有一个自由变量。
+**Theorem**. 齐次方程$A\boldsymbol x = \boldsymbol 0$有非平凡解，当且仅当方程至少含有一个自由变量。
 
-**Theorem**. 设$A\bm x = \bm b$相容，$\bm p$是一个特解，则$A\bm x = \bm b$的解集是：
-
-$$
-\{\bm w = \bm p + \bm v_h \mid A\bm v_h = \bm 0\}
-$$
-
-**Theorem**. 称一组向量$\{\bm v_1, \ldots, \bm v_p\}$是线性无关的，当且仅当向量方程
+**Theorem**. 设$A\boldsymbol x = \boldsymbol b$相容，$\boldsymbol p$是一个特解，则$A\boldsymbol x = \boldsymbol b$的解集是：
 
 $$
-x_1\bm v_1 + x_2\bm v_2 + \cdots + x_p\bm v_p = \bm 0
+\{\boldsymbol w = \boldsymbol p + \boldsymbol v_h \mid A\boldsymbol v_h = \boldsymbol 0\}
+$$
+
+**Theorem**. 称一组向量$\{\boldsymbol v_1, \ldots, \boldsymbol v_p\}$是线性无关的，当且仅当向量方程
+
+$$
+x_1\boldsymbol v_1 + x_2\boldsymbol v_2 + \cdots + x_p\boldsymbol v_p = \boldsymbol 0
 $$
 
 仅有平凡解。反之，称该向量组是线性相关的。
 
-**Theorem**. 矩阵$A$各列线性无关，当且仅当$A\bm x = \bm 0$仅有平凡解。
+**Theorem**. 矩阵$A$各列线性无关，当且仅当$A\boldsymbol x = \boldsymbol 0$仅有平凡解。
 
-**Definitioni**. [变换] 由$\mathbb R^n$到$\mathbb R^m$的一个变换（或称函数、映射）$T$是一个规则，它把$\mathbb R^n$中的每个向量$\bm x$对应以$\mathbb R^m$中的一个向量$T(\bm x)$。$\mathbb R^n$称为定义域，$\mathbb R^m$称为余定义域（或称取值空间）。$T(\bm x)$称为$\bm x$的像，所有像$T(\bm x)$的集合称为$T$的值域。
+**Definitioni**. [变换] 由$\mathbb R^n$到$\mathbb R^m$的一个变换（或称函数、映射）$T$是一个规则，它把$\mathbb R^n$中的每个向量$\boldsymbol x$对应以$\mathbb R^m$中的一个向量$T(\boldsymbol x)$。$\mathbb R^n$称为定义域，$\mathbb R^m$称为余定义域（或称取值空间）。$T(\boldsymbol x)$称为$\boldsymbol x$的像，所有像$T(\boldsymbol x)$的集合称为$T$的值域。
 
 **Definition**. 称变换$T$是线性的，当且仅当：
 
-1. $\forall \bm u, \bm v \in \mathrm{Dom}(T)$，有$T(\bm u + \bm v) = T(\bm u) + T(\bm v)$。
-2. $\forall u \in \mathrm{Dom}(T) \forall c \in \mathbb R$，有$T(c\bm u) = cT(\bm u)$。
+1. $\forall \boldsymbol u, \boldsymbol v \in \mathrm{Dom}(T)$，有$T(\boldsymbol u + \boldsymbol v) = T(\boldsymbol u) + T(\boldsymbol v)$。
+2. $\forall u \in \mathrm{Dom}(T) \forall c \in \mathbb R$，有$T(c\boldsymbol u) = cT(\boldsymbol u)$。
 
 **Theorem**. 设$T: \mathbb R^n \to \mathbb R^m$是线性变换，则存在唯一矩阵$A$使得：
 
 $$
-\forall \bm x \in \mathbb R^n, T(\bm x) = A\bm x
+\forall \boldsymbol x \in \mathbb R^n, T(\boldsymbol x) = A\boldsymbol x
 $$
 
 事实上可以证明：
@@ -97,7 +97,7 @@ $$
 $$
 A =
 \left[\begin{matrix}
-    T(\bm e_1) & T(\bm e_2) & \cdots & T(\bm e_n)
+    T(\boldsymbol e_1) & T(\boldsymbol e_2) & \cdots & T(\boldsymbol e_n)
 \end{matrix}\right]
 $$
 
@@ -105,11 +105,11 @@ $$
 
 ## 矩阵代数
 
-**Definition**. 若$A$是$m\times n$矩阵，$B$是$n \times p$矩阵，$B$的列是$\bm b_1, \bm b_2, \ldots, \bm b_p$，则乘积$AB$是$m\times p$矩阵：
+**Definition**. 若$A$是$m\times n$矩阵，$B$是$n \times p$矩阵，$B$的列是$\boldsymbol b_1, \boldsymbol b_2, \ldots, \boldsymbol b_p$，则乘积$AB$是$m\times p$矩阵：
 
 $$
 AB = \left[\begin{matrix}
-    A\bm b_1 & A\bm b_2 & \cdots & A\bm b_p
+    A\boldsymbol b_1 & A\boldsymbol b_2 & \cdots & A\boldsymbol b_p
 \end{matrix}\right]
 $$
 
@@ -153,12 +153,12 @@ $$
 1. $A$可逆；
 2. $A$等价于$I_n$；
 3. $A$有$n$个主元位置；
-4. $A\bm x = \bm 0$仅有平凡解；
-5. $A$各列线性无关；
-6. $\bm x \mapsto A\bm x$是单射；
-7. $\forall \bm b \in \mathbb R^n$，方程$A\bm x = \bm b$至少有一个解；
+4. $A\boldsymbol x = \boldsymbol 0$仅有平凡解；
+5. $A​$各列线性无关；
+6. $\boldsymbol x \mapsto A\boldsymbol x$是单射；
+7. $\forall \boldsymbol b \in \mathbb R^n$，方程$A\boldsymbol x = \boldsymbol b$至少有一个解；
 8. $A$的各列生成$\mathbb R^n$；
-9. $\bm x \mapsto A\bm x$是满射；
+9. $\boldsymbol x \mapsto A\boldsymbol x$是满射；
 10. 存在$n$阶方阵$C$使得$CA = I$；
 11. 存在$n$阶方阵$D$使得$AD = I$；
 12. $A^T$可逆。
