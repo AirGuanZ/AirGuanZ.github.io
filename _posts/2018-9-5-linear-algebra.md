@@ -113,7 +113,12 @@ AB = \left[\begin{matrix}
 \end{matrix}\right]
 $$
 
-**Theorem**. $(AB)_{ij} = a_{i1}b_{1j} + a_{i2}b_{2j} + \cdots + a_{in}b_{nj}$。
+**Theorem**. 矩阵乘法可使用以下公式完成：
+
+$$
+(AB)_{ij}
+= a_{i1}b_{1j} + a_{i2}b_{2j} + \cdots + a_{in}b_{nj}
+$$
 
 **Theorem**. 设$A$是$m \times n$矩阵，其相关乘法满足以下性质：
 
