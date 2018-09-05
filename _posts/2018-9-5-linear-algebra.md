@@ -152,11 +152,11 @@ $$
 
 **Definition**. $\mathbb R^n$中的一个子空间是某个集合$H \subseteq \mathbb R^n$，它满足：
 
-1. $\bm 0 \in H$；
-2. $\forall \bm u, \bm v \in H$，均有$\bm u + \bm v \in H$；
-3. $\forall \bm u \in H$以及标量$c$，均有$c\bm u \in H$。
+1. $\boldsymbol 0 \in H$；
+2. $\forall \boldsymbol u, \boldsymbol v \in H$，均有$\boldsymbol u + \boldsymbol v \in H$；
+3. $\forall \boldsymbol u \in H$以及标量$c$，均有$c\boldsymbol u \in H$。
 
-**Definition**. 矩阵$A$的列空间$\mathrm{Col}~A$是$A$的各列在加法和标量乘法下的闭包；$A$的零空间$\mathrm{Nul}~A$是$A\bm x = \bm 0$的所有解的集合。
+**Definition**. 矩阵$A$的列空间$\mathrm{Col}~A$是$A$的各列在加法和标量乘法下的闭包；$A$的零空间$\mathrm{Nul}~A$是$A\boldsymbol x = \boldsymbol 0$的所有解的集合。
 
 **Definition**. 称向量集$A$生成向量集$B$当且仅当$B$中的每个向量都是$A$中向量的线性组合，且不存在$B$以外的向量是$A$中向量的线性组合。若$A$是生成$B$的极小向量集，就称$A$是一个生成$B$的线性无关集。
 
@@ -164,21 +164,21 @@ $$
 
 **Theorem**. 矩阵$A$的主元列构成$\mathrm{Col}~A$的基。
 
-**Definition**. 设$\mathcal B = \{\bm b_1, \ldots, \bm b_p\}$是$H$的一组基，对每个$\bm x \in H$，$\bm x$相对于基$\mathcal B$的坐标是使得：
+**Definition**. 设$\mathcal B = \{\boldsymbol b_1, \ldots, \boldsymbol b_p\}$是$H$的一组基，对每个$\boldsymbol x \in H$，$\boldsymbol x$相对于基$\mathcal B$的坐标是使得：
 
 $$
-\bm x = c_1\bm b_1 + \cdots + c_p\bm b_p
+\boldsymbol x = c_1\boldsymbol b_1 + \cdots + c_p\boldsymbol b_p
 $$
 
 成立的权值$c_1, \ldots, c_p$。称向量：
 
 $$
-[\bm x]_{\mathcal B} = \left[\begin{matrix}
+[\boldsymbol x]_{\mathcal B} = \left[\begin{matrix}
     c_1 \\ c_2 \\ \vdots \\ c_p
 \end{matrix}\right]
 $$
 
-为$\bm x$相对于$\mathcal B$的坐标向量。
+为$\boldsymbol x$相对于$\mathcal B$的坐标向量。
 
 **Definition**. 非零子空间$H$的维数$\mathrm{dim}~H$是$H$的任意一组基的向量个数；零子空间的维数被特别定义为零。
 
@@ -204,7 +204,7 @@ $$
 14. $\mathrm{Col}~A = \mathbb R^n$；
 15. $\mathrm{dim}~\mathrm{Col}~A = n$；
 16. $\mathrm{rank}~A = n$；
-17. $\mathrm{Nul}~A = \{\bm 0\}$；
+17. $\mathrm{Nul}~A = \{\boldsymbol 0\}$；
 18. $\mathrm{dim}~\mathrm{Nul}~A = 0$。
 
 ## 行列式
