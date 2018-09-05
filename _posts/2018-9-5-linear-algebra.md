@@ -1,7 +1,7 @@
 ---
 layout: post
 title: 线性代数复习
-key: 20180905
+key: t20180905
 tags:
   - Mathematics
 ---
