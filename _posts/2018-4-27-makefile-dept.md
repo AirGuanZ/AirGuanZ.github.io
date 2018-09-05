@@ -1,7 +1,7 @@
 ---
 layout: post
 title: 关于makefile中的依赖文件自动生成
-key: 20180427
+key: t20180427
 tags:
   - Makefile
 ---

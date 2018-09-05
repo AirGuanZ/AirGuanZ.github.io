@@ -1,7 +1,7 @@
 ---
 layout: post
 title: 四元数基础
-key: 20180904
+key: t20180904
 tags:
   - Graphics
   - Mathematics

@@ -1,7 +1,7 @@
 ---
 layout: post
 title: Monte Carlo Integration in Graphics
-key: 20180820
+key: t20180820
 tags:
   - Graphics
   - Mathematics

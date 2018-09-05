@@ -1,7 +1,7 @@
 ---
 layout: post
 title: 读书笔记：A Primer on Memory Consistency and Cache Coherence
-key: 20180814
+key: t20180814
 tags:
   - Architecture
   - Notes
