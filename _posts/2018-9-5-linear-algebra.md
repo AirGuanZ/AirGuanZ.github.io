@@ -155,6 +155,24 @@ $$
 
 **Theorem**. 若$A, B​$都是$n​$阶方阵且$AB = I​$，则$A = B^{-1}, B = A^{-1}​$。
 
+**Definition**. [向量空间] 一个向量空间是由一些被称为向量的对象构成的非空集合$V$，在$V$上定义了加法和标量乘法运算，且服从以下法则：
+
+1. $\boldsymbol u, \boldsymbol v \in V \Rightarrow \boldsymbol u + \boldsymbol v \in V$；
+2. $\boldsymbol u + \boldsymbol v = \boldsymbol v + \boldsymbol u$；
+3. $(\boldsymbol u + \boldsymbol v) + \boldsymbol w = \boldsymbol u + (\boldsymbol v + \boldsymbol w)$；
+4. $V$中存在一个零向量$\boldsymbol 0$使得$\boldsymbol u + \boldsymbol 0 = \boldsymbol u$；
+5. 对每个$\boldsymbol u\in V$，存在$-\boldsymbol u \in V$使得$\boldsymbol u + (-\boldsymbol u) = \boldsymbol 0$；
+6. $\boldsymbol u \in V \Rightarrow c\boldsymbol u \in V$；
+7. $c(\boldsymbol u + \boldsymbol v) = c\boldsymbol u + c\boldsymbol v$；
+8. $(c+d)\boldsymbol u = c\boldsymbol u + d\boldsymbol u$；
+9. $c(d\boldsymbol u) = (cd)\boldsymbol u$；
+10. $1\boldsymbol u = \boldsymbol u$。
+
+**Definition**. 向量空间$V$的一个子空间是$V$中的一个满足以下两个性质的子集$H$：
+
+1. $V$中的零向量在$H$中；
+2. $H$对向量加法和标量乘法封闭。
+
 **Definition**. $\mathbb R^n$中的一个子空间是某个集合$H \subseteq \mathbb R^n$，它满足：
 
 1. $\boldsymbol 0 \in H$；
@@ -249,3 +267,44 @@ x_i = \frac{\mathrm{det}~A_i(\boldsymbol b)}{\mathrm{det}~A}, i = 1, 2, \ldots, 
 $$
 
 其中$A_i(\boldsymbol b)$是将$A$的第$i$列替换为$\boldsymbol b$后得到的矩阵。
+
+注意到$A_{-1}$的第$j$列是一个满足方程$A\boldsymbol x = \boldsymbol e_j$的向量$\boldsymbol x$，故可根据克拉默法则导出一个求逆的一般公式：
+
+$$
+(A^{-1})_{ij} = \frac{\mathrm{det}~A_i(\boldsymbol e_j)}{\mathrm{det}~A}
+$$
+
+由于$\mathrm{det}~A_i(\boldsymbol e_j) = (-1)^{i + j}\mathrm{det}~A_{ji} = C_{ji}$，故：
+
+$$
+A^{-1} = \frac 1 {\mathrm{det}~A} \left[\begin{matrix}
+    C_{11} & C_{21} & \cdots & C_{n1} \\
+    C_{12} & C_{22} & \cdots & C_{n2} \\
+    \vdots & \vdots &        & \vdots \\
+    C_{1n} & C_{2n} & \cdots & C_{nn}
+\end{matrix}\right]
+$$
+
+右边的矩阵称为$A$的伴随矩阵，记作$\mathrm{adj}~A$。
+
+**Theorem**. 二阶方阵的列确定的平行四边形面积为该方阵的行列式；三阶方阵的列确定的平行六面体体积为该方阵的行列式。
+
+## 特征值和特征向量
+
+**Definition**. 设$A$为$n$阶方阵，$\boldsymbol x$为非零向量。若存在$\lambda$使得$A\boldsymbol x = \lambda x$，则称$\lambda$为$A$的特征值，$\boldsymbol x$为对应于$\lambda$的特征向量。
+
+**Theorem**. 三角矩阵的主对角线元素是其特征值。
+
+**Theorem**. $\lambda_1, \ldots, \lambda_r$是矩阵$A$的相异的特征值，则它们各自对应的一个特征向量构成的集合线性无关。
+
+**Theorem**. $\lambda$是$A$的特征值，当且仅当$\mathrm{det}~(A-\lambda I) = 0$。该方程被称作$A$的特征方程。
+
+**Definition**. 设$A$是$n$阶方阵，$\mathrm{det}~(A-\lambda I)$是个$n$阶多项式，称特征值$\lambda$作为特征方程根的重数为$\lambda$的（代数）重数。
+
+**Definition**. 设$A, B$都是$n$阶方阵，若存在可逆矩阵$P$使得$P^{-1}AP = B$，就称$A$相似于$B$；将$A$变成$P^{-1}AP$的变换称为相似变换。
+
+**Theorem**. 若$A$与$B$相似，那么它们的特征多项式相同，从而由相同的特征值和重数。
+
+**Definition**. [相似对角化] 若方阵$A$相似于对角矩阵，即存在可逆矩阵$P$和对角矩阵$D$使得$A = PDP^{-1}$，则称$A$是可对角化的。
+
+**Theorem**. $n$阶方阵$A$可对角化当且仅当$A$有$n$个线性无关的特征向量。事实上，$A = PDP^{-1}$中的$P$就是$A$的$n$个线性无关的特征向量，此时$D$的主对角线上的元素也正是它们所对应的特征值。
