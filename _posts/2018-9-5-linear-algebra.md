@@ -290,7 +290,7 @@ $$
 
 **Theorem**. $n$阶方阵$A$可对角化当且仅当$A$有$n$个线性无关的特征向量。事实上，$A = PDP^{-1}$中的$P$就是$A$的$n$个线性无关的特征向量，此时$D$的主对角线上的元素也正是它们所对应的特征值。
 
-**Theorem**. [线性变换的矩阵] 设$T$是从$n$维向量空间$V$到$m$维向量空间$W$的线性变换，$\mathcal B, \mathcal C$分别是$V$和$W$的基。现设$\boldsymbol x \in V$，则坐标向量$[\boldsymbol x]_\mathcal B \in \mathbb R^n$，$[T(\boldsymbol x)]_\mathcal C \in \mathbb R^m$。若$\mathcal B = \{\boldsymbol b_1, \boldsymbol b_2, \ldots, \boldsymbol b_n\}$，$\boldsymbol x = r_1\boldsymbol b_1 + r_2\boldsymbol b_2 + \cdots + r_n\boldsymbol b_n$，那么：
+**Theorem**. [线性变换的矩阵] 设$T$是从$n$维向量空间$V$到$m$维向量空间$W$的线性变换，$\mathcal B, \mathcal C$分别是$V$和$W$的基。现设$\boldsymbol x \in V$，若$\mathcal B = \{\boldsymbol b_1, \boldsymbol b_2, \ldots, \boldsymbol b_n\}$，$\boldsymbol x = r_1\boldsymbol b_1 + r_2\boldsymbol b_2 + \cdots + r_n\boldsymbol b_n$，那么：
 
 $$
 [\boldsymbol x]_\mathcal B = \left[\begin{matrix}
@@ -362,3 +362,18 @@ $$
 **Theorem**. 具有单位正交列的矩阵也具有单位正交行，反之亦然。
 
 **Theorem**. 对称矩阵不同特征空间中的任意两个特征向量是正交的。
+
+**Theorem**. [柯西-施瓦兹不等式] 设$W$是$\boldsymbol u$生成的子空间，则：
+
+$$
+\vert\mathrm{Proj}_W\boldsymbol v\vert = \left\vert\frac{\langle\boldsymbol v, \boldsymbol u\rangle}{\langle\boldsymbol u, \boldsymbol u\rangle}\boldsymbol u\right\vert
+= \frac{\langle\boldsymbol v, \boldsymbol u\rangle}{\langle\boldsymbol u, \boldsymbol u\rangle}\vert\boldsymbol u\vert
+= \frac{\langle\boldsymbol v, \boldsymbol u\rangle}{\vert\boldsymbol u\vert^2}\vert\boldsymbol u\vert
+= \frac{\langle\boldsymbol v, \boldsymbol u\rangle}{\vert\boldsymbol u\vert}
+$$
+
+由于$\vert\mathrm{Proj}_W\boldsymbol v\vert \le \vert\boldsymbol v\vert$，故有：
+
+$$
+\vert\langle \boldsymbol u, \boldsymbol v\rangle\vert \le \vert\boldsymbol u\vert\vert\boldsymbol v\vert
+$$
