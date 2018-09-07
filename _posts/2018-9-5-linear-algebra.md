@@ -209,27 +209,6 @@ $$
 
 **Theorem**. 若矩阵$A$有$n$列，则$\mathrm{rank}~A + \mathrm{dim}~\mathrm{Nul}~A = n$。
 
-**Theorem**. 设$A$是$n$阶方阵，则下列命题等价：
-
-1. $A$可逆；
-2. $A$等价于$I_n$；
-3. $A$有$n$个主元位置；
-4. $A\boldsymbol x = \boldsymbol 0$仅有平凡解；
-5. $A​$各列线性无关；
-6. $\boldsymbol x \mapsto A\boldsymbol x$是单射；
-7. $\forall \boldsymbol b \in \mathbb R^n$，方程$A\boldsymbol x = \boldsymbol b$至少有一个解；
-8. $A$的各列生成$\mathbb R^n$；
-9. $\boldsymbol x \mapsto A\boldsymbol x$是满射；
-10. 存在$n$阶方阵$C$使得$CA = I$；
-11. 存在$n$阶方阵$D$使得$AD = I$；
-12. $A^T$可逆；
-13. $A$的列向量构成$\mathbb R^n$的一个基；
-14. $\mathrm{Col}~A = \mathbb R^n$；
-15. $\mathrm{dim}~\mathrm{Col}~A = n$；
-16. $\mathrm{rank}~A = n$；
-17. $\mathrm{Nul}~A = \{\boldsymbol 0\}$；
-18. $\mathrm{dim}~\mathrm{Nul}~A = 0$。
-
 ## 行列式
 
 **Definition**. 对任意方阵$A$，令$A_{ij}$表示通过划掉$A$中第$i$行和第$j$列得到的子矩阵。现定义一阶方阵$A$的值为它包含的唯一一个标量值；而当$n \ge 2$时，定义$n$阶方阵$A$的行列式为：
@@ -301,6 +280,8 @@ $$
 
 **Definition**. 设$A$是$n$阶方阵，$\mathrm{det}~(A-\lambda I)$是个$n$阶多项式，称特征值$\lambda$作为特征方程根的重数为$\lambda$的（代数）重数。
 
+**Theorem**. 每个特征值对应的特征空间的维数小于等于该特征值的重数。
+
 **Definition**. 设$A, B$都是$n$阶方阵，若存在可逆矩阵$P$使得$P^{-1}AP = B$，就称$A$相似于$B$；将$A$变成$P^{-1}AP$的变换称为相似变换。
 
 **Theorem**. 若$A$与$B$相似，那么它们的特征多项式相同，从而由相同的特征值和重数。
@@ -308,3 +289,76 @@ $$
 **Definition**. [相似对角化] 若方阵$A$相似于对角矩阵，即存在可逆矩阵$P$和对角矩阵$D$使得$A = PDP^{-1}$，则称$A$是可对角化的。
 
 **Theorem**. $n$阶方阵$A$可对角化当且仅当$A$有$n$个线性无关的特征向量。事实上，$A = PDP^{-1}$中的$P$就是$A$的$n$个线性无关的特征向量，此时$D$的主对角线上的元素也正是它们所对应的特征值。
+
+**Theorem**. [线性变换的矩阵] 设$T$是从$n$维向量空间$V$到$m$维向量空间$W$的线性变换，$\mathcal B, \mathcal C$分别是$V$和$W$的基。现设$\boldsymbol x \in V$，则坐标向量$[\boldsymbol x]_\mathcal B \in \mathbb R^n$，$[T(\boldsymbol x)]_\mathcal C \in \mathbb R^m$。若$\mathcal B = \{\boldsymbol b_1, \boldsymbol b_2, \ldots, \boldsymbol b_n\}$，$\boldsymbol x = r_1\boldsymbol b_1 + r_2\boldsymbol b_2 + \cdots + r_n\boldsymbol b_n$，那么：
+
+$$
+[\boldsymbol x]_\mathcal B = \left[\begin{matrix}
+    r_1 \\ r_2 \\ \vdots \\ r_n
+\end{matrix}\right]
+$$
+
+跟据$T$的线性性，有：
+
+$$
+T(\boldsymbol x) = r_1T(\boldsymbol b_1) + r_2T(\boldsymbol b_2) + \cdots + r_nT(\boldsymbol b_n)
+$$
+
+把上式用$\mathcal C$中的坐标表达出来，得到：
+
+$$
+\begin{aligned}
+[T(\boldsymbol x)]_\mathcal C &= r_1[T(\boldsymbol b_1)]_\mathcal C + \cdots + r_n[T(\boldsymbol b_n)]_\mathcal C \\
+&= \left[\begin{matrix} [T(\boldsymbol b_1)] & \cdots & [T(\boldsymbol b_n)] \end{matrix}\right][\boldsymbol x]_\mathcal B \\
+&= M[\boldsymbol x]_\mathcal B
+\end{aligned}
+$$
+
+$M$就是$T$的矩阵表示，称为$T$相对于基$\mathcal B$和$\mathcal C$的矩阵。在$W = V, \mathcal C = \mathcal B$时，也把$M$称为$T$的$\mathcal B$-矩阵。
+
+**Theorem**. 设$A = PDP^{-1}$，其中$D$是$n$阶对角矩阵，若$\mathbb R^n$的基$\mathcal B$由$P$的列向量构成，那么$D$是变换$\boldsymbol x\mapsto A\boldsymbol x$的$\mathcal B$-矩阵。
+
+## 可逆矩阵定理
+
+**Theorem**. 设$A$是$n$阶方阵，则下列命题等价：
+
+1. $A$可逆；
+2. $A$等价于$I_n$；
+3. $A$有$n$个主元位置；
+4. $A\boldsymbol x = \boldsymbol 0$仅有平凡解；
+5. $A​$各列线性无关；
+6. $\boldsymbol x \mapsto A\boldsymbol x$是单射；
+7. $\forall \boldsymbol b \in \mathbb R^n$，方程$A\boldsymbol x = \boldsymbol b$至少有一个解；
+8. $A$的各列生成$\mathbb R^n$；
+9. $\boldsymbol x \mapsto A\boldsymbol x$是满射；
+10. 存在$n$阶方阵$C$使得$CA = I$；
+11. 存在$n$阶方阵$D$使得$AD = I$；
+12. $A^T$可逆；
+13. $A$的列向量构成$\mathbb R^n$的一个基；
+14. $\mathrm{Col}~A = \mathbb R^n$；
+15. $\mathrm{dim}~\mathrm{Col}~A = n$；
+16. $\mathrm{rank}~A = n$；
+17. $\mathrm{Nul}~A = \{\boldsymbol 0\}$；
+18. $\mathrm{dim}~\mathrm{Nul}~A = 0$；
+19. $A$的特征值不包含零。
+
+## 正交和对称
+
+**Definition**. 与子空间$W$中的全据向量都正交的向量构成的子空间称为$W$的正交补，记作$W^\perp$。
+
+**Theorem**. [余弦定理] $\vert\boldsymbol u - \boldsymbol v\vert = \vert\boldsymbol u\vert^2 + \vert\boldsymbol v\vert^2 - 2\boldsymbol u\cdot \boldsymbol v$
+
+**Theorem**. 设$A$是$m \times n$矩阵，$A$的行向量空间的正交补空间是$A$的零空间，$A$的列向量空间的正交补空间是$A^T$的零空间，即：
+
+$$
+\begin{aligned}
+    (\mathrm{Row}~A)^\perp &= \mathrm{Nul}~A \\
+    (\mathrm{Col}~A)^\perp &= \mathrm{Nul}~A^T
+\end{aligned}
+$$
+
+**Theorem**. 设$U$是一个具有单位正交列的$m \times n$矩阵，那么线性映射$\boldsymbol x \mapsto U\boldsymbol x$保持向量长度和正交性。
+
+**Theorem**. 具有单位正交列的矩阵也具有单位正交行，反之亦然。
+
+**Theorem**. 对称矩阵不同特征空间中的任意两个特征向量是正交的。
