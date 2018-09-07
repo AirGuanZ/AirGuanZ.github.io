@@ -9,6 +9,8 @@ tags:
 
 学了这么久的graphics，居然连四元数都迷迷糊糊的，真是丢人急先锋，索性花点时间相关东西理清楚。
 
+[相关内容的C++实现](https://github.com/AirGuanZ/Utils/blob/master/Src/Math/Quaternion.h)
+
 <!--more-->
 
 ## 复数与二维旋转

@@ -308,7 +308,8 @@ $$
 
 $$
 \begin{aligned}
-[T(\boldsymbol x)]_\mathcal C &= r_1[T(\boldsymbol b_1)]_\mathcal C + \cdots + r_n[T(\boldsymbol b_n)]_\mathcal C \\
+& [T(\boldsymbol x)]_\mathcal C\\
+&= r_1[T(\boldsymbol b_1)]_\mathcal C + \cdots + r_n[T(\boldsymbol b_n)]_\mathcal C \\
 &= \left[\begin{matrix} [T(\boldsymbol b_1)] & \cdots & [T(\boldsymbol b_n)] \end{matrix}\right][\boldsymbol x]_\mathcal B \\
 &= M[\boldsymbol x]_\mathcal B
 \end{aligned}
