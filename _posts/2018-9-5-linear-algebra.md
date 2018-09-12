@@ -18,7 +18,7 @@ tags:
 2. [对换变换] 把两行对换；
 3. [倍乘变换] 把某一行所有元素乘以同一个非零数。
 
-**Definition**. 称两个矩阵时行等价的，当且仅当其中一个矩阵可以经过一系列行初等变换称为另一个矩阵。
+**Definition**. 称两个矩阵是行等价的，当且仅当其中一个矩阵可以经过一系列行初等变换称为另一个矩阵。
 
 **Theorem**. 若两个线性方程组的增广矩阵是行等价的，则它们具有相同的解集。
 
@@ -378,3 +378,5 @@ $$
 $$
 \vert\langle \boldsymbol u, \boldsymbol v\rangle\vert \le \vert\boldsymbol u\vert\vert\boldsymbol v\vert
 $$
+
+**Theorem**. $n$阶方阵$A$可正交对角化当且仅当$A$是对称的。
