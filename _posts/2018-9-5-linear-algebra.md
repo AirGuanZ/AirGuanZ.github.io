@@ -52,7 +52,7 @@ A\boldsymbol x =
 = x_1\boldsymbol a_1 + x_2\boldsymbol a_2 + \cdots + x_n\boldsymbol a_n
 $$
 
-**Theorem**. 方程$A\boldsymbol x = \boldsymbol x$有解当且仅当$\boldsymbol b$是$A$各列的线性组合。
+**Theorem**. 方程$A\boldsymbol x = \boldsymbol b$有解当且仅当$\boldsymbol b$是$A$各列的线性组合。
 
 **Theorem**. 设$A$是$m\times n$矩阵，下列命题等价：
 
