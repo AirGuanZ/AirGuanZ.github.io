@@ -19,7 +19,7 @@ Coherence和consistency是对shared memory correctness的人为划分，我暂�
 
 Coherence的正确性很简单：cache对一切软件透明。我们除了能通过一些性能测试来估计cache的性质（比如CSAPP中那个著名的存储器山）外，无法从语义的层面获知关于cache的任何信息，只需要当它不存在就行了。
 
-Consistency correctness则会真真切切地影响软件的行为，它决定了程序所观测到的许多内存操作的结果，对程序员是可见的。举个简单的例子，Facebook开源的C++基础类库[folly](github.com/facebook/folly)中有以下代码：
+Consistency correctness则会真真切切地影响软件的行为，它决定了程序所观测到的许多内存操作的结果，对程序员是可见的。举个简单的例子，Facebook开源的C++基础类库[folly](https://github.com/facebook/folly)中有以下代码：
 
 {% highlight c++ %}
 static void incrementRefs(Char * p) {
