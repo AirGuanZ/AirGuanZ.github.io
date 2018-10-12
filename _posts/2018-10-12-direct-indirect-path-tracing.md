@@ -42,4 +42,8 @@ Spectrum PathTracer::Trace(const Scene &scene, const Ray &r, uint32_t depth) con
 
 ## 推导
 
+回顾路径追踪的理论基础——渲染方程：
 
+$$
+L(x \to \Theta) = L_e(x \to \Theta) + \int_{\mathcal S^2}f_s(\Phi \to x \to \Theta)L(x \leftarrow \Phi)d\omega^{\perp}_{\Phi}
+$$
