@@ -38,7 +38,7 @@ Spectrum PathTracer::Trace(const Scene &scene, const Ray &r, uint32_t depth) con
 
 ![PathTracerConvergeTest]({{site.url}}/postpics/Atrc/2018_10_12_PathTracerConvergeTest.png)
 
-图中，上方是场景形体的参考图像，中间是用淡蓝色的“天空”把场景包裹起来后用每像素100路径渲染的结果，下方则是在场景中添加一个很小的发光球体后用每像素100路径渲染的结果。可以看到，中间的场景中路径很容易击中天空这一无比巨大的光源，而下方的场景中要击中这个小球则是一个概率很小的事件，这导致同为100采样数，下方的噪点比中间的要明显得多。这并不是场景的明暗导致的，而是光源过小或散射次数过多，很难被采样到导致的（小光源常常意味着较暗的场景，因此有许多人以为噪点多是由于场景亮度低）。
+图中，中间是场景的集合形体，左边是用淡蓝色的“天空”把场景包裹起来后用100spp渲染的结果，右边则是在场景中添加一个很小的发光球体后用100spp渲染的结果。可以看到，左边的场景中路径很容易击中天空这一无比巨大的光源，而右边的场景中要击中这个小球则是一个概率很小的事件，这导致同为100spp，右边的噪点比左边的明显得多。这并不是场景的明暗导致的，而是光源过小或散射次数过多，很难被采样到导致的（小光源常常意味着较暗的场景，因此有许多人以为噪点多是由于场景亮度低）。
 
 ## 理论
 
@@ -105,7 +105,7 @@ $$
 \begin{aligned}
 \hat L(x \to \Theta) &= L_e(x \to \Theta) + \hat E(x \to \Theta) + \hat S(x \to \Theta) \\
 \hat E(x \to \Theta) &= \frac 1 {N_E}\sum_{i = 0}^{N_E}\frac
-{f_s(x'_i \to x \to \Theta)L_e(x'_i \to x)V(x'_i, x)|N_{x'_i}\cdot\boldsymbol{e}_{x'_i \to x}||N_x\cdot\boldsymbol{e}_{x \to x'}|}
+{f_s(x'_i \to x \to \Theta)L_e(x'_i \to x)V(x'_i, x)|N_{x'_i}\cdot\boldsymbol{e}_{x'_i \to x}||N_x\cdot\boldsymbol{e}_{x \to x'_i}|}
 {|x'_i - x|^2p(x'_i)} \\
 \hat S(x \to \Theta) &= \frac 1 {N_S}\sum_{i = 0}^{N_S}\frac
 {f_s(\Phi_i \to x \to \Theta)(\hat E + \hat S)(x \leftarrow \Phi_i)|N_x\cdot\Phi_i|}
