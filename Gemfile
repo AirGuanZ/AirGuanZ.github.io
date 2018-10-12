@@ -3,7 +3,6 @@ source 'https://rubygems.org/'
 gemspec
 
 gem 'pygments.rb'
-gem 'tzinfo-data'
 
 # For dev under windows, I know that yikes....
 

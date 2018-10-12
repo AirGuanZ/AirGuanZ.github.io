@@ -28,7 +28,6 @@ Spectrum PathTracer::Trace(const Scene &scene, const Ray &r, uint32_t depth) con
         return bxdf->EmittedRadiance(inct);
 
     auto newRay = Ray(inct.pos, bxdfSample->dir, 1e-5);
-    AGZ_ASSERT(ValidDir(newRay));
     return bxdfSample->coef * Trace(scene, newRay, depth + 1) / SS(bxdfSample->pdf)
          + bxdf->EmittedRadiance(inct);
 }
@@ -38,7 +37,7 @@ Spectrum PathTracer::Trace(const Scene &scene, const Ray &r, uint32_t depth) con
 
 ![PathTracerConvergeTest]({{site.url}}/postpics/Atrc/2018_10_12_PathTracerConvergeTest.png)
 
-图中，中间是场景的集合形体，左边是用淡蓝色的“天空”把场景包裹起来后用100spp渲染的结果，右边则是在场景中添加一个很小的发光球体后用100spp渲染的结果。可以看到，左边的场景中路径很容易击中天空这一无比巨大的光源，而右边的场景中要击中这个小球则是一个概率很小的事件，这导致同为100spp，右边的噪点比左边的明显得多。这并不是场景的明暗导致的，而是光源过小或散射次数过多，很难被采样到导致的（小光源常常意味着较暗的场景，因此有许多人以为噪点多是由于场景亮度低）。
+图中，中间是场景的几何形体，左边是用淡蓝色的“天空”把场景包裹起来后用100spp渲染的结果，右边则是在场景中添加一个很小的发光球体后用100spp渲染的结果。可以看到，左边的场景中路径很容易击中天空这一无比巨大的光源，而右边的场景中要击中这个小球则是一个概率很小的事件，这导致同为100spp，右边的噪点比左边的明显得多。这并不是场景的明暗导致的，而是光源过小或散射次数过多，很难被采样到导致的（小光源常常意味着较暗的场景，因此有许多人以为噪点多是由于场景亮度低）。
 
 ## 理论
 
