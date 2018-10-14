@@ -16,7 +16,7 @@ tags:
 Spectrum PathTracer::Trace(const Scene &scene, const Ray &r, uint32_t depth) const
 {
     if(depth > maxDepth_)
-        return SPECTRUM::RED;
+        return SPECTRUM::BLACK;
 
     Intersection inct;
     if(!FindClosestIntersection(scene, r, &inct))
@@ -207,3 +207,14 @@ Spectrum PathTracerEx::S(
     return RRCoef * ret;
 }
 {% endhighlight %}
+
+用新的路径追踪器和旧的各自以10spp渲染一幅图像，对比如下：
+
+![PathTracerExConvergeTest]({{site.url}}/postpics/Atrc/2018_10_14_TwoPathTracerWith10spp.png)
+
+可以看到，在图像中绝大部分被照亮的地方，新的追踪器（右侧）都比旧的（左侧）收敛得快得多，正和我们的预期相符。
+当然，我们可以用两个追踪器各自以高采样数渲染一幅图像，对比结果以确保改进版本的正确性，这里不再详述。
+
+值得注意的是右侧光源正下方的一小块地面噪点明显，表现得还不如改进前的版本，这是因为此处地面离光源很近，Shadow Ray（用来判定光源上的采样点与物体表面间是否有障碍物）非常容易被光源自身遮挡住，很难产生实际有效的光源采样。这一问题可以通过修改光源采样策略，根据待照射点的位置进行重要性采样来改善。
+
+本文所涉及到的两个路径追踪器的完整代码可以在[这里](https://github.com/AirGuanZ/Atrc/tree/master/Source/Atrc/Integrator)找到。
