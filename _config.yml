@@ -94,6 +94,9 @@ excerpt_type: html # text | html
 markdown: kramdown
 highlighter: rouge
 permalink: date
+kramdown:
+  input: GFM
+  syntax_highlighter: rouge
 
 exclude:
   - CHANGELOG.md

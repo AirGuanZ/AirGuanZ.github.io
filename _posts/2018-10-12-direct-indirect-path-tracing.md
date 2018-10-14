@@ -10,9 +10,9 @@ tags:
 
 ## 问题
 
-最近开始写自己的离线渲染器[Atrc](https://github.com/AirGuanZ/Atrc)，撸个暴力的路径追踪器很是容易，代码甚至只有几行：
+最近开始写自己的离线渲染器[Atrc](https://github.com/AirGuanZ/Atrc)，撸个暴力的路径追踪器很是容易，代码甚至只有十几行：
 
-{% highlight c++ %}
+{% highlight c++ linenos %}
 Spectrum PathTracer::Trace(const Scene &scene, const Ray &r, uint32_t depth) const
 {
     if(depth > maxDepth_)
@@ -22,14 +22,21 @@ Spectrum PathTracer::Trace(const Scene &scene, const Ray &r, uint32_t depth) con
     if(!FindClosestIntersection(scene, r, &inct))
         return SPECTRUM::BLACK;
 
+    Spectrum ret;
+    if(inct.entity->AsLight())
+        ret += inct.entity->AsLight()->Le(inct);
+
     auto bxdf = inct.entity->GetBxDF(inct);
     auto bxdfSample = bxdf->Sample(-r.direction, BXDF_ALL);
     if(!bxdfSample)
-        return bxdf->EmittedRadiance(inct);
+        return ret + bxdf->AmbientRadiance(inct);
 
     auto newRay = Ray(inct.pos, bxdfSample->dir, 1e-5);
-    return bxdfSample->coef * Trace(scene, newRay, depth + 1) / SS(bxdfSample->pdf)
-         + bxdf->EmittedRadiance(inct);
+    ret += bxdfSample->coef * Trace(scene, newRay, depth + 1)
+         * SS(Abs(Dot(inct.nor, bxdfSample->dir)) / bxdfSample->pdf)
+         + bxdf->AmbientRadiance(inct);
+
+    return ret;
 }
 {% endhighlight %}
 
@@ -114,4 +121,89 @@ $$
 
 ## 实现
 
-（施工中……）
+改进后的PathTracer似乎要复杂许多，实际上也就是抄上面的估值器公式而已：
+
+{% highlight c++ linenos %}
+Spectrum PathTracerEx::L(const Ray &r, const Intersection &inct, const Scene &scene, int depth) const
+{
+    const Light *light = inct.entity->AsLight();
+    Spectrum Le = light ? light->Le(inct) : SPECTRUM::BLACK;
+
+    auto bxdf = inct.entity->GetBxDF(inct);
+    Spectrum Es = E(r, inct, *bxdf, scene, depth);
+    Spectrum Ss = S(r, inct, *bxdf, scene, depth);
+
+    return Le + Es + Ss;
+}
+
+Spectrum PathTracerEx::E(
+    const Ray &r, const Intersection &inct, const BxDF &bxdf, const Scene &scene, int depth) const
+{
+    Spectrum ret = SPECTRUM::BLACK;
+    if(!scene.lightMgr || !lightSampleCount_)
+        return ret;
+
+    for(int i = 0; i < lightSampleCount_; ++i)
+    {
+        auto lightSam = scene.lightMgr->Sample(inct);
+        if(!lightSam.light)
+            continue;
+
+        auto lightPnt = lightSam.light->SampleTo(inct);
+        if(!lightPnt)
+            continue;
+
+        lightPnt->pos += 1e-5 * lightPnt->nor;
+        Vec3r dstPos = inct.pos + 1e-5 * inct.nor;
+
+        Vec3r dir = dstPos - lightPnt->pos;
+        Real dis = dir.Length();
+
+        if(lightSam.light == inct.entity->AsLight() && dis <= 3e-5)
+            continue;
+
+        dir /= dis;
+        Ray shadowRay = Ray(lightPnt->pos, dir, 0, dis);
+        if(Dot(-dir, inct.nor) <= 0.0 || HasIntersection(scene, shadowRay))
+            continue;
+
+        ret += bxdf.Eval(-dir, inct.wr) * lightPnt->radiance
+             * SS(Abs(Dot(lightPnt->nor, dir) * Dot(inct.nor, -dir))
+                / (dis * dis * lightSam.pdf * lightPnt->pdf));
+    }
+
+    return ret / lightSampleCount_;
+}
+
+Spectrum PathTracerEx::S(
+    const Ray &r, const Intersection &inct, const BxDF &bxdf, const Scene &scene, int depth) const
+{
+    SS RRCoef = 1.0f;
+    if(depth >= minDepth_)
+    {
+        if(depth > maxDepth_ || Rand() > contProb_)
+            return SPECTRUM::BLACK;
+        RRCoef = 1 / SS(contProb_);
+    }
+
+    auto bxdfSample = bxdf.Sample(inct.wr, BXDF_ALL);
+    if(!bxdfSample)
+        return RRCoef * bxdf.AmbientRadiance(inct);
+
+    auto newRay = Ray(inct.pos, bxdfSample->dir, 1e-5);
+
+    Intersection newInct;
+    if(!FindClosestIntersection(scene, newRay, &newInct))
+        return SPECTRUM::BLACK;
+    auto newBxDF = newInct.entity->GetBxDF(newInct);
+
+    Spectrum EpS = E(newRay, newInct, *newBxDF, scene, depth + 1)
+                 + S(newRay, newInct, *newBxDF, scene, depth + 1);
+
+    Spectrum ret = bxdfSample->coef * EpS
+                 * SS(Abs(Dot(inct.nor, bxdfSample->dir))
+                    / bxdfSample->pdf)
+                 + bxdf.AmbientRadiance(inct);
+    return RRCoef * ret;
+}
+{% endhighlight %}
