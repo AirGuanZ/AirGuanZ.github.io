@@ -119,102 +119,42 @@ $$
 \end{aligned}
 $$
 
-## 实现
+## 初步实现
 
-改进后的PathTracer似乎要复杂许多，实际上也就是抄上面的估值器公式而已：
-
-{% highlight c++ linenos %}
-Spectrum PathTracerEx::L(const Ray &r, const Intersection &inct, const Scene &scene, int depth) const
-{
-    const Light *light = inct.entity->AsLight();
-    Spectrum Le = light ? light->Le(inct) : SPECTRUM::BLACK;
-
-    auto bxdf = inct.entity->GetBxDF(inct);
-    Spectrum Es = E(r, inct, *bxdf, scene, depth);
-    Spectrum Ss = S(r, inct, *bxdf, scene, depth);
-
-    return Le + Es + Ss;
-}
-
-Spectrum PathTracerEx::E(
-    const Ray &r, const Intersection &inct, const BxDF &bxdf, const Scene &scene, int depth) const
-{
-    Spectrum ret = SPECTRUM::BLACK;
-    if(!scene.lightMgr || !lightSampleCount_)
-        return ret;
-
-    for(int i = 0; i < lightSampleCount_; ++i)
-    {
-        auto lightSam = scene.lightMgr->Sample(inct);
-        if(!lightSam.light)
-            continue;
-
-        auto lightPnt = lightSam.light->SampleTo(inct);
-        if(!lightPnt)
-            continue;
-
-        lightPnt->pos += 1e-5 * lightPnt->nor;
-        Vec3r dstPos = inct.pos + 1e-5 * inct.nor;
-
-        Vec3r dir = dstPos - lightPnt->pos;
-        Real dis = dir.Length();
-
-        if(lightSam.light == inct.entity->AsLight() && dis <= 3e-5)
-            continue;
-
-        dir /= dis;
-        Ray shadowRay = Ray(lightPnt->pos, dir, 0, dis);
-        if(Dot(-dir, inct.nor) <= 0.0 || HasIntersection(scene, shadowRay))
-            continue;
-
-        ret += bxdf.Eval(-dir, inct.wr) * lightPnt->radiance
-             * SS(Abs(Dot(lightPnt->nor, dir) * Dot(inct.nor, -dir))
-                / (dis * dis * lightSam.pdf * lightPnt->pdf));
-    }
-
-    return ret / lightSampleCount_;
-}
-
-Spectrum PathTracerEx::S(
-    const Ray &r, const Intersection &inct, const BxDF &bxdf, const Scene &scene, int depth) const
-{
-    SS RRCoef = 1.0f;
-    if(depth >= minDepth_)
-    {
-        if(depth > maxDepth_ || Rand() > contProb_)
-            return SPECTRUM::BLACK;
-        RRCoef = 1 / SS(contProb_);
-    }
-
-    auto bxdfSample = bxdf.Sample(inct.wr, BXDF_ALL);
-    if(!bxdfSample)
-        return RRCoef * bxdf.AmbientRadiance(inct);
-
-    auto newRay = Ray(inct.pos, bxdfSample->dir, 1e-5);
-
-    Intersection newInct;
-    if(!FindClosestIntersection(scene, newRay, &newInct))
-        return SPECTRUM::BLACK;
-    auto newBxDF = newInct.entity->GetBxDF(newInct);
-
-    Spectrum EpS = E(newRay, newInct, *newBxDF, scene, depth + 1)
-                 + S(newRay, newInct, *newBxDF, scene, depth + 1);
-
-    Spectrum ret = bxdfSample->coef * EpS
-                 * SS(Abs(Dot(inct.nor, bxdfSample->dir))
-                    / bxdfSample->pdf)
-                 + bxdf.AmbientRadiance(inct);
-    return RRCoef * ret;
-}
-{% endhighlight %}
-
-用新的路径追踪器和旧的各自以10spp渲染一幅图像，对比如下：
+改进后的PathTracer似乎要复杂许多，实际上也就是抄上面的估值器公式而已。用新的路径追踪器和旧的各自以10spp渲染一幅图像，对比如下：
 
 ![PathTracerExConvergeTest]({{site.url}}/postpics/Atrc/2018_10_14_TwoPathTracerWith10spp.png)
 
-可以看到，在图像中绝大部分被照亮的地方，新的追踪器（右侧）都比旧的（左侧）收敛得快得多，正和我们的预期相符。
+可以看到，在图像中绝大部分被照亮的地方，右侧新的追踪器（以后称为PathTracerEx）都比左侧的旧版本（称为PathTracer）收敛得快得多，正和我们的预期相符。
 当然，我们可以用两个追踪器各自以高采样数渲染一幅图像，对比结果以确保改进版本的正确性，这里不再详述。
 
 值得注意的是右侧光源正下方的一小块地面噪点明显，表现得还不如改进前的版本，这是因为此处地面离光源很近，Shadow Ray（用来判定光源上的采样点与物体表面间是否有障碍物）非常容易被光源自身遮挡住，很难产生实际有效的光源采样。这一问题可以通过修改光源采样策略，根据待照射点的位置进行重要性采样来改善。
+
+## 再次改进
+
+看起来一切都很美好？让我们试试引入一个镜面球体——
+
+![PathTracerExWithoutSpecularSampling]({{site.url}}/postpics/Atrc/2018_10_15_PathTracerExWithoutSpecularSampling.png)
+
+上图中左侧是改进后的结果，右侧是之前的结果。在高达1000spp得采样数下，改进后的追踪器依然比之前的有明显的收敛速度优势……等等，左边的镜子怎么不反射光源呢？
+
+事实上，这是一个比“收敛速度慢”要严重得多的问题。PathTracerEx通过在光源上采样来计算光照，但问题是镜面反射的反射分布是个$\delta$-分布，连带着$E$也是在估值一个$\delta$-函数的积分。而$\hat E$用一个非奇异的分布进行采样，能有效地采到$\delta$点才有鬼了。因此，对于镜面这样的特殊反射/折射分布（以后称这样的反射为Specular材质），在光源上采样是行不通的，还是得回到BRDF采样等能反映出其奇异性质的方法上来。
+
+既然知道了问题产生的原因，解决起来也不困难——每次求得射线与表面的交点时都根据交点处材质是否是Specular类型来决定使用哪一种采样方法即可。下面堆公式：
+
+$$
+\begin{aligned}
+L(x \to \Theta) &= L_e(x \to \Theta) + L_s(x \to \Theta) \\
+L_s(x \to \Theta) &= \begin{cases}\begin{aligned}
+    &\int_{\mathcal S^2}f_s(\Phi \to x \to \Theta)L(x \leftarrow \Phi)d\omega^\perp_\Phi, &f_s\text{ is specular at }x \\
+    &E(x \to \Theta) + S(x \to \Theta), &\text{otherwise}
+\end{aligned}\end{cases} \\
+E(x \to \Theta) &= \int_{\mathcal M}f_s(x' \to x \to \Theta)L_e(x' \to x)V(x, x')
+\frac{|N_{x'}\cdot\boldsymbol{e}_{x' \to x}||N_x\cdot\boldsymbol{e}_{x \to x'}|}{|x' - x|^2}dA_{x'} \\
+S(x \to \Theta) &= \int_{\mathcal S^2}f_s(\Phi \to x \to \Theta)L_s(x \leftarrow \Phi)d\omega^\perp_\Phi
+\end{aligned}
+$$
+
+（施工中……）
 
 本文所涉及到的两个路径追踪器的完整代码可以在[这里](https://github.com/AirGuanZ/Atrc/tree/master/Source/Atrc/Integrator)找到。
