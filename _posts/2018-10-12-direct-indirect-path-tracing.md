@@ -132,15 +132,15 @@ $$
 
 ## 再次改进
 
-看起来一切都很美好？让我们试试引入一个镜面球体——
+看起来一切都很美好？让我们试试镜面球体——
 
 ![PathTracerExWithoutSpecularSampling]({{site.url}}/postpics/Atrc/2018_10_15_PathTracerExWithoutSpecularSampling.png)
 
-上图中左侧是改进后的结果，右侧是之前的结果。在高达1000spp得采样数下，改进后的追踪器依然比之前的有明显的收敛速度优势……等等，左边的镜子怎么不反射光源呢？
+上图中左侧是改进后的结果，右侧是之前的结果。在高达1000spp的采样数下，改进后的追踪器依然比之前的有明显的收敛速度优势……等等，左边的镜子怎么不反射光源呢？
 
 事实上，这是一个比“收敛速度慢”要严重得多的问题。PathTracerEx通过在光源上采样来计算光照，但问题是镜面反射的反射分布是个$\delta$-分布，连带着$E$也是在估值一个$\delta$-函数的积分。而$\hat E$用一个非奇异的分布进行采样，能有效地采到$\delta$点才有鬼了。因此，对于镜面这样的特殊反射/折射分布（以后称这样的反射为Specular材质），在光源上采样是行不通的，还是得回到BRDF采样等能反映出其奇异性质的方法上来。
 
-既然知道了问题产生的原因，解决起来也不困难——每次求得射线与表面的交点时都根据交点处材质是否是Specular类型来决定使用哪一种采样方法即可。下面堆公式：
+既然知道了问题产生的原因，解决起来也不困难——每次求得射线与表面的交点时都根据交点处材质是否是Specular类型来决定使用哪一种采样方法即可。公式大而不难，就直接堆这儿了：
 
 $$
 \begin{aligned}
@@ -155,6 +155,32 @@ S(x \to \Theta) &= \int_{\mathcal S^2}f_s(\Phi \to x \to \Theta)L_s(x \leftarrow
 \end{aligned}
 $$
 
-（施工中……）
+对应的估值器：
 
-本文所涉及到的两个路径追踪器的完整代码可以在[这里](https://github.com/AirGuanZ/Atrc/tree/master/Source/Atrc/Integrator)找到。
+$$
+\begin{aligned}
+\hat L(x \to \Theta) &= L_e(x \to \Theta) + L_s(x \to \Theta) \\
+\hat L_s(x \to \Theta) &= \begin{cases}\begin{aligned}
+    &\frac 1 {N_{L_s}}\sum_{i=1}^{N_{L_s}}\frac{f_s(\Phi_i \to x \to \Theta)\hat L(x \leftarrow \Phi_i)|N_x\cdot\Phi_i|}{p(\Phi_i)} \\
+    &\hat E(x \to \Theta) + \hat S(x \to \Theta)
+\end{aligned}\end{cases} \\
+\hat E(x \to \Theta) &= \frac 1 {N_E}\sum_{i = 0}^{N_E}\frac
+{f_s(x'_i \to x \to \Theta)L_e(x'_i \to x)V(x'_i, x)|N_{x'_i}\cdot\boldsymbol{e}_{x'_i \to x}||N_x\cdot\boldsymbol{e}_{x \to x'_i}|}
+{|x'_i - x|^2p(x'_i)} \\
+\hat S(x \to \Theta) &= \frac 1 {N_S}\sum_{i = 0}^{N_S}\frac
+{f_s(\Phi_i \to x \to \Theta)\hat L_s(x \leftarrow \Phi_i)|N_x\cdot\Phi_i|}
+{p(\Phi_i)}
+\end{aligned}
+$$
+
+## 小结
+
+再次改进的路径追踪器被称作PathTracerEx2，依然是抄上面的估值器公式。最后放上三个追踪器在10spp下的表现（选用如此低的采样数是为了充分表现不同采样器间的收敛速度差异）：
+
+![PathTracerExWithSpecularSampling]({{site.url}}/postpics/Atrc/2018_10_15_PathTracerExWithSpecularSampling.png)
+
+中间的是普通的PathTracer，表现得一如既往地糟糕；左侧的PathTracerEx收敛得最快，可惜连镜面反射中的光源都漏掉了；右侧是最后的PathTracerEx2，运行效率比另外两个都略低一些，但正确性吊打PathTracerEx，收敛速度吊打PathTracer，令人满意。
+
+从上述的一系列实验和分析可以看到，收敛慢或结果有偏（比如PathTracerEx，在有镜面时可以说是有偏得不行了）几乎都是由与采样概率分布和函数形态差异太大导致的采样困难导致的。尽管本文最后给出的PathTracerEx2看似表现良好，若是面对接近Specluar但又不至于成为理想镜面的表面（比如略微粗糙的金属表面），按照在光源上采样的策略，可以预见收敛速度会很慢。这一缺陷可以用一些别的方法来改善，如多重重要性采样（Multiple Importance Sampling）等，那就不在本文讨论范围内了。
+
+本文所涉及到的三个路径追踪器的完整代码可以在[这里](https://github.com/AirGuanZ/Atrc/tree/master/Source/Atrc/Integrator)找到。
