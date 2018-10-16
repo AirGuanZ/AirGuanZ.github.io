@@ -105,18 +105,79 @@ function BALANCE-HEURISTIC(f, p, n)
     return F / N
 ```
 
-## 单采样模型
+## 在路径追踪中的应用
 
 像路径追踪这样有节操的算法是不会在某一条路径的某个点处采样多次的，每次出发它都一条路走到底，只不过要出发很多次罢了。因此，将上面的MIS转换为采样单个点的形式是有必要的。
 
-设我们有$n$中采样策略，其概率密度函数分别为$p_1, \ldots, p_n$，选用哪一种策略的分布律为$c_1, \ldots, c_n~(\sum c_i = 1)$。每次采样时，先根据$c_i$选出一种采样策略，再用之前的$\hat w_i$计算估值，最后的估值器将是：
+考虑计算直接光照的方程（参见[前文](https://airguanz.github.io/2018/10/12/direct-indirect-path-tracing.html)）：
 
 $$
-\hat F = \frac{w_I(X_I)f(X_I)}{c_Ip_I(X_I)}
+E(x \to \Theta) = \int_{\mathcal S^2}f_s(\Phi \to x \to \Theta)L_e(x \leftarrow \Phi)d\omega^\perp_\Phi
 $$
 
-可以证明$V[\hat F]$不大于之前按照balance heuristic策略得到的方差。
+面对此式，常用的采用策略是按$p\propto \cos\langle N_x, \Phi\rangle f_s$采样（即所谓的BSDF采样）和将采样域变换到光源表面$\mathcal M_e$上按$L_e$采样（即所谓的光源采样）。若是使用前一种方法，则当光源分布对结果影响较大时，噪点会非常明显；按后一种策略，则当BSDF描述的时光滑的表面（近乎镜面）时，图像质量也会较差。
 
-## 实现
+现在考虑用重要性采样将这两种采样策略结合起来。设想以$c_1$的概率选用BSDF采样策略，以$c_2 = 1 - c_1$的概率选用光源采样策略，令$n_1 = n_2 = 1$，则估值器是：
 
-（施工中……）
+$$
+\begin{aligned}
+\hat E(x \to \Theta) &= \frac{w_I(X_I)f_I(X_I)}{c_Ip_I(X_I)}~~~I \in \{1, 2\}\text{ sampled with }(c_1, c_2) \\
+f_1(\Phi) &= f_s(\Phi \to x \to \Theta)L_e(x \leftarrow \Phi)|N_x\cdot\Phi| \\
+f_2(x') &= f_s(x' \to x \to \Theta)L_e(x' \to x)V(x', x)G(x', x) \\
+G(x', x) &= \frac{|N_{x'}\cdot e_{x' \to x}||N_x\cdot e_{x \to x'}|}{|x' - x|^2}\\
+w_1(\Phi) &= \frac{p_1(\Phi)}{p_1(\Phi) + p_2(\mathrm{Cast}(x, \Phi))} \\
+w_2(x') &= \frac{p_2(x')}{p_1(e_{x \to x'}) + p_2(x')}
+\end{aligned}
+$$
+
+稍微验证一下$E[\hat E]$：
+
+$$
+\begin{aligned}
+E[\hat E(x \to \Theta)] &= E\left[\frac{w_1(\Phi)f_1(\Phi)}{p_1(\Phi)}\right] + E\left[\frac{w_2(x')f_2(x')}{p_2(x')}\right] \\
+&= E\left[\frac{f_1(\Phi)}{p_1(\Phi) + p_2(\mathrm{Cast}(x,\Phi))}\right] + E\left[\frac{f_2(x')}{p_1(e_{x\to x'}) + p_2(x')}\right] \\
+&= \int_{\mathcal S^2}\frac{f_1(\Phi)p_1(\Phi)}{p_1(\Phi) + p_2(\mathrm{Cast}(x, \Phi))}d\omega_\Phi + \int_{\mathcal M}\frac{f_2(x')p_2(x')}{p_1(e_{x\to x'}) + p_2(x')}dA_{x'}
+\end{aligned}
+$$
+
+令
+
+$$
+\begin{aligned}
+\mathcal M_{x, V} &= \{x' \in \mathcal M \mid L_e(x' \to x) \ne 0 \wedge V(x', x) = 1\}
+\end{aligned}
+$$
+
+对每个$x' \in \mathcal M_{x, V}$，都一定存在一个$\Phi$使得$p_2(\mathrm{Cast}(x,\Phi)) = p_2(x')$，记
+
+$$
+R(x') = \Phi~~~\text{s.t.}~\mathrm{Cast}(x, \Phi) = x'
+$$
+
+于是:
+
+$$
+\begin{aligned}
+\int_{\mathcal M}\frac{f_2(x')p_2(x')}{p_1(e_{x\to x'}) + p_2(x')}dA_{x'}
+&= \int_{\mathcal M_{x, V}}\frac{f_s(x' \to x \to \Phi)L_e(x' \to x)G(x', x)p_2(\mathrm{Cast}(x, \Phi))}{p_1(e_{x \to x'}) + p_2(x')}dA_{x'} \\
+&= \int_{R(\mathcal M_{x, V})}\frac{f_s(\Phi \to x \to \Theta)L_e(x \leftarrow \Phi)p_2(\mathrm{Cast}(x, \Phi))}{p_1(\Phi) + p_2(\mathrm{Cast}(x, \Phi))}d\omega^\perp_\Phi \\
+\end{aligned}
+$$
+
+若规定上式积分内的式子在$L_e(x\leftarrow \Phi)$为零时也为零，就可以上述积分的积分域扩展到$\mathcal S^2$上，得到：
+
+$$
+\int_{\mathcal M}\frac{f_2(x')p_2(x')}{p_1(e_{x\to x'}) + p_2(x')}dA_{x'} = \int_{\mathcal S^2}\frac{f_1(\Phi)p_2(\mathrm{Cast}(x, \Phi))}{p_1(\Phi) + p_2(\mathrm{Cast}(x, \Phi))}d\omega_\Phi
+$$
+
+将此式代入$E[\hat E(x \to \Theta)]$，得到：
+
+$$
+\begin{aligned}
+E[\hat E(x \to \Theta)] &= \int_{\mathcal S^2}\frac{f_1(\Phi)p_1(\Phi)}{p_1(\Phi) + p_2(\mathrm{Cast}(x, \Phi))}d\omega_\Phi + \int_{\mathcal S^2}\frac{f_1(\Phi)p_2(\mathrm{Cast}(x, \Phi))}{p_1(\Phi) + p_2(\mathrm{Cast}(x, \Phi))}d\omega_\Phi \\
+&= \int_{\mathcal S^2}f_1(\Phi)d\omega_\Phi = \int_{\mathcal S^2}f_s(\Phi \to x \to \Theta)L_e(x \leftarrow \Phi)|N_x\cdot\Phi|d\omega_\Phi \\
+&= \int_{\mathcal S^2}f_s(\Phi \to x \to \Theta)L_e(x\leftarrow \Phi)d\omega^\perp_\Phi
+\end{aligned}
+$$
+
+这就验证了$\hat E(x \to \Theta)$是$E(x \to \Theta)$的无偏估值器。
