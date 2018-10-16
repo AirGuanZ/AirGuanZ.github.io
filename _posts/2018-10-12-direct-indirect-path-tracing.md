@@ -15,27 +15,27 @@ tags:
 {% highlight c++ linenos %}
 Spectrum PathTracer::Trace(const Scene &scene, const Ray &r, uint32_t depth) const
 {
-    if(depth > maxDepth_)
-        return SPECTRUM::BLACK;
+​    if(depth > maxDepth_)
+​        return SPECTRUM::BLACK;
 
     Intersection inct;
     if(!FindClosestIntersection(scene, r, &inct))
         return SPECTRUM::BLACK;
-
+    
     Spectrum ret;
     if(inct.entity->AsLight())
         ret += inct.entity->AsLight()->Le(inct);
-
+    
     auto bxdf = inct.entity->GetBxDF(inct);
     auto bxdfSample = bxdf->Sample(-r.direction, BXDF_ALL);
     if(!bxdfSample)
         return ret + bxdf->AmbientRadiance(inct);
-
+    
     auto newRay = Ray(inct.pos, bxdfSample->dir, 1e-5);
     ret += bxdfSample->coef * Trace(scene, newRay, depth + 1)
          * SS(Abs(Dot(inct.nor, bxdfSample->dir)) / bxdfSample->pdf)
          + bxdf->AmbientRadiance(inct);
-
+    
     return ret;
 }
 {% endhighlight %}
@@ -138,7 +138,7 @@ $$
 
 上图中左侧是改进后的结果，右侧是之前的结果。在高达1000spp的采样数下，改进后的追踪器依然比之前的有明显的收敛速度优势……等等，左边的镜子怎么不反射光源呢？
 
-事实上，这是一个比“收敛速度慢”要严重得多的问题。PathTracerEx通过在光源上采样来计算光照，但问题是镜面反射的反射分布是个$\delta$-分布，连带着$E$也是在估值一个$\delta$-函数的积分。而$\hat E$用一个非奇异的分布进行采样，能有效地采到$\delta$点才有鬼了。因此，对于镜面这样的特殊反射/折射分布（以后称这样的反射为Specular材质），在光源上采样是行不通的，还是得回到BRDF采样等能反映出其奇异性质的方法上来。
+事实上，这是一个比“收敛速度慢”要严重得多的问题。PathTracerEx通过在光源上采样来计算光照，但问题是镜面反射的反射分布是个$\delta$-分布，连带着$E$也是在估值一个$\delta$-函数的积分。而$\hat E$用一个非奇异的分布进行采样，能有效地采到$\delta​$点才有鬼了。因此，对于镜面这样的特殊反射/折射分布（以后称这样的反射为Specular材质），在光源上采样是行不通的，还是得回到BRDF采样等能反映出其奇异性质的方法上来。
 
 既然知道了问题产生的原因，解决起来也不困难——每次求得射线与表面的交点时都根据交点处材质是否是Specular类型来决定使用哪一种采样方法即可。公式大而不难，就直接堆这儿了：
 
@@ -159,10 +159,10 @@ $$
 
 $$
 \begin{aligned}
-\hat L(x \to \Theta) &= L_e(x \to \Theta) + L_s(x \to \Theta) \\
+\hat L(x \to \Theta) &= L_e(x \to \Theta) + \hat L_s(x \to \Theta) \\
 \hat L_s(x \to \Theta) &= \begin{cases}\begin{aligned}
-    &\frac 1 {N_{L_s}}\sum_{i=1}^{N_{L_s}}\frac{f_s(\Phi_i \to x \to \Theta)\hat L(x \leftarrow \Phi_i)|N_x\cdot\Phi_i|}{p(\Phi_i)} \\
-    &\hat E(x \to \Theta) + \hat S(x \to \Theta)
+    &\frac 1 {N_{L_s}}\sum_{i=1}^{N_{L_s}}\frac{f_s(\Phi_i \to x \to \Theta)\hat L(x \leftarrow \Phi_i)|N_x\cdot\Phi_i|}{p(\Phi_i)}, &f_s\text{ is specular at }x \\
+    &\hat E(x \to \Theta) + \hat S(x \to \Theta), &\text{otherwise}
 \end{aligned}\end{cases} \\
 \hat E(x \to \Theta) &= \frac 1 {N_E}\sum_{i = 0}^{N_E}\frac
 {f_s(x'_i \to x \to \Theta)L_e(x'_i \to x)V(x'_i, x)|N_{x'_i}\cdot\boldsymbol{e}_{x'_i \to x}||N_x\cdot\boldsymbol{e}_{x \to x'_i}|}

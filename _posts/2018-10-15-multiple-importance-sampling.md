@@ -41,7 +41,6 @@ $$
 基于这两点容易给出以下推论：对任意满足$f(x) \ne 0$的$x$，至少存在某个$i$使得$p_i(x) \ne 0$，即对$f$的每个非零点，至少要有一个$p_i$能采样到它。
 
 **Lemma**. 若$\hat F$和$w_i$满足上面的两个无偏条件，且$n_i\le 1$，则：
-
 $$
 E[\hat F] = \int_\Omega f(x)d\mu(x)
 $$
@@ -61,7 +60,6 @@ $$
 多采样模型给出了一个巨大的无偏估值器空间以及在形式上高度统一的表示方式，我们的目标是找到合适的$w_i$以得到v具有最小方差的$\hat F$。
 
 **Theorem**. 令：
-
 $$
 \hat w_i(x) = \frac{n_ip_i(x)}{\sum_kn_kp_k(x)}
 $$
@@ -109,13 +107,13 @@ function BALANCE-HEURISTIC(f, p, n)
 
 像路径追踪这样有节操的算法是不会在某一条路径的某个点处采样多次的，每次出发它都一条路走到底，只不过要出发很多次罢了。因此，将上面的MIS转换为采样单个点的形式是有必要的。
 
-考虑计算直接光照的方程（参见[前文](https://airguanz.github.io/2018/10/12/direct-indirect-path-tracing.html)）：
+考虑计算直接光照的方程（方程来源和符号含义参见[前文](https://airguanz.github.io/2018/10/12/direct-indirect-path-tracing.html)）：
 
 $$
 E(x \to \Theta) = \int_{\mathcal S^2}f_s(\Phi \to x \to \Theta)L_e(x \leftarrow \Phi)d\omega^\perp_\Phi
 $$
 
-面对此式，常用的采用策略是按$p\propto \cos\langle N_x, \Phi\rangle f_s$采样（即所谓的BSDF采样）和将采样域变换到光源表面$\mathcal M_e$上按$L_e$采样（即所谓的光源采样）。若是使用前一种方法，则当光源分布对结果影响较大时，噪点会非常明显；按后一种策略，则当BSDF描述的时光滑的表面（近乎镜面）时，图像质量也会较差。
+面对此式，常用的采用策略是按$p\propto \cos\langle N_x, \Phi\rangle f_s$采样（即所谓的BSDF采样）和将采样域变换到光源表面$\mathcal M_e$上按$L_e$采样（即所谓的光源采样）。若是使用前一种方法，则当光源分布对结果影响较大时，噪点会非常明显；按后一种策略，则当BSDF描述的是光滑的表面（近乎镜面）时，图像质量也会较差。
 
 现在考虑用重要性采样将这两种采样策略结合起来。设想以$c_1$的概率选用BSDF采样策略，以$c_2 = 1 - c_1$的概率选用光源采样策略，BSDF策略以$p_1$概率密度采样得到$\Phi$，光源策略以$p_2$概率密度采样得到$x'$。令$n_1 = n_2 = 1$，则估值器是：
 
@@ -125,7 +123,7 @@ $$
 f_1(\Phi) &= f_s(\Phi \to x \to \Theta)L_e(x \leftarrow \Phi)|N_x\cdot\Phi| \\
 f_2(x') &= f_s(x' \to x \to \Theta)L_e(x' \to x)V(x', x)G(x', x) \\
 G(x', x) &= \frac{|N_{x'}\cdot e_{x' \to x}||N_x\cdot e_{x \to x'}|}{|x' - x|^2}\\
-w_1(\Phi) &= \frac{p_1(\Phi)}{p_1(\Phi) + p_2(\mathrm{Cast}(x, \Phi))} \\
+w_1(\Phi) &= \frac{p_1(\Phi)}{p_1(\Phi) + p_2(\mathrm{Cast}_x(\Phi))} \\
 w_2(x') &= \frac{p_2(x')}{p_1(e_{x \to x'}) + p_2(x')}
 \end{aligned}
 $$
@@ -135,8 +133,8 @@ $$
 $$
 \begin{aligned}
 E[\hat E(x \to \Theta)] &= E\left[\frac{w_1(\Phi)f_1(\Phi)}{p_1(\Phi)}\right] + E\left[\frac{w_2(x')f_2(x')}{p_2(x')}\right] \\
-&= E\left[\frac{f_1(\Phi)}{p_1(\Phi) + p_2(\mathrm{Cast}(x,\Phi))}\right] + E\left[\frac{f_2(x')}{p_1(e_{x\to x'}) + p_2(x')}\right] \\
-&= \int_{\mathcal S^2}\frac{f_1(\Phi)p_1(\Phi)}{p_1(\Phi) + p_2(\mathrm{Cast}(x, \Phi))}d\omega_\Phi + \int_{\mathcal M}\frac{f_2(x')p_2(x')}{p_1(e_{x\to x'}) + p_2(x')}dA_{x'}
+&= E\left[\frac{f_1(\Phi)}{p_1(\Phi) + p_2(\mathrm{Cast}_x(\Phi))}\right] + E\left[\frac{f_2(x')}{p_1(e_{x\to x'}) + p_2(x')}\right] \\
+&= \int_{\mathcal S^2}\frac{f_1(\Phi)p_1(\Phi)}{p_1(\Phi) + p_2(\mathrm{Cast}_x(\Phi))}d\omega_\Phi + \int_{\mathcal M}\frac{f_2(x')p_2(x')}{p_1(e_{x\to x'}) + p_2(x')}dA_{x'}
 \end{aligned}
 $$
 
@@ -148,38 +146,50 @@ $$
 \end{aligned}
 $$
 
-对每个$x' \in \mathcal M_{x, V}$，都一定存在一个$\Phi$使得$p_2(\mathrm{Cast}(x,\Phi)) = p_2(x')$，其中$\mathrm{Cast}(x, \Phi)$表示从$x$出发沿方向$\Phi$的射线与场景中全体表面$\mathcal M$的最近交点。现记：
-
-$$
-R(x') = \Phi~~~\text{s.t.}~\mathrm{Cast}(x, \Phi) = x'
-$$
-
-于是:
+对每个$x' \in \mathcal M_{x, V}$，都一定存在一个$\Phi$使得$\mathrm{Cast}_x(\Phi) = x'$，于是:
 
 $$
 \begin{aligned}
 \int_{\mathcal M}\frac{f_2(x')p_2(x')}{p_1(e_{x\to x'}) + p_2(x')}dA_{x'}
-&= \int_{\mathcal M_{x, V}}\frac{f_s(x' \to x \to \Phi)L_e(x' \to x)G(x', x)p_2(\mathrm{Cast}(x, \Phi))}{p_1(e_{x \to x'}) + p_2(x')}dA_{x'} \\
-&= \int_{R(\mathcal M_{x, V})}\frac{f_s(\Phi \to x \to \Theta)L_e(x \leftarrow \Phi)p_2(\mathrm{Cast}(x, \Phi))}{p_1(\Phi) + p_2(\mathrm{Cast}(x, \Phi))}d\omega^\perp_\Phi \\
+&= \int_{\mathcal M_{x, V}}\frac{f_s(x' \to x \to \Phi)L_e(x' \to x)G(x', x)p_2(\mathrm{Cast}_x(\Phi))}{p_1(e_{x \to x'}) + p_2(x')}dA_{x'} \\
+&= \int_{\mathrm{Cast}_x^{-1}(\mathcal M_{x, V})}\frac{f_s(\Phi \to x \to \Theta)L_e(x \leftarrow \Phi)p_2(\mathrm{Cast}_x(\Phi))}{p_1(\Phi) + p_2(\mathrm{Cast}_x(\Phi))}d\omega^\perp_\Phi \\
 \end{aligned}
 $$
 
 若规定上式积分内的式子在$L_e(x\leftarrow \Phi)$为零时也为零，就可以上述积分的积分域扩展到$\mathcal S^2$上，得到：
 
 $$
-\int_{\mathcal M}\frac{f_2(x')p_2(x')}{p_1(e_{x\to x'}) + p_2(x')}dA_{x'} = \int_{\mathcal S^2}\frac{f_1(\Phi)p_2(\mathrm{Cast}(x, \Phi))}{p_1(\Phi) + p_2(\mathrm{Cast}(x, \Phi))}d\omega_\Phi
+\int_{\mathcal M}\frac{f_2(x')p_2(x')}{p_1(e_{x\to x'}) + p_2(x')}dA_{x'} = \int_{\mathcal S^2}\frac{f_1(\Phi)p_2(\mathrm{Cast}_x(\Phi))}{p_1(\Phi) + p_2(\mathrm{Cast}_x(\Phi))}d\omega_\Phi
 $$
 
 将此式代入$E[\hat E(x \to \Theta)]$，得到：
 
 $$
 \begin{aligned}
-E[\hat E(x \to \Theta)] &= \int_{\mathcal S^2}\frac{f_1(\Phi)p_1(\Phi)}{p_1(\Phi) + p_2(\mathrm{Cast}(x, \Phi))}d\omega_\Phi + \int_{\mathcal S^2}\frac{f_1(\Phi)p_2(\mathrm{Cast}(x, \Phi))}{p_1(\Phi) + p_2(\mathrm{Cast}(x, \Phi))}d\omega_\Phi \\
+E[\hat E(x \to \Theta)] &= \int_{\mathcal S^2}\frac{f_1(\Phi)p_1(\Phi)}{p_1(\Phi) + p_2(\mathrm{Cast}_x(\Phi))}d\omega_\Phi + \int_{\mathcal S^2}\frac{f_1(\Phi)p_2(\mathrm{Cast}_x(\Phi))}{p_1(\Phi) + p_2(\mathrm{Cast}_x(\Phi))}d\omega_\Phi \\
 &= \int_{\mathcal S^2}f_1(\Phi)d\omega_\Phi = \int_{\mathcal S^2}f_s(\Phi \to x \to \Theta)L_e(x \leftarrow \Phi)|N_x\cdot\Phi|d\omega_\Phi \\
 &= \int_{\mathcal S^2}f_s(\Phi \to x \to \Theta)L_e(x\leftarrow \Phi)d\omega^\perp_\Phi
 \end{aligned}
 $$
 
-这就验证了$\hat E(x \to \Theta)$是$E(x \to \Theta)$的无偏估值器。
+这就验证了$\hat E(x \to \Theta)$是$E(x \to \Theta)$的无偏估值器。结合[前文](https://airguanz.github.io/2018/10/12/direct-indirect-path-tracing.html)的内容，辐射值$L(x \to \Theta)$的单采样估值器是：
+
+$$
+\begin{aligned}
+\hat L(x \to \Theta) &= L_e(x \to \Theta) + \hat L_s(x \to \Theta) \\
+\hat L_s(x \to \Theta) &= \begin{cases}\begin{aligned}
+	&\frac{f_s(\Phi \to x \to \Theta)\hat L(x \leftarrow \Phi)|N_x\cdot\Phi|}{p(\Phi)}, &f_s\text{ is specular at }x \\
+	&\hat E(x \to \Theta) + \hat S(x \to \Theta), &\text{otherwise}
+\end{aligned}\end{cases} \\
+\hat E(x \to \Theta) &= \frac{\hat E_I(x \to \Theta)}{p(I)} \\
+\hat E_1(x \to \Theta) &= \frac{p(\Phi)f_s(\Phi \to x \to \Theta)L_e(x\leftarrow\Phi)|N_x\cdot\Phi|}{p(\Phi) + p(\mathrm{Cast}_x(\Phi))} \\
+\hat E_2(x \to \Theta) &= \frac{p(x')f_s(x' \to x \to \Theta)L_e(x' \to x)V(x, x')|N_{x'}\cdot e_{x' \to x}||N_x\cdot e_{x \to x'}|}{\left(p(\mathrm{Cast}_x^{-1}(x')) + p(x')\right)|x' - x|^2} \\
+\hat S(x \to \Theta) &= \frac{f_s(\Phi \to x \to \Theta)\hat L_s(x \to \Theta)|N_x\cdot \Phi|}{p(\Phi)}
+\end{aligned}
+$$
+
+这就是实现带有多重重要性采样的PathTracer时需要抄的公式了。当然，这只是在计算直接光照时使用了MIS，我（也许）会在以后逐步讨论更广泛的应用。
 
 ## 实现
+
+（施工中……）
