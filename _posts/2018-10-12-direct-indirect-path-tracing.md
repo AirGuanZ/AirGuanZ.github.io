@@ -4,6 +4,7 @@ title: 在路径追踪中分别采样直接与非直接光照
 key: t20181012
 tags:
   - Graphics
+  - Atrc
 ---
 
 <!--more-->

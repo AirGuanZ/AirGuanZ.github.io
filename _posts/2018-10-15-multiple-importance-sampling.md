@@ -4,6 +4,7 @@ title: 多重重要性采样
 key: t20181015
 tags:
   - Graphics
+  - Atrc
 ---
 
 <!--more-->
@@ -58,7 +59,7 @@ $$
 
 ## The balance heurostic
 
-多采样模型给出了一个巨大的无偏估值器空间以及在形式上高度统一的表示方式，我们的目标是找到合适的$w_i$以得到v具有最小方差的$\hat F$。
+多采样模型给出了一个巨大的无偏估值器空间以及在形式上高度统一的表示方式，我们的目标是找到合适的$w_i$以得到具有最小方差的$\hat F$。
 
 **Theorem**. 令：
 
@@ -107,6 +108,8 @@ function BALANCE-HEURISTIC(f, p, n)
 
 ## 在路径追踪中的应用
 
+### 估值器
+
 像路径追踪这样有节操的算法是不会在某一条路径的某个点处采样多次的，每次出发它都一条路走到底，只不过要出发很多次罢了。因此，将上面的MIS转换为采样单个点的形式是有必要的。
 
 考虑计算直接光照的方程（方程来源和符号含义参见[前文](https://airguanz.github.io/2018/10/12/direct-indirect-path-tracing.html)）：
@@ -130,8 +133,9 @@ w_2(x') &= \frac{p_2(x')}{p_1(e_{x \to x'}) + p_2(x')}
 \end{aligned}
 $$
 
-稍微验证一下$E[\hat E]$，设$\mathrm{Cast}_x(\Phi)$表示从$x$出发沿$\Phi$方向的射线与全体表面$\mathcal M$的最近交点，则：
+### 验证
 
+稍微验证一下$E[\hat E]$，设$\mathrm{Cast}_x(\Phi)$表示从$x$出发沿$\Phi$方向的射线与全体表面$\mathcal M$的最近交点，则：
 $$
 \begin{aligned}
 E[\hat E(x \to \Theta)] &= E\left[\frac{w_1(\Phi)f_1(\Phi)}{p_1(\Phi)}\right] + E\left[\frac{w_2(x')f_2(x')}{p_2(x')}\right] \\
@@ -191,6 +195,42 @@ $$
 $$
 
 这就是实现带有多重重要性采样的PathTracer时需要抄的公式了。当然，这只是在计算直接光照时使用了MIS，我（也许）会在以后逐步讨论更广泛的应用。
+
+### 为什么需要单独处理Specular表面
+
+在前文对直接光照的讨论中，遇到Specular表面时需要完全用BRDF进行采样，那是因为在光源上采样会无法命中Specular表面的$\delta$散射分布上的非零点。而本文讨论MIS技术号称能融合多种采样策略，只要每个点被至少一种策略覆盖即可，对Specular表面而言，其BSDF采样无疑就是一种覆盖了$\delta$散射分布的采样策略，那为什么在上面的估值器中还需要单独处理Specular表面呢？
+
+Corner case是谁都不喜欢的，因此这里引入对Specular表面的单独处理也是迫不得已——我们根本无法正确地按蒙特卡洛估值技术来采样Specular表面，即使是朴素的路径追踪算法的处理也带有一定的trick性质，MIS要在这里发挥作用就更是无稽之谈了。试考虑某个理想镜面，反射颜色为$c$，设其法线为$\boldsymbol n$，入射方向为$\boldsymbol w_i$，则反射方向为：
+$$
+\boldsymbol w_o = (\boldsymbol w_i\cdot\boldsymbol n)\boldsymbol n - \boldsymbol w_i
+$$
+于是BSDF为：
+$$
+f_s(\Phi \to x \to \Theta) = \begin{cases}\begin{aligned}
+	&\frac{\delta((\boldsymbol w_i\cdot\boldsymbol n)\boldsymbol n-\boldsymbol w_i)}{\boldsymbol n\cdot\boldsymbol w_i}c, &\boldsymbol n\cdot\boldsymbol w_i > 0 \\
+	&0, &\text{otherwise}
+\end{aligned}\end{cases}
+$$
+BSDF采样所使用的概率密度函数则是：
+$$
+p(\Phi) = \delta((\boldsymbol w_i\cdot\boldsymbol n)\boldsymbol n-\boldsymbol w_i)
+$$
+再看看算法中按照BSDF采样的代码：
+
+```
+// struct BSDFSample {
+//     Spectrum color;
+//     Vec3 phi;
+//     float pdf;
+// };
+BSDFSample sample = bsdf.Sample();
+Spectrum t = RecursivelyTrace(NewRay(pos, phi));
+Spectrum ret = t * sample.color * Dot(normal, sample.phi) / sample.pdf;
+```
+
+试问：如何用`BSDFSample::color`和`BSDFSample::pdf`表示$\delta$函数的取值？这当然是不可能的，所以实践中一般把`pdf`设为$1$，把`color`设为$c$，使得最后`sample.color/sample.pdf`的值保持不变。
+
+而MIS却把`sample.color/sample.pdf`给拆解开来，在其中插入了别的量，此时这个trick会导致错误的结果。这就是我们尽管引入了MIS技术，还是得单独处理Specular表面的原因。当然，如何用编程技巧正确地处理$\delta$分布，以去掉这个corner case，就是与本文无关的另外一个问题了。
 
 ## 实现
 
