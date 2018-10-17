@@ -242,4 +242,4 @@ Spectrum ret = t * sample.color * Dot(normal, sample.phi) / sample.pdf;
 
 ## 实现
 
-（施工中……）
+实现代码可以在[这里](https://github.com/AirGuanZ/Atrc/tree/master/Source/Atrc/Integrator)找到，位于`class PathTracerMIS`中。我已经通过和朴素PathTracer效果的比对验证了它是无偏的，但很不幸的是由于我还没有实现任何Glossy材质（丢人），所以很难展示其优越性。之后实现了相应材质后来补上效果图。
