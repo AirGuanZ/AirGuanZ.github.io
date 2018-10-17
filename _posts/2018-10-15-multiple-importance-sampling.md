@@ -124,7 +124,8 @@ $$
 
 $$
 \begin{aligned}
-\hat E(x \to \Theta) &= \frac{w_I(X_I)f_I(X_I)}{c_Ip_I(X_I)}~~~I \in \{1, 2\}\text{ sampled with }(c_1, c_2) \\
+\hat E(x \to \Theta) &= \frac{\hat E_I}{c_I}~~~I \in \{1, 2\}\text{ sampled with }(c_1, c_2) \\
+\hat E_i &= \frac{w_I(X_I)f_I(X_I)}{p_I(X_I)}~~~I \in \{1, 2\} \\
 f_1(\Phi) &= f_s(\Phi \to x \to \Theta)L_e(x \leftarrow \Phi)|N_x\cdot\Phi| \\
 f_2(x') &= f_s(x' \to x \to \Theta)L_e(x' \to x)V(x', x)G(x', x) \\
 G(x', x) &= \frac{|N_{x'}\cdot e_{x' \to x}||N_x\cdot e_{x \to x'}|}{|x' - x|^2}\\
@@ -188,8 +189,8 @@ $$
 	&\hat E(x \to \Theta) + \hat S(x \to \Theta), &\text{otherwise}
 \end{aligned}\end{cases} \\
 \hat E(x \to \Theta) &= \frac{\hat E_I(x \to \Theta)}{p(I)} \\
-\hat E_1(x \to \Theta) &= \frac{p(\Phi)f_s(\Phi \to x \to \Theta)L_e(x\leftarrow\Phi)|N_x\cdot\Phi|}{p(\Phi) + p(\mathrm{Cast}_x(\Phi))} \\
-\hat E_2(x \to \Theta) &= \frac{p(x')f_s(x' \to x \to \Theta)L_e(x' \to x)V(x, x')|N_{x'}\cdot e_{x' \to x}||N_x\cdot e_{x \to x'}|}{\left(p(\mathrm{Cast}_x^{-1}(x')) + p(x')\right)|x' - x|^2} \\
+\hat E_1(x \to \Theta) &= \frac{f_s(\Phi \to x \to \Theta)L_e(x\leftarrow\Phi)|N_x\cdot\Phi|}{p(\Phi) + p(\mathrm{Cast}_x(\Phi))} \\
+\hat E_2(x \to \Theta) &= \frac{f_s(x' \to x \to \Theta)L_e(x' \to x)V(x, x')|N_{x'}\cdot e_{x' \to x}||N_x\cdot e_{x \to x'}|}{\left(p(\mathrm{Cast}_x^{-1}(x')) + p(x')\right)|x' - x|^2} \\
 \hat S(x \to \Theta) &= \frac{f_s(\Phi \to x \to \Theta)\hat L_s(x \to \Theta)|N_x\cdot \Phi|}{p(\Phi)}
 \end{aligned}
 $$
@@ -201,20 +202,26 @@ $$
 在前文对直接光照的讨论中，遇到Specular表面时需要完全用BRDF进行采样，那是因为在光源上采样会无法命中Specular表面的$\delta$散射分布上的非零点。而本文讨论MIS技术号称能融合多种采样策略，只要每个点被至少一种策略覆盖即可，对Specular表面而言，其BSDF采样无疑就是一种覆盖了$\delta$散射分布的采样策略，那为什么在上面的估值器中还需要单独处理Specular表面呢？
 
 Corner case是谁都不喜欢的，因此这里引入对Specular表面的单独处理也是迫不得已——我们根本无法正确地按蒙特卡洛估值技术来采样Specular表面，即使是朴素的路径追踪算法的处理也带有一定的trick性质，MIS要在这里发挥作用就更是无稽之谈了。试考虑某个理想镜面，反射颜色为$c$，设其法线为$\boldsymbol n$，入射方向为$\boldsymbol w_i$，则反射方向为：
+
 $$
 \boldsymbol w_o = (\boldsymbol w_i\cdot\boldsymbol n)\boldsymbol n - \boldsymbol w_i
 $$
+
 于是BSDF为：
+
 $$
 f_s(\Phi \to x \to \Theta) = \begin{cases}\begin{aligned}
 	&\frac{\delta((\boldsymbol w_i\cdot\boldsymbol n)\boldsymbol n-\boldsymbol w_i)}{\boldsymbol n\cdot\boldsymbol w_i}c, &\boldsymbol n\cdot\boldsymbol w_i > 0 \\
 	&0, &\text{otherwise}
 \end{aligned}\end{cases}
 $$
+
 BSDF采样所使用的概率密度函数则是：
+
 $$
 p(\Phi) = \delta((\boldsymbol w_i\cdot\boldsymbol n)\boldsymbol n-\boldsymbol w_i)
 $$
+
 再看看算法中按照BSDF采样的代码：
 
 ```
