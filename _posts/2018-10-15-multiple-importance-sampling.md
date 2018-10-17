@@ -137,6 +137,7 @@ $$
 ### 验证
 
 稍微验证一下$E[\hat E]$，设$\mathrm{Cast}_x(\Phi)$表示从$x$出发沿$\Phi$方向的射线与全体表面$\mathcal M$的最近交点，则：
+
 $$
 \begin{aligned}
 E[\hat E(x \to \Theta)] &= E\left[\frac{w_1(\Phi)f_1(\Phi)}{p_1(\Phi)}\right] + E\left[\frac{w_2(x')f_2(x')}{p_2(x')}\right] \\
