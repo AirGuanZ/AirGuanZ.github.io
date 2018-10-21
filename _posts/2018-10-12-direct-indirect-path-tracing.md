@@ -184,4 +184,4 @@ $$
 
 从上述的一系列实验和分析可以看到，收敛慢或结果有偏（比如PathTracerEx，在有镜面时可以说是有偏得不行了）几乎都是由与采样概率分布和函数形态差异太大导致的采样困难导致的。尽管本文最后给出的PathTracerEx2看似表现良好，若是面对接近Specluar但又不至于成为理想镜面的表面（比如略微粗糙的金属表面），按照在光源上采样的策略，可以预见收敛速度会很慢。这一缺陷可以用一些别的方法来改善，如多重重要性采样（Multiple Importance Sampling）等，那就不在本文讨论范围内了。
 
-本文所涉及到的三个路径追踪器的完整代码可以在[这里](https://github.com/AirGuanZ/Atrc/tree/master/Source/Atrc/Integrator)找到。
+本文所涉及到的三个路径追踪器的完整代码可以在[这里](https://github.com/AirGuanZ/Atrc/tree/20181019-before-refractor/Source/Atrc/Integrator)找到。

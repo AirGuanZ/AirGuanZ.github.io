@@ -242,4 +242,10 @@ Spectrum ret = t * sample.color * Dot(normal, sample.phi) / sample.pdf;
 
 ## 实现
 
-实现代码可以在[这里](https://github.com/AirGuanZ/Atrc/tree/master/Source/Atrc/Integrator)找到，位于`class PathTracerMIS`中。我已经通过和朴素PathTracer效果的比对验证了它是无偏的，但很不幸的是由于我还没有实现任何Glossy材质（丢人），所以很难展示其优越性。之后实现了相应材质后来补上效果图。
+实现代码可以在[这里](https://github.com/AirGuanZ/Atrc/tree/master/Source/Atrc/Integrator)中的PathTracer.h/cpp找到。随便摆个场景看看——
+
+![PathTracerExWithSpecularSampling]({{site.url}}/postpics/Atrc/2018_10_21_MIS.png)
+
+最左边的是按BSDF进行100spp采样（也就是[前文](https://airguanz.github.io/2018/10/12/direct-indirect-path-tracing.html)最开始用的方案）的结果，在稍微原理光源的地方惨不忍睹，这是意料之中的；中间的是前文给出的PathTracerEx2的结果，在靠近光源的地方由于无法有效地采样光源产生了很严重的噪声；最右侧的则是本文所讨论的MIS技术应用的结果，它在很难有效采样光源的地方没有产生很高的方差，在远离光源的地方表现也还不错。应该说，在每一种特定的情境下，都存在比MIS更好的采样策略，但当各种情境齐聚一堂时，MIS能够集各家之所长，得到一个满意解（而未必是最优解）。
+
+当然，上图中光源采样造成的噪点可以通过改善光源采样策略来消除，因此这不算是个很好的显示MIS优越性的例子。在后续文章中，我会引入一些光泽感较强的材质，那时MIS才可一鸣惊人。
