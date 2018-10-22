@@ -205,14 +205,14 @@ $$
 Corner case是谁都不喜欢的，因此这里引入对Specular表面的单独处理也是迫不得已——我们根本无法正确地按蒙特卡洛估值技术来采样Specular表面，即使是朴素的路径追踪算法的处理也带有一定的trick性质，MIS要在这里发挥作用就更是无稽之谈了。试考虑某个理想镜面，反射颜色为$c$，设其法线为$\boldsymbol n$，入射方向为$\boldsymbol w_i$，则反射方向为：
 
 $$
-\boldsymbol w_o = (\boldsymbol w_i\cdot\boldsymbol n)\boldsymbol n - \boldsymbol w_i
+\boldsymbol w_o = \mathrm{Ref}(\boldsymbol w_i) = (\boldsymbol w_i\cdot\boldsymbol n)\boldsymbol n - \boldsymbol w_i
 $$
 
 于是BSDF为：
 
 $$
 f_s(\Phi \to x \to \Theta) = \begin{cases}\begin{aligned}
-	&\frac{\delta((\boldsymbol w_i\cdot\boldsymbol n)\boldsymbol n-\boldsymbol w_i - \boldsymbol w_o)}{\boldsymbol n\cdot\boldsymbol w_i}c, &\boldsymbol n\cdot\boldsymbol w_i > 0 \\
+	&\frac{\delta(\Theta - \mathrm{Ref}(\Phi))}{N_x\cdot \Phi}c, & N_x\cdot \Phi > 0 \\
 	&0, &\text{otherwise}
 \end{aligned}\end{cases}
 $$
@@ -220,7 +220,7 @@ $$
 BSDF采样所使用的概率密度函数则是：
 
 $$
-p(\Phi) = \delta((\boldsymbol w_i\cdot\boldsymbol n)\boldsymbol n-\boldsymbol w_i - \boldsymbol w_o)
+p(\Phi) = \delta(\Theta - \mathrm{Ref}(\Phi))
 $$
 
 再看看算法中按照BSDF采样的代码：
