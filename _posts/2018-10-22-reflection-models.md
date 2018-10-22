@@ -39,7 +39,7 @@ $$
 L(x \to \Theta) = L_e(x \to \Theta) + \int_{\mathcal S^2}f_s(\Phi \to x \to \Theta)L(x \leftarrow \Phi)|N_x\cdot\Phi|d\omega_\Phi
 $$
 
-考虑到大部分材料都是不透明的，其BSDF的非零范围仅限于表面法线方向的半立体角$\mathcal H^2$而已，我们可以把BSDF定义域中的方向限制到$\mathcal H^2$上，得到的函数称为Bidirection Reflectance Distribution Function，即双向反射分布函数，简记为BSDF，用符号$f_r$表示。类似的定义还有描述折射的BTDF $f_t$等，这里不再赘述。
+考虑到大部分材料都是不透明的，其BSDF的非零范围仅限于表面法线方向的半立体角$\mathcal H^2$而已，我们可以把BSDF定义域中的方向限制到$\mathcal H^2$上，得到的函数称为Bidirection Reflectance Distribution Function，即双向反射分布函数，简记为BRDF，用符号$f_r$表示。类似的定义还有描述折射的BTDF $f_t$等，这里不再赘述。
 
 ## Fresnel Formula
 
@@ -57,7 +57,7 @@ $$
 
 其中$\theta_i$和$\theta_t$分别是入射光和折射光与分界面在各自一侧的法线的夹角。
 
-导体的Fresnel系数计算依赖于一个更加一般的公式，其中导体本身的“折射率”以$\eta_t + ik'$的复数形式给出，$k'$代表了材料对入射光的吸收率。设$\eta + ik = \eta_t/\eta_i + ik'/\eta_i$，入射角度为$\theta$，则：
+导体的Fresnel系数计算依赖于一个更加一般的公式，其中导体本身的“折射率”以$\eta_t + ik'$的复数形式给出，$k'$代表了材料对入射光的吸收率。设$\eta = \eta_t / \eta_i, k = k' / \eta_i$，入射角度为$\theta​$，则：
 
 $$
 \begin{aligned}

@@ -53,7 +53,7 @@ GEM
       sass (~> 3.4)
     jekyll-sitemap (1.2.0)
       jekyll (~> 3.3)
-    jekyll-watch (2.1.1)
+    jekyll-watch (2.1.2)
       listen (~> 3.0)
     jemoji (0.10.1)
       gemoji (~> 3.0)
@@ -91,7 +91,7 @@ GEM
     thread_safe (0.3.6)
     tzinfo (1.2.5)
       thread_safe (~> 0.1)
-    tzinfo-data (1.2018.5)
+    tzinfo-data (1.2018.6)
       tzinfo (>= 1.0.0)
     wdm (0.1.1)
 
