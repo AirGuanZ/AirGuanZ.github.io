@@ -212,7 +212,7 @@ $$
 
 $$
 f_s(\Phi \to x \to \Theta) = \begin{cases}\begin{aligned}
-	&\frac{\delta((\boldsymbol w_i\cdot\boldsymbol n)\boldsymbol n-\boldsymbol w_i)}{\boldsymbol n\cdot\boldsymbol w_i}c, &\boldsymbol n\cdot\boldsymbol w_i > 0 \\
+	&\frac{\delta((\boldsymbol w_i\cdot\boldsymbol n)\boldsymbol n-\boldsymbol w_i - \boldsymbol w_o)}{\boldsymbol n\cdot\boldsymbol w_i}c, &\boldsymbol n\cdot\boldsymbol w_i > 0 \\
 	&0, &\text{otherwise}
 \end{aligned}\end{cases}
 $$
@@ -220,7 +220,7 @@ $$
 BSDF采样所使用的概率密度函数则是：
 
 $$
-p(\Phi) = \delta((\boldsymbol w_i\cdot\boldsymbol n)\boldsymbol n-\boldsymbol w_i)
+p(\Phi) = \delta((\boldsymbol w_i\cdot\boldsymbol n)\boldsymbol n-\boldsymbol w_i - \boldsymbol w_o)
 $$
 
 再看看算法中按照BSDF采样的代码：
