@@ -21,7 +21,7 @@ $$
 f_s(\Phi \to x \to \Theta) = \frac{dL(x \to \Theta)}{dE(x \leftarrow \Phi)}
 $$
 
-根据 Lambertian定律和$L$与$E$间的关系，有：
+根据Lambertian定律和$L$与$E$间的关系，有：
 
 $$
 dE(x\leftarrow\Phi) = L(x\leftarrow\Phi)\cos\langle N_x, \Phi\rangle d\omega_\Phi
@@ -132,4 +132,52 @@ $$
 材质效果如下：
 
 ![PathTracerExWithSpecularSampling]({{site.url}}/postpics/Atrc/23_2018_10_23_IdealMirror.png)
+
+## Perfect Specular Transmission
+
+有了理想反射自然就要有理想折射，这两者凑在一起才能制作出玻璃钻石之类的特效。然而折射的天然特性使得它比反射更困难一些——
+
+1. 折射角和介质折射率有关，服从Snell定律
+2. 要考虑全反射
+3. 折射角的变化会“压缩”或“扩张”立体角微元，使得辐射值等比例地发生变化
+
+首先是Snell定律，也是初中物理学过的：
+
+$$
+\eta_i\sin\theta_i = \eta_t\sin\theta_t
+$$
+
+据此可以根据入射角$\theta_i$计算出折射角$\theta_t$。当按此式计算出的$\sin\theta_t \ge 1$时，就发生了全反射，使得折射量为零。
+
+现在来计算入射辐射量和折射辐射量之间的关系。根据Fresnel公式，折射的能量在入射能量中占比满足：
+
+$$
+L_t\cos\theta_tdAd\omega_t = (1 - F_r)\cos\theta_idAd\omega_i
+$$
+
+对Snell定律两边求导易得：
+
+$$
+\frac{\eta_i}{\eta_t} = \frac{\cos\theta_t d\theta_t}{\cos\theta_i d\theta_i}
+$$
+
+代入上式可得：
+
+$$
+\frac{L_t}{L_i} = (1 - F_r)\frac{\eta_t^2}{\eta_i^2}
+$$
+
+这样一来，就能给出完整的BTDF了：
+
+$$
+f_t(\Phi \to x \to \Theta) = (1 - F_r)\frac{\eta_t^2\delta(\Theta - \mathrm{Trans}_x(\Phi))}{\eta_i^2\cos\langle N_x, \Phi\rangle}~~~~\Phi \in \mathcal H^2, \Theta \in -\mathcal H^2
+$$
+
+其中$\mathrm{Trans}_x(\Phi)$是按照Snell定律计算出的理想折射方向，易证明：
+
+$$
+\mathrm{Trans}_x(\Phi) = \left[\frac{\eta_i}{\eta_t}(\Phi\cdot N_x)- \cos\theta_t\right]N_x - \frac{\eta_i}{\eta_t}\Phi
+$$
+
+当然，发生全反射时，$f_t$的值强制归零。
 
