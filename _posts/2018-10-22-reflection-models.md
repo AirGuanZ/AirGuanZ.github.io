@@ -68,4 +68,41 @@ $$
 \end{aligned}
 $$
 
-（施工中……）
+## Perfect Diffuse Reflection
+
+完美漫反射表面会将入射光均匀地反射到法线方向半立体角上的每一个方向，这样的材质在真实世界中应该是找不到的，但却是一种非常基本的“分量”，绝大部分材质的BRDF中都或多或少地包含了漫反射成分。
+
+将“均匀反射到各个方向”形式化，就得到了下述公式：
+
+$$
+f_r(\Phi \to x \to \Theta) = \mathrm{CONST\_VALUE}~~~~\Phi, \Theta \in \mathcal H^2
+$$
+
+也就是说$f_r$是个常值函数。现在假设我希望有一个表面，它反射入射光的能量比例为$a$，且反射到各方向两的辐射都是相同的，则$f_r$必然具有形式：
+
+$$
+f_r(\Phi \to x \to \Theta) = ca
+$$
+
+如何计算这个$c$呢？设入射照度为$I$，则出射照度为$E = aI$，据此：
+
+$$
+\begin{aligned}
+E &= aI \\
+E &= \int_{\mathcal S^2}\left(\int_{\mathcal S^2}caL(x\leftarrow\Phi)d\omega^\perp_\Phi\right)d\omega^\perp_\Theta \\
+I &= \int_{\mathcal S^2}L(x \leftarrow \Phi)d\omega^\perp_\Phi
+\end{aligned}
+$$
+
+联立这几个式子，解得
+
+$$
+c = \frac 1 \pi
+$$
+
+因此理想漫反射表面的BRDF为：
+$$
+f_r(\Phi \to x \to \Theta) = \frac a \pi ~~~~\Phi, \Theta \in \mathcal H^2
+$$
+
+## Perfect Specular Reflection
