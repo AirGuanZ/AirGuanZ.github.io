@@ -295,11 +295,7 @@ $$
 \Lambda(\Theta) = \frac 1 2 \left(\frac 2 {\sqrt{\pi}}\int_0^ae^{-t^2}dt - 1 + \frac{e^{-a^2}}{a\sqrt{\pi}}\right)
 $$
 
-其中$a = 1/(\alpha\tan\theta_\Theta)$，$\mathrm{erf}$是高斯误差函数，定义为：
-
-$$
-\mathrm{erf}(x) = 
-$$
+其中$a = 1/(\alpha\tan\theta_\Theta)$。
 
 同样地，可以推出Trowbridge–Reitz分布的$\Lambda$是：
 
