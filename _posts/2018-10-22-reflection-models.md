@@ -1,6 +1,6 @@
 ---
 layout: post
-title: 关于材质模型
+title: 物理材质模型
 key: t20181022
 tags:
   - Graphics
@@ -81,7 +81,7 @@ $$
 
 随便画个图意思一下：
 
-![PathTracerExWithSpecularSampling]({{site.url}}/postpics/Atrc/2018-10-23-perfect-diffuse-reflection.png)
+![PICTURE]({{site.url}}/postpics/Atrc/2018_10_23_perfect_diffuse_reflection.png)
 
 ## Fresnel Formula
 
@@ -131,7 +131,7 @@ $$
 
 材质效果如下：
 
-![PathTracerExWithSpecularSampling]({{site.url}}/postpics/Atrc/23_2018_10_23_IdealMirror.png)
+![PICTURE]({{site.url}}/postpics/Atrc/23_2018_10_23_IdealMirror.png)
 
 ## Perfect Specular Transmission
 
@@ -183,8 +183,126 @@ $$
 
 我想不出什么东西会只有折射没有反射，那样也太违和了，所以完美折射的例子就用玻璃球吧，即反射和折射的结合体。该材质每次采样时以一半的概率选择反射，以另一半的概率选择折射，并将计算结果乘二以达到无偏，效果如下方左侧所示：
 
-![PathTracerExWithSpecularSampling]({{site.url}}/postpics/Atrc/2018_10_24_glass.png)
+![PICTURE]({{site.url}}/postpics/Atrc/2018_10_24_glass.png)
 
 这噪点不免也太多了点，得改进一下。注意到当入射光线和法线方向相近时，Fresnel项几乎是零，折射成分居多；而当入射光线和法线接近垂直时，Fresnel项几乎是一，反射成分居多。据此，在进行折射/反射的选择时，可以先计算出Fresnel项$F_r$来，然后以$F_r$的概率选择反射，这是重要性采样的思想。应用这一策略后的效果如上图右侧所示，和左边相比改善颇多。
 
-需要注意的是，玻璃材质的反射项计算也需要判断是否发生了全反射，这一点是上面的Perfect Specular Reflection中没有考虑的。反射和折射是相当难以调试的材质，因为即使代码中有问题，它往往也能呈现出看起来很不错的效果。
+需要注意的是，玻璃材质的反射项计算也需要判断是否发生了全反射，这一点是上面的Perfect Specular Reflection中没有考虑的。反射和折射是相当难以调试的材质，因为即使代码中有问题，往往也能呈现出很不错的效果。
+
+## Torrance Sparrow Model
+
+近年来，随着硬件性能的提升，微表面材质模型在实时渲染中名声大噪，作为PBR（physically based rendering）的主力模型，哪个3A大作都得来上一套。事实上，这些模型在离线渲染中的存在感更强，著名的Torrance-Sparrow模型比我上一辈人的年龄都大，本节就讨论它的一些应用。
+
+微表面模型（Microfacet Model）假设物体表面有许许多多的被称为微表面（microfacet）的细小结构，它们在宏观上不可见，但也不至于小到光的波长量级，以至于影响我们使用几何光学来进行推导的程度。“宏观上不可见”的意思是我们所看到的物体表面点$x$处的反射特性是由$x$附近的大量微表面的统计性质决定的，因而我们不必去计算每个微表面的行为。特定的微表面模型往往会假设这些微表面具有某些特殊的形态，比如Oren–Nayar假设它们是“V”字形的漫反射表面，而本节的Torrance-Sparrow模型则假设微表面都是理想镜面。
+
+本节中讨论的微表面模型假设对微表面构成宏观表面上的一个高度场，即微表面中不含“洞穴”结构。
+
+### Microfacet Distribution Function
+
+给定入射点$x$、入射方向$\Phi$和出射方向$\Theta$，令：
+
+$$
+H = \frac{\Phi + \Theta}{|\Phi + \Theta|}
+$$
+
+此时令$D(H)$表示$x$处法线位于$d\omega_H$内的微表面的面积和宏观表面面积$dA_x$之比，称为微表面分布函数。注意，这里的$\Theta, \Phi, H$都是在$x$点的（以$N_x$为z轴的）局部坐标系中讨论。以理想镜面反射为例，如果我们从微表面的角度来看待它，那么所有的微表面都是平行于表面本身的，其$D(H)$则是：
+
+$$
+D(H) = \delta(H - (0, 0, 1))
+$$
+
+对$x$处的面积微元$dA_x$，给定方向$H$和它附近的立体角微元$d\omega_H$，则法线在$d\omega_H$内的微表面总面积为$D(H)d\omega_H dA_x$。这些微表面是朝向$H$的，因此它们的面积投影到宏观表面上后就只剩下：
+
+$$
+dA^\perp_{x, H} = D(H)\cos\langle N_x, H\rangle d\omega_H dA_x
+$$
+
+所有$dA^\perp_{x, H}$之和必须是宏观表面总面积$dA_x$，这就得到了$D(H)$的归一化约束：
+
+$$
+\int_{\mathcal H^2}D(H)\cos\langle N_x, H\rangle d\omega_H = 1
+$$
+
+来看个例子：上古时期的Blinn-Phong分布希望$D(H) \propto \cos^e\langle N_x, H\rangle$，将右侧归一化，就得到了实际使用的分布函数：
+
+$$
+D_\text{Blinn-Phong}(H) = \frac{e + 2}{2\pi}\cos^e\langle N_x, H\rangle
+$$
+
+另外一个常用的分布是Beckmann–Spizzichino分布（这个式子是PBRT上看来的，我是真不知道咋来的）：
+
+$$
+D(H) = \frac{e^{-\tan^2\langle N_x,H\rangle / \alpha^2}}{\pi\alpha^2\cos^4\langle N_x, H\rangle}
+$$
+
+设$\sigma$为微表面斜率的均方根，则$\alpha = \sqrt{2}\sigma$。
+
+最后再记一个Trowbridge-Reitz分布，也是PBRT上的，对此我表示放弃治疗：
+
+$$
+D(H) = \frac{1}
+{
+	\pi \alpha_x \alpha_y \cos^4\theta_H
+	\left(
+		1 +
+		\tan^2\theta_H
+		(\cos^2\phi_H / \alpha_x^2 + \sin^2\phi_H / \alpha_y^2)
+	\right)^2
+}
+$$
+
+其中$\theta_H$是$H$与$N_x$的夹角，$\phi_H$是$H$的极坐标表示中的水平旋转角分量。这样写着实方便，以后就用$(\theta_\Gamma, \phi_\Gamma)$来表示方向$\Gamma$好了。
+
+### Geometry Attenuation Factor
+
+就算微表面中不存在洞穴结构，相近的微表面之间也可能会形成遮蔽，进而使得部分朝向正确的微表面无法为反射做出贡献。我们用$G_1(\Theta, H)$来表示从$\Theta$角度看时，法线为$H$的微表面中有多大比例能够幸运地免于被挡住，称它为Smith遮蔽阴影函数（Smith's Masking-Shadowing Function）。
+
+给定$x$出的宏观面积微元$dA_x$，并从$\Theta$角度去看它，那么看到的面积其实是$\cos\theta_\Theta dA_x$。法线与$\Theta$夹角不超过$\pi/2$的微表面只要没被遮住，都应该可以被看到。现给定$H$附近的立体角微元$d\omega_H$，若$H$和$\Theta$夹角小于$\pi/2$，则法线在$d\omega_H$中的微表面被看到的面积为：
+
+$$
+G_1(\Theta, H)D(H)d\omega_H dA_x
+$$
+
+对所有这样的$d\omega_H$积分，就得到了从$\Theta$角度看到的微表面总面积，这肯定等于$\cos\theta_\Theta dA_x$，于是我们推出了$G_1$的归一化条件：
+
+$$
+\int_{\mathcal H^2, \cos\langle \Theta, H\rangle > 0}G_1(\Theta, H)D(H)d\omega_H = \cos\theta_\Theta
+$$
+
+如果$G_1$的值仅与$\Theta$有关而和$H$无关，那么可以把它简写为$G_1(\Theta)$，而这正是图形学一般所使用的假设。至于这个假设有什么道理，emmm，不知道。
+
+每一块被遮蔽的面朝我们的微表面，都一定对应着一块遮蔽它的背对我们的微表面，而且它们在$\Theta$方向上的投影面积是相等的。我们把法线和$\Theta$夹角小于$\pi/2$的微表面在$\Theta$方向的投影面积为$A^+(\Theta)$，称其他微表面在$\Theta$上的投影面积为$A^-(\Theta)$，$G_1$就可以用这两个量表示出来：
+
+$$
+G_1(\Theta) = \frac{A^+(\Theta) - A^-(\Theta)}{A^+(\Theta)}
+$$
+
+现令：
+
+$$
+\Lambda(\Theta) = \frac{A^-(\Theta)}{A^+(\Theta) - A^-(\Theta)}
+$$
+
+那么$G_1$和$\Lambda$间的关系是：
+
+$$
+G_1(\Theta) = \frac 1 {1 + \Lambda(\Theta)}
+$$
+
+一般来说，$D$给出的信息量不足以让我们是推出$\Lambda$，但如果假设表面上相邻两点间的高度不相关（这个假设看起来简直扯淡，但验证表明它实际造成的影响小得可以忽略不计，只是我们很难严格地分析），就可以推出一些$D$对应的$\Lambda$。Beckmann–Spizzichino分布的$\Lambda$为：
+
+$$
+\Lambda(\Theta) = \frac 1 2 \left(\frac 2 {\sqrt{\pi}}\int_0^ae^{-t^2}dt - 1 + \frac{e^{-a^2}}{a\sqrt{\pi}}\right)
+$$
+
+其中$a = 1/(\alpha\tan\theta_\Theta)$，$\mathrm{erf}$是高斯误差函数，定义为：
+
+$$
+\mathrm{erf}(x) = 
+$$
+
+同样地，可以推出Trowbridge–Reitz分布的$\Lambda$是：
+
+$$
+\Lambda(\Theta) = \frac{-1 + \sqrt{1 + \alpha^2\tan^2\theta_\Theta}}{2}
+$$
