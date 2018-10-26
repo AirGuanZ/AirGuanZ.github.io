@@ -189,13 +189,13 @@ $$
 
 需要注意的是，玻璃材质的反射项计算也需要判断是否发生了全反射，这一点是上面的Perfect Specular Reflection中没有考虑的。反射和折射是相当难以调试的材质，因为即使代码中有问题，往往也能呈现出很不错的效果。
 
-## Torrance Sparrow Model
+## Torrance-Sparrow Model
 
 近年来，随着硬件性能的提升，微表面材质模型在实时渲染中名声大噪，作为PBR（physically based rendering）的主力模型，哪个3A大作都得来上一套。事实上，这些模型在离线渲染中的存在感更强，著名的Torrance-Sparrow模型比我上一辈人的年龄都大，本节就讨论它的一些应用。
 
 微表面模型（Microfacet Model）假设物体表面有许许多多的被称为微表面（microfacet）的细小结构，它们在宏观上不可见，但也不至于小到光的波长量级，以至于影响我们使用几何光学来进行推导的程度。“宏观上不可见”的意思是我们所看到的物体表面点$x$处的反射特性是由$x$附近的大量微表面的统计性质决定的，因而我们不必去计算每个微表面的行为。特定的微表面模型往往会假设这些微表面具有某些特殊的形态，比如Oren–Nayar假设它们是“V”字形的漫反射表面，而本节的Torrance-Sparrow模型则假设微表面都是理想镜面。
 
-本节中讨论的微表面模型假设对微表面构成宏观表面上的一个高度场，即微表面中不含“洞穴”结构。
+本节中讨论的微表面模型假设微表面构成宏观表面上的一个高度场，即微表面中不含“洞穴”结构。
 
 ### Microfacet Distribution Function
 
@@ -223,7 +223,7 @@ $$
 \int_{\mathcal H^2}D(H)\cos\langle N_x, H\rangle d\omega_H = 1
 $$
 
-来看个例子：上古时期的Blinn-Phong分布希望$D(H) \propto \cos^e\langle N_x, H\rangle$，将右侧归一化，就得到了实际使用的分布函数：
+来看个例子：上古时期的Blinn-Phong分布满足$D(H) \propto \cos^e\langle N_x, H\rangle$，将右侧归一化，就得到了实际使用的分布函数：
 
 $$
 D_\text{Blinn-Phong}(H) = \frac{e + 2}{2\pi}\cos^e\langle N_x, H\rangle
@@ -301,4 +301,50 @@ $$
 
 $$
 \Lambda(\Theta) = \frac{-1 + \sqrt{1 + \alpha^2\tan^2\theta_\Theta}}{2}
+$$
+
+(TODO)
+
+### Torrance-Sparrow Framework
+
+有了微表面分布函数和几何遮蔽函数，我们还需要一个把他们整合起来形成BRDF的式子。之前提到过，我们假设所有的微表面都是理想镜面，于是对入射方向$\Phi$和出射方向$\Theta$，设入射光辐射为$L_\Phi$，考虑到只有法线为$H$的微表面才能为BRDF值做出贡献，有效的入射光通量为：
+
+$$
+d\Psi_H = L_\Phi d\omega_\Phi \cos\langle H, \Theta\rangle D(H)d\omega_HdA_x
+$$
+
+于是出射能量为：
+
+$$
+d\Psi_\Theta = F_r(\Theta)d\Psi_H
+$$
+
+根据定义，出射辐射为：
+
+$$
+dL_\Theta = \frac{d\Psi_\Theta}{d\omega_\Theta \cos\theta_\Theta dA_x}
+$$
+
+联立以上三式，解得：
+
+$$
+dL(\Theta) = \frac{F_r(\Theta)L_\Phi d\omega_\Phi D(H)d\omega_H dA_x\cos\langle H, \Theta\rangle}{d\omega_\Theta dA_x\cos\theta_\Theta}
+$$
+
+式中的$d\omega_H$与$d\omega_\Theta$之间有如下关系：
+
+$$
+d\omega_H = \frac{d\omega_\Theta}{4\cos\langle H, \Theta \rangle}
+$$
+
+这个式子的由来我会专门写篇博客来讲，它本身倒不值什么篇幅，但我要好好批判一番查证它的过程中遇到的坑，气得我都想挂人了。总之我们把$d\omega_H$给换成$d\omega_\Theta$，乘上一个几何项$G$，就得到了：
+
+$$
+dL_\Theta = \frac{F_r(\Theta)L_\Phi D(H)Gd\omega_\Phi}{4\cos\theta_\Theta}
+$$
+
+将$dE_\Phi = L_\Phi \cos\theta_\Phi d\omega_\Phi$代入上式，终于得到BRDF形式了：
+
+$$
+f_r(\Theta \to x \to \Phi) = \frac{F_r(\Theta)D(H)G(\Theta, \Phi)}{4\cos\theta_\Theta\cos\theta_\Phi}
 $$
