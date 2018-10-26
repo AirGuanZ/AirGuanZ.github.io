@@ -37,7 +37,7 @@ $$
 
 **Bakhvalow's Theorem**. 任给$s$维求积规则，存在具有$r$阶有界连续导数的函数$f$，$f$在该规则下的误差是$O(N^{-r/s})$。
 
-## 估值器
+## 估计量
 
 给定积分：
 
@@ -45,7 +45,7 @@ $$
 I = \int_\Omega f(x)d\mu(x)
 $$
 
-令估值器$F_N$为：
+令估计量$F_N$为：
 
 $$
 F_N = \frac 1 N \sum_{i=1}^N\dfrac{f(X_i)}{p(X_i)}
@@ -73,13 +73,13 @@ $$
     则令采样结果为$X_i$，否则重来一遍。这样得到的采样点符合$p$。
 3. Metropolis方法，这里不详述。
 
-设$F_N$是某个量$\mathcal Q$的一个估值器，则$F_N - \mathcal Q$称为误差，误差的期望值称为偏差：
+设$F_N$是某个量$\mathcal Q$的一个估计量，则$F_N - \mathcal Q$称为误差，误差的期望值称为偏差：
 
 $$
 \beta[F_N] = E[F_N - \mathcal Q]
 $$
 
-偏差为0的估值器被称为是无偏的（unbiased）。另一方面，一个估值器是一致的（consistent）当且仅当误差随$N$的增大以概率1收敛到0，即：
+偏差为0的估计量被称为是无偏的（unbiased）。另一方面，一个估计量是一致的（consistent）当且仅当误差随$N$的增大以概率1收敛到0，即：
 
 $$
 Pr\left\{\lim_{N \to \infty}F_N = \mathcal Q\right\} = 1
@@ -96,7 +96,7 @@ MSE[F] &= E[(F - \mathcal Q)^2] = (E[F^2] - 2E^2[F] + E^2[F]) + (E^2[F] - 2E[F]\
 \end{aligned}
 $$
 
-对无偏估值器而言，其MSE就等于方差。于是，对某个无偏估值器$Y$，设$Y_1, Y_2, \ldots, Y_N$是其$N$个独立采样值，则：
+对无偏估计量而言，其MSE就等于方差。于是，对某个无偏估计量$Y$，设$Y_1, Y_2, \ldots, Y_N$是其$N$个独立采样值，则：
 
 $$
 \hat V[F_N] = \dfrac 1 {N - 1}
@@ -112,13 +112,13 @@ $$
 \right\}
 $$
 
-是无偏估值器
+是无偏估计量
 
 $$
 F_N = \dfrac 1 N\sum_{i=1}^NY_i
 $$
 
-的方差的无偏估值器。
+的方差的无偏估计量。
 
 一些常见的减小方差的方法：
 
@@ -172,7 +172,7 @@ $$
 I = \int_\Omega f(x)d\mu(x) = \int_\Omega g(x)d\mu(x) + \int_\Omega (f(x) - g(x))d\mu(x)
 $$
 
-估值器也就变成了：
+估计量也就变成了：
 
 $$
 F = \int_\Omega g(x)d\mu(x) + \dfrac 1 N \sum_{i=1}^N\dfrac{f(X_i) - g(X_i)}{p(X_i)}
