@@ -328,7 +328,7 @@ $$
 联立以上三式，解得：
 
 $$
-dL(\Theta) = \frac{F_r(\Theta)L_\Phi d\omega_\Phi D(H)d\omega_H dA_x\cos\langle H, \Theta\rangle}{d\omega_\Theta dA_x\cos\theta_\Theta}
+dL_\Theta = \frac{F_r(\Theta)L_\Phi d\omega_\Phi D(H)d\omega_H dA_x\cos\langle H, \Theta\rangle}{d\omega_\Theta dA_x\cos\theta_\Theta}
 $$
 
 式中的$d\omega_H$与$d\omega_\Theta$之间有如下关系：
