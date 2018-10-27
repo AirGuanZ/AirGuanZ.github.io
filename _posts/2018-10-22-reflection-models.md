@@ -362,3 +362,9 @@ f_r(\Theta \to x \to \Phi) = \frac{F_r(\Theta)D(H)G(\Theta, \Phi)}{4\cos\theta_\
 $$
 
 本文所讨论的微表面模型只不过是Torrance-Sparrow框架下的冰山一角，关于更多$D$和$G$的选取可参考[这里](http://graphicrants.blogspot.com/2013/08/specular-brdf-reference.html)。
+
+### 效果
+
+在实践中，我们可以测量物体表面的反射特性，然后用上述模型去拟合，从而得到合理的模型参数，这些就不是本文所能讨论的了。下面我将漫反射和高光反射叠加起来，通过控制两者的比例以及Fresnel项的类型，很容易得到塑料或金属质感的表面：
+
+![PICTURE]({{site.url}}/postpics/Atrc/2018_10_27_PlasticAndMetal.png)
