@@ -196,7 +196,7 @@ $$
 
 ### 计算E
 
-和[之前](https://airguanz.github.io/2018/10/12/direct-indirect-path-tracing.html)一样，我们用[多重重要性采样](https://airguanz.github.io/2018/10/15/multiple-importance-sampling.html)将光源采样和BSDF采样两种策略得到的结果结合起来。
+和[之前](https://airguanz.github.io/2018/10/15/multiple-importance-sampling.html)一样，我们用多重重要性采样将光源采样和BSDF采样两种策略得到的结果结合起来。
 
 光源采样非常简单，我们按概率密度$p_{L_e}$随机选择一个光源$\ell$，在上面按概率密度$p_\ell$选择点$x'$，设$x'$到$x$的辐射亮度为$r$（距离衰减等均被计入其中），于是在使用MIS的情形下，光源采样的贡献估计量为：
 
