@@ -202,8 +202,8 @@ $$
 
 $$
 \hat E_1(x \to \Theta) = \begin{cases}\begin{aligned}
-    &\frac{(T_rr + \mathcal E)f_s(x' \to x \to \Theta)\cos\langle N_x, e_{x' \to x}\rangle}{p_{L_e}(\ell)p_\ell(x') + p_s(e_{x \to x'})}, &p_\ell\text{ is not singular} \\
-    &\frac{(T_rr + \mathcal E)f_s(x' \to x \to \Theta)\cos\langle N_x, e_{x' \to x}\rangle}{p_{L_e}(\ell)p_\ell(x')}, &p_\ell\text{ is singular}
+    &\frac{(T_rr + \mathcal E)f_s(x' \to x \to \Theta)\cos\langle N_x, e_{x' \to x}\rangle}{p_{L_e}(\ell)p_\ell(x') + p_s(e_{x \to x'})}, &p_\ell < \infty \\
+    &\frac{(T_rr + \mathcal E)f_s(x' \to x \to \Theta)\cos\langle N_x, e_{x' \to x}\rangle}{p_{L_e}(\ell)p_\ell(x')}, &\text{otherwise}
 \end{aligned}\end{cases}
 $$
 
@@ -213,9 +213,9 @@ $$
 
 $$
 \hat E_2(x \to \Theta) = \begin{cases}\begin{aligned}
-    &\frac{(T_rr + \mathcal E)f_s(\Phi \to x \to \Theta)\cos\langle N_x, \Phi\rangle}{p_s{\Phi} + p_{L_e}(\ell)p_\ell(x')}, &x' = \mathrm{Cast}_x(\Phi)\text{ exists and }p_s\text{ is not singular} \\
-    &\frac{(T_rr + \mathcal E)f_s(\Phi \to x \to \Theta)\cos\langle N_x, \Phi\rangle}{p_s(\Phi) + p_{L_e}(\ell)p_\ell(\Phi \to x)}, &\mathrm{Cast}_x(\Phi)\text{ doesn't exist and }p_s\text{ is not singular} \\
-    &\frac{(T_rr + \mathcal E)f_s(\Phi \to x \to \Theta)\cos\langle N_x, \Phi\rangle}{p_s{\Phi}}, &p_s\text{ is singular} \\
+    &\frac{(T_rr + \mathcal E)f_s(\Phi \to x \to \Theta)\cos\langle N_x, \Phi\rangle}{p_s{\Phi} + p_{L_e}(\ell)p_\ell(x')}, &x' = \mathrm{Cast}_x(\Phi)\text{ exists and }p_s < \infty \\
+    &\frac{(T_rr + \mathcal E)f_s(\Phi \to x \to \Theta)\cos\langle N_x, \Phi\rangle}{p_s(\Phi) + p_{L_e}(\ell)p_\ell(\Phi \to x)}, &\mathrm{Cast}_x(\Phi)\text{ doesn't exist and }p_s < \infty \\
+    &\frac{(T_rr + \mathcal E)f_s(\Phi \to x \to \Theta)\cos\langle N_x, \Phi\rangle}{p_s{\Phi}}, &\text{otherwise} \\
 \end{aligned}\end{cases}
 $$
 
