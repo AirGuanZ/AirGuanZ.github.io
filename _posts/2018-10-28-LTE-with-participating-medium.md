@@ -144,7 +144,7 @@ $$
 \mathscr P(\Phi \to \Theta) = \frac 1 {4\pi}
 $$
 
-1941年，Henyey & Greenstein提出了一个能够仅用一个参数就很好地拟合现实中许多物质测量结果的公式，称为HG函数：
+1941年，Henyey & Greenstein提出了一个能够仅用一个参数就很好地拟合现实中许多物质测量结果的相函数公式，称为HG函数：
 
 $$
 \mathscr P_\mathrm{HG}(\theta) = \frac{1 - g^2}{4\pi\left(1 + g^2 + 2g\cos\theta\right)^{3/2}}
@@ -154,29 +154,29 @@ $$
 
 ## 路径追踪
 
-### 透射比
-
-首先讨论$T_r$的估计量——它在LTE中频繁出现，且和其他部分基本独立。根据定义：
-
-$$
-T_r(x' \to x) = \exp\left(-\int_0^d\sigma_t(x' + e_{x' \to x}t \to x)dt\right)
-$$
-
-因此，我们可以在$[0, d]$中以概率密度函数$p_T$选取$N_T$个$t$，然后令：
-
-$$
-\hat T_r(x' \to x) = \exp\left(-\frac 1 {N_T}\sum_{i=1}^{N_T}\frac{\sigma_t(x' + e_{x' \to x}t_i \to x)}{p_T(t_i)}\right)
-$$
-
-一般情况下，在$[0, d]$间均匀采样就可以了；如果是在均匀介质中，那么$\sigma_t$处处相等，可以这样计算：
-
-$$
-\hat T_r(x' \to x) = \exp(-\sigma_td)
-$$
-
 ### 框架
 
-要将这一大坨LTE转换为可以用蒙特卡洛方法来估值的形式，还要融入MIS等采样技术，就需要把LTE细致地分解开来。首先我们约定：用$x$表示表面（其实也就是不同介质的分界面）上的位置，用$p$表示介质内部的位置，于是$L(x \leftarrow \Phi)$和$L(p \leftarrow \Phi)$就有了完全不同的含义。此时，我们将表面上某点的出射光分解为自发光和散射光：
+要将这一大坨LTE转换为可以用蒙特卡洛方法来估值的形式，还要融入MIS等采样技术，就需要把LTE细致地分解开来。首先我们约定：用$x$表示表面（其实也就是不同介质的分界面）上的位置，用$p$表示介质内部的位置，于是$L(x \leftarrow \Phi)$和$L(p \leftarrow \Phi)$就有了完全不同的含义。在这一符号约定下，LTE变成了：
+
+$$
+\begin{cases}
+\begin{aligned}
+    L(x \to \Theta) &= L_e(x \to \Theta) + \int_{\mathcal S^2}f_s(\Phi \to x \to \Theta)L(x \leftarrow \Phi)d\omega^\perp_\Phi \\
+    L(x \leftarrow \Phi) & = \begin{cases}\begin{aligned}
+        &T_r(x' \to x)L(x' \to -\Phi) + \int_{x'x}T_r(p \to x)L_s(p \to -\Phi)dl_p, &x'\text{ exists} \\
+        &\int_{\mathrm{ray}(x, \Phi)}T_r(p \to x)L_s(p \to -\Phi)dl_p, &\text{otherwise}
+    \end{aligned}\end{cases} \\
+    L(p \leftarrow \Phi) & = \begin{cases}\begin{aligned}
+        &T_r(x' \to p)L(x' \to -\Phi) + \int_{x'p}T_r(p' \to p)L_s(p' \to -\Phi)dl_{p'}, &x'\text{ exists} \\
+        &\int_{\mathrm{ray}(p, \Phi)}T_r(p' \to p)L_s(p' \to -\Phi)dl_{p'}, &\text{otherwise}
+    \end{aligned}\end{cases} \\
+    L_s(p \to \Theta) &= L_e(p \to \Theta) + \sigma_s(p \to \Theta)\int_{\mathcal S^2}\mathscr P(\Phi \to p \to \Theta)L(p \leftarrow \Phi)d\omega_\Phi \\
+    T_r(a \to b) &= \int_{ab}\sigma_t(p \to e_{a \to b})dl_p
+\end{aligned}
+\end{cases}
+$$
+
+此时，我们将表面上某点的出射光分解为自发光和散射光：
 
 $$
 L(x \to \Theta) = L_e(x \to \Theta) + L_2(x \to \Theta)
@@ -188,16 +188,7 @@ $$
 L_2(x \to \Theta) = \int_{\mathcal S^2}f_s(\Phi \to x \to \Theta)L(x \leftarrow \Phi)d\omega^\perp_\Phi
 $$
 
-由于介质的参与，$L(x \leftarrow \Phi)$的计算相当不平凡。我们把$[0, t_m]$上的积分直接改写为$x$和$x'$间的线段上的积分，于是：
-
-$$
-L(x \leftarrow \Phi) = \begin{cases}\begin{aligned}
-    &T_r(x' \to x)L(x' \to -\Phi) + \int_{x'x}T_r(p \to x)L_s(p \to -\Phi)dl_p, &x' = \mathrm{Cast_x}(\Phi)\text{ exists} \\
-    &\int_{\mathrm{ray}(x, \Phi)}T_r(p \to x)L_s(p \to -\Phi)dl_p, &\text{otherwise}
-\end{aligned}\end{cases}
-$$
-
-为了书写简便，后文不再列出$x'$不存在时的情形（即上式中的“$\mathrm{otherwise}$”）。现令：
+由于介质的参与，$L(x \leftarrow \Phi)$的计算相当不平凡。为了书写简便，后文不再列出$x'$不存在时的情形（即LTE中的“$\mathrm{otherwise}$”）。现令：
 
 $$
 \begin{aligned}
@@ -222,4 +213,79 @@ $$
 \end{aligned}
 $$
 
-$E$就是所谓的直接照明项，和[前文]({{site.url}}/2018/10/15/multiple-importance-sampling.html)一样使用MIS技术来采样，只不过计算辐射亮度时都要乘上一个透射比罢了。$S$的采样则要复杂一些，因为它的里面出现了因介质发光和内散射造成的增益。
+对应的估计量是：
+
+$$
+\hat L_2(x \to \Theta) = \hat E(x \to \Theta) + \hat S(x \to \Theta)
+$$
+
+$E$是所谓的直接照明项，和[前文]({{site.url}}/2018/10/15/multiple-importance-sampling.html)一样使用MIS技术来采样，只不过计算辐射亮度时都要乘上一个透射比罢了。$S$的采样则要复杂一些，因为它的里面出现了介质发光和内散射产生的增益。
+
+### 间接照明
+
+在计算$S(x \to \Theta)$时，设想我们用概率密度$p_s$进行BSDF采样，选取了入射方向$\Phi$，且$x' = \mathrm{Cast}_x(\Phi)$存在（$x'$不存在的情形更加简单，因此这里略过），那么$S$的估计量是：
+
+$$
+\hat S(x \to \Theta) = \frac{\hat D_2(x \leftarrow \Phi)f_s(\Phi \to x \to \Theta)\cos\langle N_x, \Phi\rangle}{p_s(\Phi)}
+$$
+
+要计算$\hat D_2$，我们首先需要在线段$x'x$上以概率密度$p_{x'x}$采样点$p$，然后根据$D_2$的定义：
+
+$$
+\hat D_2(x \leftarrow \Phi) = \hat T_r(x' \to x)\hat L_2(x' \to -\Phi) + \frac{\hat T_r(p \to x)\hat L_s(p \to -\Phi)}{p_{x'x}(p)}
+$$
+
+$\hat L_s$的计算又涉及到对相函数$\mathscr P$进行重要性采样。设概率密度函数为$p_{\mathscr P}$，采样得到的方向为$\Phi$，则：
+
+$$
+\hat L_s(p \to \Theta) = L_e(p \to \Theta) + \sigma_s(p \to \Theta)\frac{\mathscr P(\Phi \to p \to \Theta)\hat L(p \leftarrow \Phi)}{p_{\mathscr P}(\Phi)}
+$$
+
+$L(p \leftarrow \Phi)$和$L(x \leftarrow \Phi)$在形式上一样，其估计量的计算也完全相同，这里就不再赘述了。
+
+### 透射比
+
+根据定义，有：
+
+$$
+T_r(x' \to x) = \exp\left(-\int_0^d\sigma_t(x' + e_{x' \to x}t \to x)dt\right)
+$$
+
+因此，我们可以在$[0, d]$中以概率密度函数$p_T$选取$N_T$个$t$，然后令：
+
+$$
+\hat T_r(x' \to x) = \exp\left(-\frac 1 {N_T}\sum_{i=1}^{N_T}\frac{\sigma_t(x' + e_{x' \to x}t_i \to x)}{p_T(t_i)}\right)
+$$
+
+路径追踪算法通常把$N_T$设置为1。如果是在均匀介质中，那么$\sigma_t$处处相等，可以这样计算：
+
+$$
+\hat T_r(x' \to x) = \exp(-\sigma_td)
+$$
+
+### 小结
+
+总结上面的讨论以及过去MIS的文章（用来计算$\hat E）$，就得到了以下的一系列估计量，其中涉及到采样的地方都将采样的概率密度和随机变量标注在式子后方：
+
+$$
+\begin{cases}
+\begin{aligned}
+    \hat L(x \to \Theta) &= L_e(x \to \Theta) + \hat L_2(x \to \Theta) \\
+    \hat L_2(x \to \Theta) &= \hat E(x \to \Theta) + \hat S(x \to \Theta) \\
+    \hat E(x \to \Theta) &= \hat E_1(x \to \Theta) + \hat E_2(x \to \Theta) \\
+    \hat E_1(x \to \Theta) &= \frac{L_e(x' \to -\Phi)f_s(\Phi \to x \to \Theta)\cos\langle N_x, \Phi\rangle}{p_s(\Phi) + p_\ell(x')}~~~[p_s, \Phi] \\
+    \hat E_2(x \to \Theta) &= \frac{L_e(x' \to e_{x' \to x})f_s(e_{x \to x'} \to x \to \Theta)V(x', x)G(x', x)}{(p_s(e_{x \to x'}) + p_\ell(x'))}~~~[p_\ell, x'] \\
+    G(x', x) &= \frac{\cos\langle N_x, e_{x \to x'}\rangle\cos\langle N_{x'}, e_{x' \to x}\rangle}{|x' - x|^2} \\
+    \hat S(x \to \Theta) &= \frac{\hat D_2(x \leftarrow \Phi)f_s(\Phi \to x \to \Theta)\cos\langle N_x, \Phi\rangle}{p_s(\Phi)}~~~[p_s, \Phi] \\
+    \hat D_2(x \leftarrow \Phi) &= \hat T_r(x' \to x)\hat L_2(x' \to -\Phi) + \frac{\hat T_r(p \to x)\hat L_s(p \to -\Phi)}{p_{x'x}(p)}~~~[p_{x'x}, p] \\
+    \hat L_s(p \to \Theta) &= L_e(p \to \Theta) + \sigma_s(p \to \Theta)\frac{\mathscr P(\Phi \to p \to \Theta)\hat L(p \leftarrow \Phi)}{p_{\mathscr P}(\Phi)}~~~[p_{\mathscr P}, \Phi] \\
+    \hat L(x \leftarrow \Phi) &= \hat T_r(x' \to x)L_e(x' \to -\Phi) + \hat D_2(x \leftarrow \Phi) \\
+    \hat L(p \leftarrow \Phi) &= \text{ same as }\hat L(x \leftarrow \Phi) \\
+    \hat T_r(a \to b) &= \exp\left(\frac{\sigma_t(p \to e_{a \to b})}{p_T(p)}\right)~~~[p_T, p]
+\end{aligned}
+\end{cases}
+$$
+
+## 实现
+
+（施工中……）我最近打算写个GPU加速的BVH Mesh，所以介质渲染的实现可能要延后一段时间。
