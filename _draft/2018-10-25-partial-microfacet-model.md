@@ -96,3 +96,64 @@ $$
 
 （施工中……）
 
+================================================================================
+
+记$E(x \to \Theta)$为光源直接照射到$x$点后朝$\Theta$方向散射的亮度，$S(x \to \Theta)$为从其他表面散射到$x$，再散射到$\Theta$上的亮度，于是有：
+
+$$
+\begin{aligned}
+    L(x \to \Theta) &= L_e(x \to \Theta) + L_s(x \to \Theta) \\
+    L_s(x \to \Theta) &= E(x \to \Theta) + S(x \to \Theta)
+\end{aligned}
+$$
+
+其中：
+
+$$
+\begin{aligned}
+    E(x \to \Theta) &= \int_{\mathcal S^2}f_s(\Phi \to x \to \Theta)L_e(x \leftarrow \Phi)\cos\langle N_x, \Phi\rangle d\omega_\Phi \\
+    S(x \to \Theta) &= \int_{\mathcal S^2}f_s(\Phi \to x \to \Theta)L_s(x \leftarrow \Phi)\cos\langle N_x, \Phi\rangle d\omega_\Phi
+\end{aligned}
+$$
+
+### 计算直接照明E
+
+和[之前](https://airguanz.github.io/2018/10/15/multiple-importance-sampling.html)一样，我们用多重重要性采样将光源采样和BSDF采样两种策略得到的结果结合起来。
+
+光源采样非常简单，我们按概率密度$p_{L_e}$随机选择一个光源$\ell$，在上面按概率密度$p_\ell$选择点$x'$，设$x'$到$x$的辐射亮度为$r$（距离衰减等均被计入其中），于是在使用MIS的情形下，光源采样的贡献估计量为：
+
+$$
+\hat E_1(x \to \Theta) = \begin{cases}\begin{aligned}
+    &\frac{(T_rr + \mathcal E)f_s(x' \to x \to \Theta)\cos\langle N_x, e_{x' \to x}\rangle}{p_{L_e}(\ell)p_\ell(x') + p_s(e_{x \to x'})}, &p_\ell < \infty \\
+    &\frac{(T_rr + \mathcal E)f_s(x' \to x \to \Theta)\cos\langle N_x, e_{x' \to x}\rangle}{p_{L_e}(\ell)p_\ell(x')}, &\text{otherwise}
+\end{aligned}\end{cases}
+$$
+
+其中$p_s$是BSDF采样时所使用的概率密度函数，$T_r$是刚刚讨论过如何计算的透射比，$\mathcal E$是从$x'$传播到$x$的过程中介质自发光/外散射额外添加的亮度。
+
+现在来考虑BRDF采样。设想我们以概率密度函数$p_s$选取了一个入射方向$\Phi$，若击中了某个实体光源上$\ell$上的点$x'$，那么可以直接用$p_{L_e}$和$p_\ell$来计算光源采样时采样到该点的概率；若是没有击中任何实体，那么我们按$p_{L_e}$随机选择一个光源，并计算它在$\Phi \to x$上的辐射亮度。BSDF采样贡献的估计量是：
+
+$$
+\hat E_2(x \to \Theta) = \begin{cases}\begin{aligned}
+    &\frac{(T_rr + \mathcal E)f_s(\Phi \to x \to \Theta)\cos\langle N_x, \Phi\rangle}{p_s{\Phi} + p_{L_e}(\ell)p_\ell(x')}, &x' = \mathrm{Cast}_x(\Phi)\text{ exists and }p_s < \infty \\
+    &\frac{(T_rr + \mathcal E)f_s(\Phi \to x \to \Theta)\cos\langle N_x, \Phi\rangle}{p_s(\Phi) + p_{L_e}(\ell)p_\ell(\Phi \to x)}, &\mathrm{Cast}_x(\Phi)\text{ doesn't exist and }p_s < \infty \\
+    &\frac{(T_rr + \mathcal E)f_s(\Phi \to x \to \Theta)\cos\langle N_x, \Phi\rangle}{p_s{\Phi}}, &\text{otherwise} \\
+\end{aligned}\end{cases}
+$$
+
+将$\hat E_1$和$\hat E_2$叠加起来，就得到了使用了MIS技术的$E$的估计量：
+
+$$
+\hat E(x \to \Theta) = \hat E_1(x \to \Theta) + \hat E_2(x \to \Theta)
+$$
+
+### 计算间接照明S
+
+和计算E时可以直接采样光源不同，我们难以预料从各个方向来的散射光的强度，因此只能按BSDF采样来计算S。若我们以概率密度$p_s$进行BSDF采样得到了入射方向$\Phi$，那么：
+
+$$
+\hat S(x \to \Theta) = \begin{cases}\begin{aligned}
+    &\frac{(L_s(x' \to -\Phi) + \mathcal E)f_s(\Phi \to x \to \Theta)\cos\langle N_x, \Phi\rangle}{p_s(\Phi)}, &x' = \mathrm{Cast}_x(\Phi)\text{ exists} \\
+    &\frac{\mathcal Ef_s(\Phi \to x \to \Theta)\cos\langle N_x, \Phi\rangle}{p_s(\Phi)}, &\text{otherwise}
+\end{aligned}\end{cases}
+$$

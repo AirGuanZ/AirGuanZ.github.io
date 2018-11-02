@@ -176,51 +176,50 @@ $$
 
 ### 框架
 
-记$E(x \to \Theta)$为光源直接照射到$x$点后朝$\Theta$方向散射的亮度，$S(x \to \Theta)$为从其他表面散射到$x$，再散射到$\Theta$上的亮度，于是有：
+要将这一大坨LTE转换为可以用蒙特卡洛方法来估值的形式，还要融入MIS等采样技术，就需要把LTE细致地分解开来。首先我们约定：用$x$表示表面（其实也就是不同介质的分界面）上的位置，用$p$表示介质内部的位置，于是$L(x \leftarrow \Phi)$和$L(p \leftarrow \Phi)$就有了完全不同的含义。此时，我们将表面上某点的出射光分解为自发光和散射光：
 
 $$
-\begin{aligned}
-    L(x \to \Theta) &= L_e(x \to \Theta) + L_s(x \to \Theta) \\
-    L_s(x \to \Theta) &= E(x \to \Theta) + S(x \to \Theta)
-\end{aligned}
+L(x \to \Theta) = L_e(x \to \Theta) + L_2(x \to \Theta)
 $$
 
-其中：
+其中$L_2$表示$x$点散射其他入射光而产生的出射光，其定义为：
 
 $$
-\begin{aligned}
-    E(x \to \Theta) &= \int_{\mathcal S^2}f_s(\Phi \to x \to \Theta)L_e(x \leftarrow \Phi)\cos\langle N_x, \Phi\rangle d\omega_\Phi \\
-    S(x \to \Theta) &= \int_{\mathcal S^2}f_s(\Phi \to x \to \Theta)L_s(x \leftarrow \Phi)\cos\langle N_x, \Phi\rangle d\omega_\Phi
-\end{aligned}
+L_2(x \to \Theta) = \int_{\mathcal S^2}f_s(\Phi \to x \to \Theta)L(x \leftarrow \Phi)d\omega^\perp_\Phi
 $$
 
-### 计算E
-
-和[之前](https://airguanz.github.io/2018/10/15/multiple-importance-sampling.html)一样，我们用多重重要性采样将光源采样和BSDF采样两种策略得到的结果结合起来。
-
-光源采样非常简单，我们按概率密度$p_{L_e}$随机选择一个光源$\ell$，在上面按概率密度$p_\ell$选择点$x'$，设$x'$到$x$的辐射亮度为$r$（距离衰减等均被计入其中），于是在使用MIS的情形下，光源采样的贡献估计量为：
+由于介质的参与，$L(x \leftarrow \Phi)$的计算相当不平凡。我们把$[0, t_m]$上的积分直接改写为$x$和$x'$间的线段上的积分，于是：
 
 $$
-\hat E_1(x \to \Theta) = \begin{cases}\begin{aligned}
-    &\frac{(T_rr + \mathcal E)f_s(x' \to x \to \Theta)\cos\langle N_x, e_{x' \to x}\rangle}{p_{L_e}(\ell)p_\ell(x') + p_s(e_{x \to x'})}, &p_\ell < \infty \\
-    &\frac{(T_rr + \mathcal E)f_s(x' \to x \to \Theta)\cos\langle N_x, e_{x' \to x}\rangle}{p_{L_e}(\ell)p_\ell(x')}, &\text{otherwise}
+L(x \leftarrow \Phi) = \begin{cases}\begin{aligned}
+    &T_r(x' \to x)L(x' \to -\Phi) + \int_{x'x}T_r(p \to x)L_s(p \to -\Phi)dl_p, &x' = \mathrm{Cast_x}(\Phi)\text{ exists} \\
+    &\int_{\mathrm{ray}(x, \Phi)}T_r(p \to x)L_s(p \to -\Phi)dl_p, &\text{otherwise}
 \end{aligned}\end{cases}
 $$
 
-其中$p_s$是BSDF采样时所使用的概率密度函数，$\mathcal E$是从$x'$传播到$x$的过程中介质自发光/外散射额外添加的亮度。
-
-现在来考虑BRDF采样。设想我们以概率密度函数$p_s$选取了一个入射方向$\Phi$，若击中了某个实体光源上$\ell$上的点$x'$，那么可以直接用$p_{L_e}$和$p_\ell$来计算光源采样时采样到该点的概率；若是没有击中任何实体，那么我们按$p_{L_e}$随机选择一个光源，并计算它在$\Phi \to x$上的辐射亮度。BSDF采样贡献的估计量是：
+为了书写简便，后文不再列出$x'$不存在时的情形（即上式中的“$\mathrm{otherwise}$”）。现令：
 
 $$
-\hat E_2(x \to \Theta) = \begin{cases}\begin{aligned}
-    &\frac{(T_rr + \mathcal E)f_s(\Phi \to x \to \Theta)\cos\langle N_x, \Phi\rangle}{p_s{\Phi} + p_{L_e}(\ell)p_\ell(x')}, &x' = \mathrm{Cast}_x(\Phi)\text{ exists and }p_s < \infty \\
-    &\frac{(T_rr + \mathcal E)f_s(\Phi \to x \to \Theta)\cos\langle N_x, \Phi\rangle}{p_s(\Phi) + p_{L_e}(\ell)p_\ell(\Phi \to x)}, &\mathrm{Cast}_x(\Phi)\text{ doesn't exist and }p_s < \infty \\
-    &\frac{(T_rr + \mathcal E)f_s(\Phi \to x \to \Theta)\cos\langle N_x, \Phi\rangle}{p_s{\Phi}}, &\text{otherwise} \\
-\end{aligned}\end{cases}
+\begin{aligned}
+    D_1(x \leftarrow \Phi) &= T_r(x' \to x)L_e(x' \to -\Phi) \\
+    D_2(x \leftarrow \Phi) &= T_r(x' \to x)L_2(x' \to -\Phi) + \int_{x'x}T_r(p \to x)L_s(p \to -\Phi)dl_p
+\end{aligned}
 $$
 
-将$\hat E_1$和$\hat E_2$叠加起来，就得到了使用了MIS技术的$E$的估计量：
+则：
 
 $$
-\hat E(x \to \Theta) = \hat E_1(x \to \Theta) + \hat E_2(x \to \Theta)
+L(x \leftarrow \Phi) = D_1(x \leftarrow \Phi) + D_2(x \leftarrow \Phi)
 $$
+
+于是$L_2$也可以对应地分解为两项：
+
+$$
+\begin{aligned}
+    L_2(x \to \Theta) &= E(x \to \Theta) + S(x \to \Theta) \\
+    E(x \to \Theta) &= \int_{\mathcal S^2}f_s(\Phi \to x \to \Theta)D_1(x \leftarrow \Phi)d\omega^\perp_\Phi \\
+    S(x \to \Theta) &= \int_{\mathcal S^2}f_s(\Phi \to x \to \Theta)D_2(x \leftarrow \Phi)d\omega^\perp_\Phi \\
+\end{aligned}
+$$
+
+$E$就是所谓的直接照明项，和[前文]({{site.url}}/2018/10/15/multiple-importance-sampling.html)一样使用MIS技术来采样，只不过计算辐射亮度时都要乘上一个透射比罢了。$S$的采样则要复杂一些，因为它的里面出现了因介质发光和内散射造成的增益。
