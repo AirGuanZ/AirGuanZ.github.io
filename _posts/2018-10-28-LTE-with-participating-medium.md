@@ -10,7 +10,7 @@ tags:
 
 <!--more-->
 
-## 包含半透明介质的光线传输方程
+## 光线传输方程（LTE）
 
 原始的渲染方程是：
 
@@ -273,15 +273,15 @@ $$
     \hat L(x \to \Theta) &= L_e(x \to \Theta) + \hat L_2(x \to \Theta) \\
     \hat L_2(x \to \Theta) &= \hat E(x \to \Theta) + \hat S(x \to \Theta) \\
     \hat E(x \to \Theta) &= \hat E_1(x \to \Theta) + \hat E_2(x \to \Theta) \\
-    \hat E_1(x \to \Theta) &= \frac{L_e(x' \to -\Phi)f_s(\Phi \to x \to \Theta)\cos\langle N_x, \Phi\rangle}{p_s(\Phi) + p_\ell(x')}~~~[p_s, \Phi] \\
-    \hat E_2(x \to \Theta) &= \frac{L_e(x' \to e_{x' \to x})f_s(e_{x \to x'} \to x \to \Theta)V(x', x)G(x', x)}{(p_s(e_{x \to x'}) + p_\ell(x'))}~~~[p_\ell, x'] \\
+    \hat E_1(x \to \Theta) &= \frac{L_e(x' \to -\Phi)f_s(\Phi \to x \to \Theta)\cos\langle N_x, \Phi\rangle}{p_s(\Phi) + p_\ell(x')} &[p_s, \Phi] \\
+    \hat E_2(x \to \Theta) &= \frac{L_e(x' \to e_{x' \to x})f_s(e_{x \to x'} \to x \to \Theta)V(x', x)G(x', x)}{(p_s(e_{x \to x'}) + p_\ell(x'))} &[p_\ell, x'] \\
     G(x', x) &= \frac{\cos\langle N_x, e_{x \to x'}\rangle\cos\langle N_{x'}, e_{x' \to x}\rangle}{|x' - x|^2} \\
-    \hat S(x \to \Theta) &= \frac{\hat D_2(x \leftarrow \Phi)f_s(\Phi \to x \to \Theta)\cos\langle N_x, \Phi\rangle}{p_s(\Phi)}~~~[p_s, \Phi] \\
-    \hat D_2(x \leftarrow \Phi) &= \hat T_r(x' \to x)\hat L_2(x' \to -\Phi) + \frac{\hat T_r(p \to x)\hat L_s(p \to -\Phi)}{p_{x'x}(p)}~~~[p_{x'x}, p] \\
-    \hat L_s(p \to \Theta) &= L_e(p \to \Theta) + \sigma_s(p \to \Theta)\frac{\mathscr P(\Phi \to p \to \Theta)\hat L(p \leftarrow \Phi)}{p_{\mathscr P}(\Phi)}~~~[p_{\mathscr P}, \Phi] \\
+    \hat S(x \to \Theta) &= \frac{\hat D_2(x \leftarrow \Phi)f_s(\Phi \to x \to \Theta)\cos\langle N_x, \Phi\rangle}{p_s(\Phi)} &[p_s, \Phi] \\
+    \hat D_2(x \leftarrow \Phi) &= \hat T_r(x' \to x)\hat L_2(x' \to -\Phi) + \frac{\hat T_r(p \to x)\hat L_s(p \to -\Phi)}{p_{x'x}(p)} &[p_{x'x}, p] \\
+    \hat L_s(p \to \Theta) &= L_e(p \to \Theta) + \sigma_s(p \to \Theta)\frac{\mathscr P(\Phi \to p \to \Theta)\hat L(p \leftarrow \Phi)}{p_{\mathscr P}(\Phi)} &[p_{\mathscr P}, \Phi] \\
     \hat L(x \leftarrow \Phi) &= \hat T_r(x' \to x)L_e(x' \to -\Phi) + \hat D_2(x \leftarrow \Phi) \\
     \hat L(p \leftarrow \Phi) &= \text{ same as }\hat L(x \leftarrow \Phi) \\
-    \hat T_r(a \to b) &= \exp\left(\frac{\sigma_t(p \to e_{a \to b})}{p_T(p)}\right)~~~[p_T, p]
+    \hat T_r(a \to b) &= \exp\left(-\frac{\sigma_t(p \to e_{a \to b})}{p_T(p)}\right) &[p_T, p]
 \end{aligned}
 \end{cases}
 $$
