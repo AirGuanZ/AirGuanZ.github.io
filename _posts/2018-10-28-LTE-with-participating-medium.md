@@ -288,4 +288,8 @@ $$
 
 ## 实现
 
-（施工中……）我最近打算写个GPU加速的BVH Mesh，所以介质渲染的实现可能要延后一段时间。
+实现见[Atrc](https://github.com/AirGuanZ/Atrc/tree/master/Source/Atrc/Integrator)中的VolumetricPathTracer。随便画了点东西：
+
+![PICTURE]({{site.url}}/postpics/Atrc/2018_11_06_Vol.png)
+
+此外，我现在有点不知道该如何处理室外场景中雾和太阳光这样的光源的关系，后面再慢慢探究吧。
