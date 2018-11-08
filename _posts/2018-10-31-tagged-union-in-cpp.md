@@ -28,9 +28,7 @@ auto MatchVar(E &&e, Vs...vs)
         }
     };
 
-    return std::visit(
-        overloaded(vs...),
-        std::forward<E>(e));
+    return std::visit(overloaded(vs...), std::forward<E>(e));
 }
 {% endhighlight %}
 
