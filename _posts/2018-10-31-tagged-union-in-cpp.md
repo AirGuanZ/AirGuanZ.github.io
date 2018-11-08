@@ -38,11 +38,11 @@ auto MatchVar(E &&e, Vs...vs)
 
 {% highlight c++ linenos %}
 Variant<int, float, std::string> tu = 5
-auto v = MatchVar<float>(tu,
-    [](float f) { return f; },
-    [](int x) { return x + 2.0f; },
-    [](auto v) { return 0.0f; });
-assert(v == 7.0f);
+auto v = MatchVar(tu,
+    [](float f) { return f;        },
+    [](int x)   { return x + 2.0f; },
+    [](auto v)  { return 0.0f;     });
+assert(ApproxEq(v, 7.0f));
 {% endhighlight %}
 
 有点像Rust的enum，只不过不允许手动指定Tag，只能拿类型当标记。现在稍微解析一下那一小段代码的原理。
