@@ -96,64 +96,52 @@ $$
 
 （施工中……）
 
-================================================================================
+======================================================================================================
 
-记$E(x \to \Theta)$为光源直接照射到$x$点后朝$\Theta$方向散射的亮度，$S(x \to \Theta)$为从其他表面散射到$x$，再散射到$\Theta$上的亮度，于是有：
+## LTE的路径和形式
+
+首先祭出表面积形式的LTE（Light Transport Equation）：
+
+$$
+L(x \to \Theta) = L_e(x \to \Theta) + \int_{\mathcal M}f_s(e_{xx'} \to x \to \Theta)L(x' \to e_{x'x})G(x, x')V(x, x')dA^\perp_{x'}
+$$
+
+可以看到，从$x$出发面向$\Theta$方向的辐射亮度$L(x \to \Theta)$可以拆成两部分的和：
+
+1. 自发光$L_e(x \to \Theta)$
+2. 反射自其他方向的光
+
+其中反射光本身又用到了$L$，于是我们可以用LTE继续拆分反射光内的那个$L$，反反复复无穷尽也。最后，我们得到了这样的方程组（记$x_0 = x, x_{-1} = x_0 + e_\Theta$）：
 
 $$
 \begin{aligned}
-    L(x \to \Theta) &= L_e(x \to \Theta) + L_s(x \to \Theta) \\
-    L_s(x \to \Theta) &= E(x \to \Theta) + S(x \to \Theta)
+    &L(x_0 \to x_{-1}) = \\
+    &\sum_{i = 0}^\infty\left(\idotsint_{\mathcal M^i}L_e(x_i \to x_{i-1})\left(\prod_{k=0}^i f_s(x_{k+1} \to x_k \to x_{k-1})G(x_{k+1}, x_k)V(x_{k+1}, x_k)\right)dA^\perp_{x_i}\cdots dA^\perp_{x_1}\right)
 \end{aligned}
 $$
 
-其中：
+它的含义是：$L(x \to \Theta)$可以拆成以下部分的和：
+
+- 场景中的自发光经$0$次散射后从$x$点出发朝向$\Theta$的辐射亮度（其实就是$x$点的自发光）
+- 场景中的自发光经$1$次散射后从$x$点出发朝向$\Theta$的辐射亮度
+- 场景中的自发光经$2$次散射后从$x$点出发朝向$\Theta$的辐射亮度
+- ……
+- 场景中的自发光经$n$次散射后从$x$点出发朝向$\Theta$的辐射亮度
+
+## 算法概述
+
+路径追踪（path tracing）是从镜头出发寻找光源的故事，“光线”追踪（light tracing）是从光源出发寻找镜头的故事，双向路径追踪（bidirectional path tracing，BDPT）则是两者的结合。我们从光源发射一条子路径，同时也从视点发射一条子路径，再将两条子路径相连，就得到了一条完整的路径。每条路径所能传递的辐射亮度并不难求，因此BDPT的关键在于如何正确求解这些路径对应的概率密度值。
+
+若从光源发射的子路径有$s$个顶点，从视点出发的子路径有$t$个顶点，那么将两者的末端连接得到的路径长度应为：
 
 $$
-\begin{aligned}
-    E(x \to \Theta) &= \int_{\mathcal S^2}f_s(\Phi \to x \to \Theta)L_e(x \leftarrow \Phi)\cos\langle N_x, \Phi\rangle d\omega_\Phi \\
-    S(x \to \Theta) &= \int_{\mathcal S^2}f_s(\Phi \to x \to \Theta)L_s(x \leftarrow \Phi)\cos\langle N_x, \Phi\rangle d\omega_\Phi
-\end{aligned}
+k = (s - 1) + (t - 1) + 1 = s + t - 1
 $$
 
-### 计算直接照明E
+从这个角度看，长度为$k$的路径有$k+2$种可能的构建方法——令$s = 0, 1, \ldots, k+1$即可。譬如，$s = 0$相当于path tracing，$s = 1$相当于在path tracing的基础上单独计算直接照明，$s = k+1$相当于light tracing等。每一种构建方法都对应了路径空间中的一个概率分布，因而也各有各的长处。
 
-和[之前](https://airguanz.github.io/2018/10/15/multiple-importance-sampling.html)一样，我们用多重重要性采样将光源采样和BSDF采样两种策略得到的结果结合起来。
-
-光源采样非常简单，我们按概率密度$p_{L_e}$随机选择一个光源$\ell$，在上面按概率密度$p_\ell$选择点$x'$，设$x'$到$x$的辐射亮度为$r$（距离衰减等均被计入其中），于是在使用MIS的情形下，光源采样的贡献估计量为：
+写到这里，我已经想到MIS了——如果能将它们的好处尽收囊中，而又避免variance累加的恶果，岂不美哉？令我感到荣幸万分的是Veach也是这样想的，他还非常牛逼地把这个idea给真正设计出来了。以$\overline x_{x, t}$表示采样得到的路径，$p_{s, t}$为采样路径所使用的概率密度函数，则MIS估计量为：
 
 $$
-\hat E_1(x \to \Theta) = \begin{cases}\begin{aligned}
-    &\frac{(T_rr + \mathcal E)f_s(x' \to x \to \Theta)\cos\langle N_x, e_{x' \to x}\rangle}{p_{L_e}(\ell)p_\ell(x') + p_s(e_{x \to x'})}, &p_\ell < \infty \\
-    &\frac{(T_rr + \mathcal E)f_s(x' \to x \to \Theta)\cos\langle N_x, e_{x' \to x}\rangle}{p_{L_e}(\ell)p_\ell(x')}, &\text{otherwise}
-\end{aligned}\end{cases}
-$$
-
-其中$p_s$是BSDF采样时所使用的概率密度函数，$T_r$是刚刚讨论过如何计算的透射比，$\mathcal E$是从$x'$传播到$x$的过程中介质自发光/外散射额外添加的亮度。
-
-现在来考虑BRDF采样。设想我们以概率密度函数$p_s$选取了一个入射方向$\Phi$，若击中了某个实体光源上$\ell$上的点$x'$，那么可以直接用$p_{L_e}$和$p_\ell$来计算光源采样时采样到该点的概率；若是没有击中任何实体，那么我们按$p_{L_e}$随机选择一个光源，并计算它在$\Phi \to x$上的辐射亮度。BSDF采样贡献的估计量是：
-
-$$
-\hat E_2(x \to \Theta) = \begin{cases}\begin{aligned}
-    &\frac{(T_rr + \mathcal E)f_s(\Phi \to x \to \Theta)\cos\langle N_x, \Phi\rangle}{p_s{\Phi} + p_{L_e}(\ell)p_\ell(x')}, &x' = \mathrm{Cast}_x(\Phi)\text{ exists and }p_s < \infty \\
-    &\frac{(T_rr + \mathcal E)f_s(\Phi \to x \to \Theta)\cos\langle N_x, \Phi\rangle}{p_s(\Phi) + p_{L_e}(\ell)p_\ell(\Phi \to x)}, &\mathrm{Cast}_x(\Phi)\text{ doesn't exist and }p_s < \infty \\
-    &\frac{(T_rr + \mathcal E)f_s(\Phi \to x \to \Theta)\cos\langle N_x, \Phi\rangle}{p_s{\Phi}}, &\text{otherwise} \\
-\end{aligned}\end{cases}
-$$
-
-将$\hat E_1$和$\hat E_2$叠加起来，就得到了使用了MIS技术的$E$的估计量：
-
-$$
-\hat E(x \to \Theta) = \hat E_1(x \to \Theta) + \hat E_2(x \to \Theta)
-$$
-
-### 计算间接照明S
-
-和计算E时可以直接采样光源不同，我们难以预料从各个方向来的散射光的强度，因此只能按BSDF采样来计算S。若我们以概率密度$p_s$进行BSDF采样得到了入射方向$\Phi$，那么：
-
-$$
-\hat S(x \to \Theta) = \begin{cases}\begin{aligned}
-    &\frac{(L_s(x' \to -\Phi) + \mathcal E)f_s(\Phi \to x \to \Theta)\cos\langle N_x, \Phi\rangle}{p_s(\Phi)}, &x' = \mathrm{Cast}_x(\Phi)\text{ exists} \\
-    &\frac{\mathcal Ef_s(\Phi \to x \to \Theta)\cos\langle N_x, \Phi\rangle}{p_s(\Phi)}, &\text{otherwise}
-\end{aligned}\end{cases}
+\hat F = \sum_{s \ge 0}\sum_{t \ge 0}w_{s, t}(\overline x_{s, t})\frac{f(\overline x_{i, j})}{p_{s, t}(\overline x_{s, t})}
 $$
