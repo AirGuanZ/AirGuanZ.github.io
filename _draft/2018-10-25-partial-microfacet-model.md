@@ -98,50 +98,70 @@ $$
 
 ======================================================================================================
 
-## LTE的路径和形式
 
-首先祭出表面积形式的LTE（Light Transport Equation）：
+
+## 摄像机模型和Measurement Equation
+
+考虑如下的（经过简化的）摄像机模型：
+
+## Measurement Equation
+
+从信号的角度来看，我们计算图像上每个像素颜色的过程，实际上是一个严格的采样-重建过程。我们在图像上选取点$(x, y)$，根据摄像机参数给出从该点出射的射线方向$d(x, y)$，再通过求解LTE来得到沿着$-d(x, y)$命中$(x, y)$的radiance值，这就相当于一次“采样”。在对图像进行了大量采样后，根据采样结果计算像素值颜色的过程，就是在重建图像。既然是重建，那当然就有重建所用的filter了。对图像上平面坐标为$(x, y)$的点，它对某特定像素的贡献可以由指定的filter给出：
 
 $$
-L(x \to \Theta) = L_e(x \to \Theta) + \int_{\mathcal M}f_s(e_{xx'} \to x \to \Theta)L(x' \to e_{x'x})G(x, x')V(x, x')dA^\perp_{x'}
+f(x - x_c, y - y_c)
 $$
 
-可以看到，从$x$出发面向$\Theta$方向的辐射亮度$L(x \to \Theta)$可以拆成两部分的和：
+其中$(x_c, y_c)$是像素中心点的位置。给定一组采样点$(x_k, y_k)$和采样结果$L(x_k, y_k)$，某个像素$(i, j)$的颜色可以这样计算：
 
-1. 自发光$L_e(x \to \Theta)$
-2. 反射自其他方向的光
+$$
+I_{i, j} = \frac{\sum_k f(x_k - x_c, y_k - y_c)L(x_k, y_k)}{\sum_k f(x_k - x_c, y_k - y_c)}
+$$
 
-其中反射光本身又用到了$L$，于是我们可以用LTE继续拆分反射光内的那个$L$，反反复复无穷尽也。最后，我们得到了这样的方程组（记$x_0 = x, x_{-1} = x_0 + e_\Theta$）：
+现用$d(p)$来表示图像平面上的点$p$对应的射线方向，则按照上面的采样-重建过程计算出的像素$i, j$的（期望）颜色为：
 
 $$
 \begin{aligned}
-    &L(x_0 \to x_{-1}) = \\
-    &\sum_{i = 0}^\infty\left(\idotsint_{\mathcal M^i}L_e(x_i \to x_{i-1})\left(\prod_{k=0}^i f_s(x_{k+1} \to x_k \to x_{k-1})G(x_{k+1}, x_k)V(x_{k+1}, x_k)\right)dA^\perp_{x_i}\cdots dA^\perp_{x_1}\right)
+I_{i, j} = &\left(
+    \int_{\mathcal M_\mathrm{film}}\int_{\mathcal S^2}f(p_\mathrm{film} - p_c)\delta(d(p_\mathrm{film}) - e_\omega)L(p_\mathrm{film} \leftarrow e_\omega)\cos\langle N_\mathrm{film}, e_\omega\rangle d\omega dA_{p_\mathrm{film}}
+\right) \\
+/&\left(
+    \int_{\mathcal M_\mathrm{film}}\int_{\mathcal S^2}f(p_{\mathrm{film}} - p_c)d\omega dA_{p_\mathrm{film}}
+\right)
 \end{aligned}
 $$
 
-它的含义是：$L(x \to \Theta)$可以拆成以下部分的和：
-
-- 场景中的自发光经$0$次散射后从$x$点出发朝向$\Theta$的辐射亮度（其实就是$x$点的自发光）
-- 场景中的自发光经$1$次散射后从$x$点出发朝向$\Theta$的辐射亮度
-- 场景中的自发光经$2$次散射后从$x$点出发朝向$\Theta$的辐射亮度
-- ……
-- 场景中的自发光经$n$次散射后从$x$点出发朝向$\Theta$的辐射亮度
-
-## 算法概述
-
-路径追踪（path tracing）是从镜头出发寻找光源的故事，“光线”追踪（light tracing）是从光源出发寻找镜头的故事，双向路径追踪（bidirectional path tracing，BDPT）则是两者的结合。我们从光源发射一条子路径，同时也从视点发射一条子路径，再将两条子路径相连，就得到了一条完整的路径。每条路径所能传递的辐射亮度并不难求，因此BDPT的关键在于如何正确求解这些路径对应的概率密度值。
-
-若从光源发射的子路径有$s$个顶点，从视点出发的子路径有$t$个顶点，那么将两者的末端连接得到的路径长度应为：
+其中$\mathcal M_\mathrm{film}$是世界坐标系中的图像表面。注意到这里的分母是个常数，不妨假设$f$已经用它归一化过了，再令：
 
 $$
-k = (s - 1) + (t - 1) + 1 = s + t - 1
+W_e^{(i, j)}(p_\mathrm{film} \to e_\omega) = f(p_\mathrm{film} - p_c)\delta(d(p_\mathrm{film}) - e_\omega)
 $$
 
-从这个角度看，长度为$k$的路径有$k+2$种可能的构建方法——令$s = 0, 1, \ldots, k+1$即可。譬如，$s = 0$相当于path tracing，$s = 1$相当于在path tracing的基础上单独计算直接照明，$s = k+1$相当于light tracing等。每一种构建方法都对应了路径空间中的一个概率分布，因而也各有各的长处。
-
-写到这里，我已经想到MIS了——如果能将它们的好处尽收囊中，而又避免variance累加的恶果，岂不美哉？令我感到荣幸万分的是Veach也是这样想的，他还非常牛逼地把这个idea给真正设计出来了。以$\overline x_{x, t}$表示采样得到的路径，$p_{s, t}$为采样路径所使用的概率密度函数，则MIS估计量为：
+则原式变为：
 
 $$
-\hat F = \sum_{s \ge 0}\sum_{t \ge 0}w_{s, t}(\overline x_{s, t})\frac{f(\overline x_{i, j})}{p_{s, t}(\overline x_{s, t})}
+I_{i, j} = \int_{\mathcal M_\mathrm{film}}\int_{\mathcal S^2}W_e^{(i, j)}(p_\mathrm{film} \to e_\omega)L(p_\mathrm{film} \leftarrow e_\omega)\cos\langle N_\mathrm{film}, e_\omega\rangle d\omega dA_{p_\mathrm{film}}
+$$
+
+记$p_0 = p_\mathrm{film}$，$p_1 = \mathrm{Cast}(p_0, d(p_\mathrm{film}))$，将上式中的$\mathcal S^2$换成$\mathcal M$，即：
+
+$$
+I_{i, j} = \int_{\mathcal M_\mathrm{film}}\int_{\mathcal M}W_e^{(i, j)}(p_0 \to p_1)L(p_1 \to p_0)G(p_0 \leftrightarrow p_1)dA_{p_1}dA_{p_0}
+$$
+
+这就是所谓的Measurement Equation（ME）了。就是这玩意儿卡了我两天的时间！因为我看的资料总是一上来先摆出这个式子，然后用语言来抽象地解释$W_e$的意义，以至于我虽然大概知道它们想表达什么，却无法理解$W_e$的具体表达式和在代码中的计算方法。
+
+现在把$W_e$延拓到整个$\mathcal M$上（延拓部分取零值），将ME中的$L(p_1 \to p_0)$用LTE的路径和形式展开：
+
+$$
+\begin{aligned}
+I_{i, j} &= \int_{\mathcal M}\int_{\mathcal M}W_e^{(i, j)}(p_0 \to p_1)\left(\sum_{n=1}^\infty P(\overline x_n)\right)G(p_0 \leftrightarrow p_1)dA_{p_1}dA_{p_0} \\
+&= \sum_{n=1}^\infty \underbrace{\int_{\mathcal M}\cdots\int_{\mathcal M}}_{n+1}W_e^{(i, j)}(p_0 \to p_1)T(\overline p_n)L_e(p_n \to p_{n-1})G(p_0\leftrightarrow p_1)dA_{p_0}\cdots dA_{p_n}
+\end{aligned}
+$$
+
+其中：
+
+$$
+T(\overline p_n) = \prod_{i=1}^{n-1}f_s(x_{i+1} \to x_i \to x_{i-1})G(x_{i+1}\leftrightarrow x_i)
 $$
