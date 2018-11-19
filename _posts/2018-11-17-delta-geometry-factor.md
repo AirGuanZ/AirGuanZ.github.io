@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Delta函数积分换元时的放缩
+title: delta函数积分换元时的放缩
 key: t20181117
 tags:
   - Mathematics
