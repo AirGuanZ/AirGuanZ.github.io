@@ -40,7 +40,7 @@ $$
 $$
 \begin{aligned}
     \mathrm{origin} &= [0, 0, 0]^T \\
-    \mathrm{direction} &= [-L, -x_S, y_S]^T
+    \mathrm{direction} &= [L, -x_S, y_S]^T
 \end{aligned}
 $$
 
@@ -66,14 +66,14 @@ $$
 
 $$
 \begin{aligned}
-    C_L \to C_W:~~~~~~~&\begin{cases}\begin{aligned}
-        &\vec v_W = \boldsymbol R\vec v_L,          &\vec v_L\text{ is a direction} \\
-        &\vec p_W = \boldsymbol R\vec p_L + \vec T, &\vec p_L\text{ is a point}
-    \end{aligned}\end{cases} \\
-    C_W \to C_L:~~~~~~~&\begin{cases}\begin{aligned}
-        &\vec v_L = \boldsymbol R^T\vec v_W,                       &\vec v_W\text{ is a direction} \\
-        &\vec p_L = \boldsymbol R^T\left(\vec p_W - \vec T\right), &\vec p_W\text{ is a point}
-    \end{aligned}\end{cases}
+    C_L \to C_W:~~~~~~~&\begin{cases}
+        &\vec v_W = \boldsymbol R\vec v_L \\
+        &\vec p_W = \boldsymbol R\vec p_L + \vec T
+    \end{cases} \\
+    C_W \to C_L:~~~~~~~&\begin{cases}
+        &\vec v_L = \boldsymbol R^T\vec v_W \\
+        &\vec p_L = \boldsymbol R^T\left(\vec p_W - \vec T\right)
+    \end{cases}
 \end{aligned}
 $$
 
