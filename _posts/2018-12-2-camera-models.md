@@ -49,8 +49,8 @@ $$
 $$
 \begin{aligned}
     \vec e_x &\Rightarrow \vec d \\
-    \vec e_y &\Rightarrow \vec u \times \vec e_x \\
-    \vec e_z &\Rightarrow \vec e_x \times \vec e_y
+    \vec e_y &\Rightarrow \vec u \times \vec d \\
+    \vec e_z &\Rightarrow \vec d \times (\vec u \times \vec d)
 \end{aligned}
 $$
 
@@ -146,4 +146,61 @@ $$
 
 ## 简化的薄凸透镜摄像机
 
+理想的小孔摄像机在现实中是不存在的，因为光没法通过一个没有大小的孔洞来照亮整个传感元器件平面。本节讨论一种简化的凸透镜摄像机模型，它假设透镜的厚度可以被忽略。
 
+考虑将一个薄凸透镜放置在数轴的原点处，一束平行光沿着$-\vec e_x$方向击中透镜，它们将汇聚于$-x$轴上的一点，该点和原点间的距离称为薄凸透镜的焦距，记作$f$。对位于距原点$z$（$z > f$）的物体，它所发出的光穿过凸透镜后也会汇聚于一点，设该汇聚点距原点为$z'$（$z' < f$），则$z$、$z'$、$f$满足以下关系：
+
+$$
+\frac 1 {z'} - \frac 1 z = \frac 1 f
+$$
+
+也就是说，给定元器件平面和透镜的距离$z'$，我们可以通过上式计算出$z$来。在三维空间中，这样一个和透镜中心距离为$z$的平面被称为焦平面，位于焦平面上的物体上的每个点所发出的光都将汇聚到元器件平面上的一点，而不在焦平面上的点所发出的光在穿过透镜后则会汇聚到元器件平面上的一个圆内，若该圆的大小超过了一个像素，那么我们将观察到模糊的物体，也就是所谓的景深效果。
+
+简单起见，给定元器件平面上的点$\vec x$，我们认为薄凸透镜上的每一点$\vec y$都会对$\vec x$所响应的亮度作出同等的贡献。此外，我们也希望$W_e^{(j)}$能够满足归一化约束：
+
+$$
+\int_{\mathcal M_j}\int_{\mathcal S^2}W_e^{(j)}(\vec x \to \vec \omega)\cos\langle \vec N_x, \vec \omega\rangle d\omega dA_x = 1
+$$
+
+为此，我们首先把$\mathcal S^2$改写到$\mathcal M_A$上，其中$\mathcal M_A$是薄凸透镜在场景中对应的区域：
+
+$$
+\int_{\mathcal M_j}\int_{\mathcal M_A}W_e^{(j)}(\vec x \to \vec e_{xy})\cos\langle \vec N_x, \vec e_{xy}\rangle\frac{\cos\langle \vec N_y, \vec e_{yx}\rangle}{\left|\vec x - \vec y\right|_2^2} dA_y dA_x = 1
+$$
+
+由于每个$\vec y$都对$j$的颜色作出同等的贡献，因而：
+
+$$
+W_e^{(j)}(\vec x \to \vec e_{xy})\cos\langle \vec N_x, \vec e_{xy}\rangle\frac{\cos\langle \vec N_y, \vec e_{yx}\rangle}{\left|\vec x - \vec y\right|_2^2} = C
+$$
+
+$C$表示某个和$\vec y$无关的数。代入归一化条件后我们可以得到：
+
+$$
+\begin{aligned}
+&\int_{\mathcal M_j}\int_{\mathcal M_A}C dA_y dA_x = 1 \\
+\Rightarrow~&C = \frac 1 {\mathrm{area}(\mathcal M_j)\mathrm{area}(\mathcal M_A)}
+\end{aligned}
+$$
+
+这就成功解出了$W_e^{(j)}$：
+
+$$
+W_e^{(j)}(\vec x \to \vec e_{xy}) =  \frac{\left|\vec x - \vec y\right|_2^2}{\cos\langle \vec N_x, \vec e_{xy}\rangle\cos\langle \vec N_y, \vec e_{yx}\rangle\mathrm{area}(\mathcal M_j)\mathrm{area}(\mathcal M_A)}
+$$
+
+容易验证以下三个关系的正确性：
+
+$$
+\begin{aligned}
+    \cos\langle \vec N_y, \vec e_{yx}\rangle &= \cos\langle \vec N_x, \vec e_{xy}\rangle \\
+    \left|\vec x - \vec y\right|_2^2 &= \frac{L^2}{\cos^2\langle \vec N_x, \vec e_{xy}\rangle} \\
+    \mathcal M_A &= \pi r^2
+\end{aligned}
+$$
+
+其中$L$是元器件平面和凸透镜间的距离，$r$是凸透镜半径。把这三个式子代入上面的$W_e^{(j)}$表达式中，再把$\vec N_x$换成与之相等的摄像机朝向$\vec d$，就得到了：
+
+$$
+W_e^{(j)}(\vec x \to \vec \omega) = \frac{L^2}{\pi r^2 \cos^4\langle \vec d, \vec \omega\rangle \mathrm{area}(\mathcal M_j)}
+$$
