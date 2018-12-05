@@ -3,8 +3,8 @@ layout: post
 title: 多重重要性采样
 key: t20181015
 tags:
-  - Graphics
   - Atrc
+  - Graphics
 ---
 
 [前文](https://airguanz.github.io/2018/10/12/direct-indirect-path-tracing.html)提到当光源和物体表面材质都接近$\delta$分布时，无论是在光源上采样还是按BSDF采样都可能带来很高的方差。本文讨论一种能很好地改善该问题的技术——多重重要性采样。

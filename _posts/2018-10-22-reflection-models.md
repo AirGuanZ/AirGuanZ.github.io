@@ -3,8 +3,8 @@ layout: post
 title: 物理材质模型
 key: t20181022
 tags:
-  - Graphics
   - Atrc
+  - Graphics
 ---
 
 在实现了Multiple Importance Sampling后，我发现[Atrc](https://github.com/AirGuanZ/Atrc)居然没有Glossy类型的材质，以至于我很难构造一个能够展现MIS技术优越性的场景。因此，下一步个小目标就是实现一个能用的材质系统了。

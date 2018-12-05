@@ -3,12 +3,15 @@ layout: post
 title: 摄像机模型小结
 key: t20181202
 tags:
+  - Atrc
   - Graphics
 ---
 
 最近在试着实现light tracing算法，需要手推各种摄像机模型的measurement function。除了最简单的正交和透视投影摄像机外，我居然一个都推不出来……感觉是自己对各种摄像机模型的理解不够，因此重新学习和思考一番，总结在这里。这篇文章内容是比较trivial的，只是我需要把它们完全理清楚才好实现。
 
 本文一律使用右手坐标系，且视$z$轴正方向为垂直向上的方向。此外，本文的讨论并不立足于实时渲染，因此不会涉及到透视投影变换、齐次坐标系等话题。
+
+所有内容的实现均可在[我的GitHub](https://github.com/AirGuanZ/Atrc/tree/master/Source/Atrc/Camera)上找到。
 
 <!--more-->
 
