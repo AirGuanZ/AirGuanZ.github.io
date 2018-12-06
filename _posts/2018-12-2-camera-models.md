@@ -80,7 +80,7 @@ $$
 \end{aligned}
 $$
 
-其中$\vec v$表示方向，$\vec p$表示位置；$\boldsymbol R^T$表示的其实是$\boldsymbol R^{-1}$，因为旋转矩阵是单位正交矩阵，所以可以通过转置来快速求它的逆。
+其中$\vec v$表示方向，$\vec p$表示位置；$\boldsymbol R^T$表示的其实是$\boldsymbol R^{-1}$，因为旋转矩阵是单位正交矩阵，所以可以通过转置来快速求它的逆。$C_L$和$C_W$间的转换方法适用于后文中所有的摄像机模型。
 
 ## Measurement Function
 
