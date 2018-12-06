@@ -104,48 +104,11 @@ W_e^{(j)}(\vec x \to \vec \omega) =
         \right)
     \right)
 }{
-    \cos\langle\vec N_x, \vec\omega\rangle\int_{\mathcal M_j}dA
+    \cos\langle\vec N_x, \vec\omega\rangle\mathrm{area}(\mathcal M_j)
 }
 $$
 
-其中$\mathrm{Nor}$表示将向量归一化。这个式子的意思是对$\mathcal M_j$上的每个点$\vec x$，只有从小孔所在的方向来的光可以对$j$的颜色作出贡献。当然，我们也可以把$\cos$因子纳入考虑，使得结果更加严格：
-
-$$
-\begin{aligned}
-W_e^{(j)}(\vec x \to \vec \omega) &= \frac{\delta\left(\vec \omega - \mathrm{Nor}\left(
-            \boldsymbol R_{L \to W}[L, x_{S_j}, -y_{S_j}]^T
-        \right)\right)}{\int_{\mathcal M_j}\int_{\mathcal S^2} \delta\left(\vec \omega - \mathrm{Nor}\left(
-            \boldsymbol R_{L \to W}[L, x_{S_j}, -y_{S_j}]^T
-        \right)\right)\cos\langle\vec N_x, \vec\omega\rangle d\omega dA} \\
-&= \frac{
-    \delta
-    \left(
-        \vec \omega - \mathrm{Nor}\left(
-            \boldsymbol R_{L \to W}[L, x_{S_j}, -y_{S_j}]^T
-        \right)
-    \right)
-}{
-    \int_{\mathcal M_j}
-    \cos\langle
-        \vec N_x,
-        \boldsymbol R_{L \to W}[L, x_{S_j}, -y_{S_j}]^T
-    \rangle
-    dA
-} \\
-&= \frac{
-    \delta
-    \left(
-        \vec \omega - \mathrm{Nor}\left(
-            \boldsymbol R_{L \to W}[L, x_{S_j}, -y_{S_j}]^T
-        \right)
-    \right)
-}{
-    \int_{\mathcal M_j}
-    L / \sqrt{L^2 + x_{S_j}^2 + y_{S_j}^2}
-    dA
-}
-\end{aligned}
-$$
+其中$\mathrm{Nor}$表示将向量归一化。这个式子的意思是对$\mathcal M_j$上的每个点$\vec x$，只有从小孔所在的方向来的光可以对$j$的颜色作出贡献。
 
 把这一节和上一节的内容结合起来，就可以实现小孔摄像机模型了。随便画个图看看：
 
@@ -285,7 +248,7 @@ $$
 W_e^{(j)}(\vec x \to \vec \omega) =  \frac{\delta\left(\vec N_x - \vec \omega\right)}{\mathrm{area}(\mathcal M_j)}
 $$
 
-## Measurement Equation on Image
+## Measurement Equation on Film
 
 对环境摄像机的探究就算是大功告成了吗？其实不然。在之前讨论的两个摄像机模型中，如果我们在像素$j$中均匀采样像素平面上的点，那么这也等价于在$\mathcal M_j$上均匀采样，进而可以通过均匀采样和求均值来估计$I_j$。而在环境摄像机模型中，像素$j$上的均匀分布并不等价于$\mathcal M_j$上的均匀分布，因而在$C_I$中，像素$j$范围内的各点对$I_j$的贡献是不等的。我们把measurement equation中的$\mathcal M_j$换到$C_I$上试试：
 
@@ -306,7 +269,7 @@ $$
 
 其中$N$是采样数，$(x_i, y_i)$和$\omega_i$分别是第$i$次采样得到的$C_I$中的点和入射方向，$p(\omega_i \mid (x_i, y_i))$是在选中了$(x_i, y_i)$后选中$\omega_i$的条件概率密度。
 
-接下来我们来尝试导出$W_e^{(j)}$和$Q_e^{(j)}$之间的关系。设$\mathcal M_j$可以被写作参数曲面$\mathcal M_j(\alpha, \beta)$，而全体$(\alpha, \beta)$和$C_I$中像素$j$上的点间构成双射，且具有一大坨我在这里不想写的数学上的良好性质，那么我们可以把对$Q_e$的积分换到$\mathcal M_j$上：
+接下来我们来尝试导出$W_e$和$Q_e$之间的关系。设$\mathcal M_j$可以被写作参数曲面$\mathcal M_j(\alpha, \beta)$，$(\alpha, \beta)$和$C_I$中像素$j$上的点间构成双射，且具有一大坨我在这里不想写的良好数学性质，那么我们可以把对$Q_e$的积分换到$\mathcal M_j$上：
 
 $$
 \begin{aligned}
@@ -322,3 +285,35 @@ Q_e^{(j)}((x, y) \to \vec \omega)\left|\frac{\partial(x, y)}{\partial(\alpha, \b
 $$
 
 其中$\vec x$是$(x, y)$在$\mathcal M_j$上的对应点。
+
+我们把小孔摄像机的$W_e$代入上式，就能得到它的$Q_e$：
+
+$$
+\begin{aligned}
+Q_e^{(j)}((x, y) \to \vec \omega) &= \mathrm{area}(\mathcal M_j)\frac{
+    \delta\left(
+        \vec \omega -
+        \mathrm{Nor}\left(
+            \boldsymbol R_{L \to W}[L, x_{S_j}, -y_{S_j}]^T
+        \right)
+    \right)
+}{
+    \cos\langle\vec N_x, \vec\omega\rangle\mathrm{area}(\mathcal M_j)
+}\cos\langle \vec N_x, \vec \omega\rangle \\
+&= \delta\left(
+    \vec \omega -
+    \mathrm{Nor}\left(
+        \boldsymbol R_{L \to W}[L, x_{S_j}, -y_{S_j}]^T
+    \right)
+\right)
+\end{aligned}
+$$
+
+对薄凸透镜模型也有类似的结论：
+
+$$
+\begin{aligned}
+Q_e^{(j)}((x, y) \to \vec \omega) &= \mathrm{area}(\mathcal M_j)\frac{L^2}{\pi r^2 \cos^4\langle \vec d, \vec \omega\rangle \mathrm{area}(\mathcal M_j)}\cos\langle \vec N_x, \vec \omega\rangle \\
+&= \frac{L^2}{\pi r^2 \cos^3\langle \vec d, \vec \omega\rangle}
+\end{aligned}
+$$
