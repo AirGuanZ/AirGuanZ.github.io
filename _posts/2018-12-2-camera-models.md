@@ -38,7 +38,7 @@ $$
 \end{aligned}
 $$
 
-除了$C_I$和$C_S$间的转换，我们还需要把$C_S$中的坐标转换为世界坐标系中的射线的能力。为了简化问题，我们先考虑一个本地坐标系$C_L$中的情况：摄像机的小孔位于原点，正面朝向$\vec e_x$方向，小孔和元器件平面的距离为$L$，则给定$C_S$中的坐标$(x_S, y_S)$，$C_L$中的射线原点和方向就可以表示为：
+除了$C_I$和$C_S$间的转换，我们还需要把$C_S$中的坐标转换为世界坐标系中的射线的能力。为了简化问题，我们先考虑一个本地坐标系$C_L$中的情况：摄像机的小孔位于原点，正面朝向$\vec e_x$方向，小孔和元器件平面的距离为$L$，则给定$C_S$中的坐标$(x_S, y_S)$，$C_L$中的射线原点和方向可以表示为：
 
 $$
 \begin{aligned}
@@ -47,7 +47,7 @@ $$
 \end{aligned}
 $$
 
-最后，我们引入图形学中非常常见的本地坐标系$C_L$与世界坐标系$C_W$间的变换。假设摄像机可以先被旋转，再被平移。令$\vec d$表示摄像机旋转后的正面朝向，$\vec u$为$C_L$中的$xOz$平面上任意一个不平行于$\vec e_x$的单位向量被变换到在$C_W$中的结果，则$C_L$中的$\vec e_x, \vec e_y, \vec e_z$在$C_W$中分别对应：
+最后，我们引入图形学中非常常见的本地坐标系$C_L$与世界坐标系$C_W$间的变换。假设摄像机可以先被旋转，再被平移。令$\vec d$表示摄像机旋转后的正面朝向，$\vec u$为$C_L$中的$xOz$平面上任意一个不平行于$\vec e_x$的单位向量被变换到$C_W$中的结果，则$C_L$中的$\vec e_x, \vec e_y, \vec e_z$在$C_W$中分别对应：
 
 $$
 \begin{aligned}
@@ -177,7 +177,7 @@ $$
 W_e^{(j)}(\vec x \to \vec \omega) = \frac{L^2}{\pi r^2 \cos^4\langle \vec d, \vec \omega\rangle \mathrm{area}(\mathcal M_j)}
 $$
 
-凸透镜半径取得越大，不在焦平面上的物体显得越模糊。下图的元器件平面宽度为2m，距离透镜1m透镜半径为20cm（这参数已经超出我对摄像机的认知了，不过请不要在意这些细节），可以看到景深效果非常夸张：
+凸透镜半径取得越大，不在焦平面上的物体显得越模糊。下图的元器件平面宽度为2m，距离透镜1m，透镜半径为20cm（这参数已经超出我对摄像机的认知了，不过请不要在意这些细节），可以看到景深效果非常夸张：
 
 ![PICTURE]({{site.url}}/postpics/Atrc/29_2018_12_05_SimpleDoF.png)
 
@@ -285,12 +285,10 @@ $$
 于是$Q_e$和$W_e$满足：
 
 $$
-Q_e^{(j)}((x, y) \to \vec \omega)\left|\frac{\partial(x, y)}{\partial(\alpha, \beta)}\right| = W_e^{(j)}(\vec x \to \vec \omega)\cos\langle \vec N_x, \vec \omega\rangle
+Q_e^{(j)}((x, y) \to \vec \omega)\left|\frac{\partial(x, y)}{\partial(\alpha, \beta)}\right| = W_e^{(j)}(\vec x \to \vec \omega)\cos\langle \vec N_x, \vec \omega\rangle \left|\frac{dA_{\mathcal M_j}}{d\alpha d\beta}\right|
 $$
 
-其中$\vec x$是$(x, y)$在$\mathcal M_j$上的对应点。
-
-我们把小孔摄像机的$W_e$代入上式，就能得到它的$Q_e$：
+其中$\vec x$是$(x, y)$在$\mathcal M_j$上的对应点。我们把小孔摄像机的$W_e$代入上式，就能得到它的$Q_e$：
 
 $$
 \begin{aligned}
@@ -320,4 +318,37 @@ $$
 Q_e^{(j)}((x, y) \to \vec \omega) &= \mathrm{area}(\mathcal M_j)\frac{L^2}{\pi r^2 \cos^4\langle \vec d, \vec \omega\rangle \mathrm{area}(\mathcal M_j)}\cos\langle \vec N_x, \vec \omega\rangle \\
 &= \frac{L^2}{\pi r^2 \cos^3\langle \vec d, \vec \omega\rangle}
 \end{aligned}
+$$
+
+对环境摄像机，注意到：
+
+$$
+\begin{aligned}
+    x &= -\frac 1 {2\pi}w_I\theta \\
+    y &= -\frac{h_I}{2} + \frac{h_I\phi}{\pi}
+\end{aligned}
+$$
+
+于是：
+
+$$
+\left|\frac{\partial(x, y)}{\partial(\theta, \phi)}\right| = \left|\mathrm{Det}\left(\left[\begin{matrix}
+    -w_I/(2\pi) & 0 \\
+    0 & h_I/\pi
+\end{matrix}\right]\right)\right| = \frac{w_Ih_I}{2\pi^2}
+$$
+
+若取摄像机球体半径为1（这与最后的结论无关），那么：
+
+$$
+\begin{aligned}
+& \int_{\theta_1}^{\theta_2}\int_{\phi_1}^{\phi_2}\int_{\mathcal S^2}Q_e^{(j)}((x, y) \to \vec \omega)L(\vec x \leftarrow \vec \omega)\left|\frac{\partial(x, y)}{\partial(\theta, \phi)}\right|d\omega d\phi d\theta \\
+=~& \int_{\theta_1}^{\theta_2}\int_{\phi_1}^{\phi_2}\int_{\mathcal S^2}W_e^{(j)}(\vec x \to \vec \omega)L(\vec x\leftarrow \vec \omega)\cos\langle \vec N_x, \vec\omega\rangle \cos\phi d\omega d\phi d\theta
+\end{aligned}
+$$
+
+其中$\theta_1, \theta_2, \phi_1, \phi_2$是$\mathcal M_j$对应的$\theta$和$\phi$的范围边界。从上式可以解得：
+
+$$
+Q_e^{(j)}((x, y) \to \vec\omega) = \frac{2\pi^2 \delta(\vec N_x - \vec\omega)\cos\phi}{w_Ih_I(\theta_2 - \theta_1)(\sin\phi_2 - \sin\phi_1)}
 $$
