@@ -248,6 +248,10 @@ $$
 W_e^{(j)}(\vec x \to \vec \omega) =  \frac{\delta\left(\vec N_x - \vec \omega\right)}{\mathrm{area}(\mathcal M_j)}
 $$
 
+随便画个图看看：
+
+![PICTURE]({{site.url}}/postpics/Atrc/2018_12_06_EnvironmentCamera.png)
+
 ## Measurement Equation on Film
 
 对环境摄像机的探究就算是大功告成了吗？其实不然。在之前讨论的两个摄像机模型中，如果我们在像素$j$中均匀采样像素平面上的点，那么这也等价于在$\mathcal M_j$上均匀采样，进而可以通过均匀采样和求均值来估计$I_j$。而在环境摄像机模型中，像素$j$上的均匀分布并不等价于$\mathcal M_j$上的均匀分布，因而在$C_I$中，像素$j$范围内的各点对$I_j$的贡献是不等的。我们把measurement equation中的$\mathcal M_j$换到$C_I$上试试：
