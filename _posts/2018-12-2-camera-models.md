@@ -187,7 +187,7 @@ $$
 
 $$
 \begin{aligned}
-    u_\omega &= -\frac{\theta_\omega}{2\pi} \\
+    u_\omega &= 1-\frac{\theta_\omega}{2\pi} \\
     v_\omega &= 0.5 - \frac{\phi_\omega}{\pi}
 \end{aligned}
 $$
