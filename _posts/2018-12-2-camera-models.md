@@ -273,13 +273,19 @@ $$
 
 其中$N$是采样数，$(x_i, y_i)$和$\omega_i$分别是第$i$次采样得到的$C_I$中的点和入射方向，$p(\omega_i \mid (x_i, y_i))$是在选中了$(x_i, y_i)$后选中$\omega_i$的条件概率密度。
 
-接下来我们来尝试导出$W_e$和$Q_e$之间的关系。设$\mathcal M_j$可以被写作参数曲面$\mathcal M_j(\alpha, \beta)$，$(\alpha, \beta)$和$C_I$中像素$j$上的点间构成双射，且具有一大坨我在这里不想写的良好数学性质，那么我们可以把对$Q_e$的积分换到$\mathcal M_j$上：
+接下来我们来尝试导出$W_e$和$Q_e$之间的关系。设$\mathcal M_j$可以被写作参数曲面$\mathcal M_j(\alpha, \beta)$，$(\alpha, \beta)$和$C_I$中像素$j$上的点间构成双射，且具有一大坨我在这里不想写的良好数学性质，那么我们可以把对$Q_e$的积分换到$\mathcal M_j$的参数空间$\Omega$上：
 
 $$
 \begin{aligned}
-&\int_{x_0}^{x_1}\int_{y_0}^{y_1}\int_{\mathcal S^2}Q_e^{(j)}((x, y) \to \vec \omega)L(\mathcal W(x, y) \leftarrow \vec \omega)d\omega dxdy \\
-=~&\int_{\mathcal M_j}\int_{\mathcal S^2}Q_e^{(j)}((x(\alpha, \beta), y(\alpha, \beta)) \to \vec \omega)L(\mathcal M_j(\alpha, \beta) \leftarrow \vec \omega)\left|\frac{\partial(x, y)}{\partial(\alpha, \beta)}\right|d\omega d\alpha d\beta
+I_j &= \int_{x_0}^{x_1}\int_{y_0}^{y_1}\int_{\mathcal S^2}Q_e^{(j)}((x, y) \to \vec \omega)L(\mathcal W(x, y) \leftarrow \vec \omega)d\omega dxdy \\
+&= \int_{\Omega}\int_{\mathcal S^2}Q_e^{(j)}((x(\alpha, \beta), y(\alpha, \beta)) \to \vec \omega)L(\mathcal M_j(\alpha, \beta) \leftarrow \vec \omega)\left|\frac{\partial(x, y)}{\partial(\alpha, \beta)}\right|d\omega d\alpha d\beta
 \end{aligned}
+$$
+
+而$W_e$所满足的方程在形式上和上式非常相似：
+
+$$
+I_j = \int_{\Omega}\int_{\mathcal S^2}W_e^{(j)}(\vec x \to \vec \omega)L(\vec x \leftarrow \vec \omega)\cos\langle \vec N_x, \vec \omega\rangle \left|\frac{dA_{\mathcal M_j}}{d\alpha d\beta}\right| d\omega d\alpha d\beta
 $$
 
 于是$Q_e$和$W_e$满足：
@@ -350,5 +356,5 @@ $$
 其中$\theta_1, \theta_2, \phi_1, \phi_2$是$\mathcal M_j$对应的$\theta$和$\phi$的范围边界。从上式可以解得：
 
 $$
-Q_e^{(j)}((x, y) \to \vec\omega) = \frac{2\pi^2 \delta(\vec N_x - \vec\omega)\cos\phi}{w_Ih_I(\theta_2 - \theta_1)(\sin\phi_2 - \sin\phi_1)}
+Q_e^{(j)}((x, y) \to \vec\omega) = \frac{2\pi^2 \delta(\vec N_x - \vec\omega)\cos\phi}{w_Ih_I\left|(\theta_2 - \theta_1)(\sin\phi_2 - \sin\phi_1)\right|}
 $$
