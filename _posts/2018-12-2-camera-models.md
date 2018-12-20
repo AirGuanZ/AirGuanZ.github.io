@@ -7,9 +7,13 @@ tags:
   - Graphics
 ---
 
-最近在试着实现light tracing算法，需要手推各种摄像机模型的measurement function，打算把结果总结在这里。这篇文章内容是比较trivial的，只是需要把它们完全理清楚才好实现。
+本文内容已作废，原因参见[此文](http://alvyray.com/Memos/CG/Microsoft/6_pixel.pdf)。我最近在重构Atrc，没有再采用本文对摄像机的建模方法，尤其是measurement equation的形式。
 
 <!--more-->
+
+# 原文
+
+最近在试着实现light tracing算法，需要手推各种摄像机模型的measurement function，打算把结果总结在这里。这篇文章内容是比较trivial的，只是需要把它们完全理清楚才好实现。
 
 本文一律使用右手坐标系，且视$z$轴正方向为垂直向上的方向。此外，本文的讨论并不立足于实时渲染，因此不会涉及到透视投影变换、齐次坐标系等话题。
 
