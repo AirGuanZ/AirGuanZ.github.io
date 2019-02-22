@@ -33,41 +33,7 @@ Physically Based Rendering（PBR）是个很美好的概念，意为在物理意
 
 以上所有参数的有效取值范围均为[0, 1]，该范围内的任何取值组合都被认为是合法的（valid）材质。下面依次解析Disney BRDF的各分量模型以及上述参数在其中起到的作用。
 
-## Fresnel项
-
-想象某种透明材质，譬如玻璃和宝石，当一束光沿特定角度照射到它的表面时，反射光占反射光+折射光的比例可以用一个公式来计算，称为fresnel项。绝缘体的fresnel项具有如下形式：
-
-$$
-\begin{aligned}
-	F_r &= \frac 1 2 (r^2_\parallel + r^2_\perp) \\
-	r_\parallel &= \frac{\eta_t\cos\theta_i - \eta_i\cos\theta_t}{\eta_t\cos\theta_i + \eta_i\cos\theta_t} \\
-	r_\perp &= \frac{\eta_i\cos\theta_i - \eta_t\cos\theta_t}{\eta_i\cos\theta_i + \eta_t\cos\theta_t}
-\end{aligned}
-$$
-
-其中$\theta_i$是入射光与法线的夹角大小，$\theta_t$是出射光与法线的夹角大小，$\eta_i$、$\eta_t$则分别是入射介质和出射介质的折射率。$r_\parallel$是平行极化光分量，$r_\perp$是垂直极化光分量，图形学通常会忽略入射光和出射光的极化特征，因此我们不关心其影响。
-
-导体（金属）材质的fresnel项要复杂一些，其折射率具有复数形式$\eta' + ik'$，设$\eta = \eta' / \eta_i, k = k' / \eta_i$，则：
-
-$$
-\begin{aligned}
-	F_r &= \frac 1 2(r^2_\parallel + r^2_\perp) \\
-	r_\parallel &= r_\perp\frac{\cos^2\theta(a^2 + b^2) - 2a\cos\theta\sin^2\theta + \sin^4\theta}{\cos^2\theta(a^2 + b^2) + 2a\cos\theta\sin^2\theta + \sin^4\theta} \\
-	r_\perp &= \frac{a^2 + b^2 - 2a\cos\theta + \cos^2\theta}{a^2 + b^2 + 2a\cos\theta + \cos^2\theta} \\
-	a^2 + b^2 &= \sqrt{(\eta^2 - k^2 - \sin^2\theta)^2 + 4\eta^2k^2} \\
-	a &= \sqrt{\frac 1 2\left(a^2 + b^2 + \eta^2 - k^2 - \sin^2\theta\right)}
-\end{aligned}
-$$
-
-以上两个公式是完全可以从经典电磁学的角度推导出来的。笔者大二学习《电磁场与波》时还纳闷学这个有什么用，没想到在图形学中再次相见了。
-
-以折射率为1.4的球体为例，将它的fresnel项绘制出来会是这样的：
-
-![PICTURE]({{site.url}}/postpics/dielectric-fresnel-1-1.4.png)
-
-可以看到，该球体的$F_r(\theta_i)$在$\theta$接近0°（垂直入射）时最小，而在接近90°时靠近1，即正对着视线的一面以折射为主，而在边缘则几乎全是反射。
-
-## 漫反射模型
+## 漫反射
 
 中学物理课本告诉我们，漫反射是由于物体表面粗糙不平，会把入射光反射到各个不同方向上造成的反射现象。然而在PBR中，这正是微表面理论所建模的对象。微表面模型通常用于模拟高光，和漫反射的实际效果八竿子打不着，可见中学物理中的漫反射和PBR中的漫反射不是同一个概念。
 
@@ -86,7 +52,7 @@ $$
 \end{aligned}
 $$
 
-其中$\theta_d$是入射方向$\boldsymbol w_i$与half vector $\boldsymbol h = \mathrm{normalize(\boldsymbol w_i + \boldsymbol w_o)}$的夹角。
+其中$\theta_d$是入射方向$\boldsymbol w_i$与half vector $\boldsymbol \omega_h = \mathrm{normalize(\boldsymbol w_i + \boldsymbol w_o)}$的夹角。
 
 既然漫反射和次表面散射具有类似的原理，那么就可以用一个参数来在二者之间进行过度，也就是Disney BRDF中的subsurface参数。Disney BRDF会计算出一个漫反射值和一个次表面散射值，然后用subsurface在二者间进行插值。
 
@@ -100,34 +66,6 @@ $$
 \end{aligned}
 $$
 
-这种东西的代码实现很简单，抄公式就行了：
-
-{% highlight c++ %}
-template<typename T>
-auto Mix(const T &left, const T &right, Real factor)
-{
-    return (1 - factor) * left + factor * right;
-}
-
-Real Diffuse(Real cosThetaI, Real cosThetaO, Real cosThetaD, Real roughness, Real subsurfaceWeight)
-{
-    Real cosThetaD2 = cosThetaD * cosThetaD;
-    Real FD90 = Real(0.5) + 2 * cosThetaD2 * roughness;
-    Real x = 1 - cosThetaI, x2 = x * x, x5 = x2 * x2 * x;
-    Real y = 1 - cosThetaO, y2 = y * y, y5 = y2 * y2 * y;
-    Real diffuse = (1 + (FD90 - 1) * x5) * (1 + (FD90 - 1) * y5);
-
-    if(!subsurfaceWeight)
-        return 1 / PI * diffuse;
-
-    Real Fss90 = cosThetaD2 * roughness;
-    Real Fss = (1 + (Fss90 - 1) * x5) * (1 + (Fss90 - 1) * y5);
-    Real subsurface = Real(1.25) * (Fss * (1 / (cosThetaI + cosThetaO) - Real(0.5)) + Real(0.5));
-
-    return 1 / PI * Mix(diffuse, subsurface, subsurfaceWeight);
-}
-{% endhighlight %}
-
 ## 高光项
 
 如今几乎所有的PBR材质模型中的高光都是用Torrance-Sparrow微表面模型来模拟的，其形式如下：
@@ -138,13 +76,23 @@ $$
 
 其中$F_r(\theta_d)$是fresnel项；$D(\theta_h, \phi_h)$是微表面法线分布函数值，$\theta_h$为$\boldsymbol w_h$与法线的夹角，$\phi_h$为$\boldsymbol w_h$的水平极角；$G(\theta_i, \theta_o)$为法线为$\boldsymbol w_h$的微表面中没有被其他微表面遮蔽的比例。$D$和$G$在不同的材质模型中有不同的选择，下方的$4\cos\theta_i\cos\theta_o$则是Torrance-Sparrow模型固有的一部分。Torrance-Sparrow模型的来历可简单参见[这里]({{site.url}}/2018/10/22/reflection-models.html#torrance-sparrow-model)。
 
+### 微表面法线分布
+
 Disney BRDF中的高光项也使用了该模型，其微表面法线分布函数具有如下形式：
 
 $$
 D(\theta_h, \phi_h) = \frac{c}{\left(\sin^2\theta_h\left(\dfrac{\cos^2\phi}{\alpha_x^2} + \dfrac{\sin^2\phi}{\alpha_y^2}\right) + \cos^2\theta_h\right)^\gamma}
 $$
 
-其中c是归一化常数；$\alpha_x$和$\alpha_y$是衡量表面粗糙度的参数，它们相等时材料为各向同性，不等时则为各向异性；$\gamma$是一个用来调整函数曲线的参数，为2时就恰好等价于近来流行的GGX（Trowbridge-Reitz）函数。由于这一函数在Trowbridge-Reitz的基础上添加了$\gamma$参数，因此被称为Generalized-Trowbridge-Reitz函数，简称GTR。Disney BRDF中有两处使用了GTR函数，一处是这里的高光项，另一处是清漆的反射。在高光项中，$\gamma$值恰好被设定为2。
+其中c是归一化常数；$\alpha_x$和$\alpha_y$是衡量表面粗糙度的参数，它们相等时材料为各向同性，不等时则为各向异性；$\gamma$是一个用来调整函数曲线的参数，为2时就恰好等价于近来流行的GGX（Trowbridge-Reitz）函数。由于这一函数在Trowbridge-Reitz的基础上添加了$\gamma$参数，因此被称为Generalized-Trowbridge-Reitz函数，简称GTR。Disney BRDF中有两处使用了GTR函数，一处是这里的高光项，另一处是清漆的反射。在高光项中，$\gamma$值恰好被设定为2。$\alpha_x$、$\alpha_y$与Disney BRDF参数间的关系为：
+
+$$
+\begin{aligned}
+\alpha_x &= \mathrm{roughness}^2 a \\
+\alpha_y &= \mathrm{roughness}^2 / a \\
+a &= \sqrt{1 - 0.9\mathrm{anisotropic}}
+\end{aligned}
+$$
 
 考虑到$D$应满足归一化约束：
 
@@ -214,19 +162,69 @@ $$
 \phi_h = \arctan\left(\frac{\alpha_y}{\alpha_x}\tan(2\pi\xi_1)\right)
 $$
 
-这个式子有些问题——里面的$\tan$对$\xi_1 = 0.25$或$\xi_1 = 0.75$是无意义的，外面的$\arctan$的取值范围又是$(-\pi/2, \pi/2)$而不是我们想要的$[0, \pi/2)$——
+这个式子有些问题：里面的$\tan$对$\xi_1 = 0.25$或$\xi_1 = 0.75$是无意义的，外面的$\arctan$的取值范围又是$(-\pi/2, \pi/2)$而不是我们想要的$[0, \pi/2)$，如下图所示：
 
 ![PICTURE]({{site.url}}/postpics/sample-phi-in-aniso-ggx.png)
 
-可以看到这一函数被分为三段，我们把中间的一段向上平移$\pi$，最后一段向上平移$2\pi$，并专门处理$0.25$和$0.75$附近的值以保持函数曲线平滑、避免出现数值问题即可。
+可以看到这一函数被分为三段，我们把中间的一段向上平移$\pi$，最后一段向上平移$2\pi$，并专门处理$0.25$和$0.75$附近的值以保持函数曲线平滑、避免出现数值问题即可。事实上，我们并不直接需要$\phi_h$的值，只要求出$\sin\phi_h$和$\cos\phi_h$即可，这样就能绕开$\tan$和$\arctan$的糟糕性质——
+
+$$
+\begin{aligned}
+\sin\phi_h &= \frac{\alpha_y}{r}\sin(2\pi\xi_1) \\
+\cos\phi_h &= \frac{\alpha_x}{r}\cos(2\pi\xi_1)
+\end{aligned}
+$$
+
+其中$r$是保证$\sin^2\phi_h + \cos^2\phi_h = 1$的归一化系数。
 
 最后是求$p_h(\theta_h\mid\phi_h)$对应的条件分布：
 
 $$
 \begin{aligned}
 P_h(\theta_h\mid\phi_h) &= \int_0^{\theta_h}2\pi\alpha_x\alpha_y\Phi(\phi)D(x, \phi_h)\sin x\cos xdx \\
-&= \int_0^{\theta_h}\frac {2\Phi(\phi)\sin x\cos x} {\left(\sin^2x\Phi(\phi_h) + \cos^2x\right)^2}dx
+&= \int_0^{\theta_h}\frac {2\Phi(\phi_h)\sin x\cos x} {\left(\sin^2x\Phi(\phi_h) + \cos^2x\right)^2}dx \\
+&= \frac{\Phi(\phi_h)(1 - \cos(2\theta_h))}{(1 - \Phi(\theta_h))\cos(2\theta_h) + (1 + \Phi(\theta_h))}
 \end{aligned}
 $$
+
+令$P_h(\theta_h\mid\phi_h) = \xi_2$，解得：
+
+$$
+\begin{aligned}
+&\frac{\Phi(\phi_h)(1 - \cos(2\theta_h))}{(1 - \Phi(\theta_h))\cos(2\theta_h) + (1 + \Phi(\theta_h))} = \xi_2 \\
+\Rightarrow~&\theta_h = \arccos\left(\sqrt{\frac{\Phi(\phi_h)(1 - \xi_2)}{(1 - \Phi(\phi_h))\xi_2 + \Phi(\phi_h)}}\right)
+\end{aligned}
+$$
+
+最后推导一下按这种方式采样$\boldsymbol \omega_h$，然后依据它计算出入射方向$\boldsymbol \omega_i$的概率密度。注意到：
+
+$$
+p(\boldsymbol \omega_h)d\omega_h = p(\theta_h, \phi_h)d\theta_hd\phi_h \Rightarrow p(\boldsymbol \omega_h) = D(\theta_h, \phi_h)\cos\theta_h
+$$
+
+又根据$d\omega_i = 4\cos\theta_hd\omega_h$，有：
+
+$$
+p(\boldsymbol \omega_i) = p(\boldsymbol \omega_h)\frac{d\omega_h}{d\omega_i} = \frac{p(\boldsymbol \omega_h)}{4\cos\theta_h} = \frac{D(\theta_h, \phi_h)}{4}
+$$
+
+### 遮蔽项
+
+接下来是Torrance-Sparrow公式中的$G$，Disney BRDF选择了Smith遮蔽函数：
+
+$$
+G(\boldsymbol \omega_i, \boldsymbol \omega_o) = G_1(\boldsymbol \omega_i)G_1(\boldsymbol \omega_o)
+$$
+
+至于$G_1$，就直接用各向异性GGX分布对应的遮蔽函数好了：
+
+$$
+\begin{aligned}
+&G_1(\boldsymbol \omega) = \frac 1 {1 + \Lambda(\boldsymbol \omega)} \\
+&\Lambda(\boldsymbol \omega) = -\frac 1 2 + \frac 1 2 \sqrt{1 + (\alpha_x^2\cos^2\phi + \alpha_y^2\sin^2\phi)\tan^2\theta}
+\end{aligned}
+$$
+
+注意到我们对高光进行采样的时候没有考虑$G$的影响，其主要原因是，emmm，考虑了$G$之后我就推不出来了……
 
 （施工中……）
