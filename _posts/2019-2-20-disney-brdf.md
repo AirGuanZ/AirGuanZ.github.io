@@ -186,7 +186,7 @@ $$
 $$
 \begin{aligned}
 &p_h(\theta_h, \phi_h)d\theta_hd\phi_h = D(\theta_h, \phi_h)\cos\theta_hd\omega_h = D(\theta_h, \phi_h)\sin\theta_h\cos\theta_hd\theta_hd\phi_h \\
-\Rightarrow~&p_h(\theta_h)p_h(\phi_h) = D(\theta_h, \phi_h)\sin\theta_h\cos\theta_h
+\Rightarrow~&p_h(\theta_h, \phi_h) = D(\theta_h, \phi_h)\sin\theta_h\cos\theta_h
 \end{aligned}
 $$
 
