@@ -48,7 +48,7 @@ $$
 
 其中$\theta_d$是入射方向$\boldsymbol w_i$与half vector $\boldsymbol \omega_h = \mathrm{normalize(\boldsymbol w_i + \boldsymbol w_o)}$的夹角。
 
-既然漫反射和次表面散射具有类似的原理，那么就可以用一个参数来在二者之间进行过度，也就是Disney BRDF中的subsurface参数。Disney BRDF会计算出一个漫反射值和一个次表面散射值，然后用subsurface在二者间进行插值。
+既然漫反射和次表面散射具有类似的原理，那么就可以用一个参数来在二者之间过渡，也就是Disney BRDF中的subsurface参数。Disney BRDF会计算出一个漫反射值和一个次表面散射值，然后用subsurface在二者间进行插值。
 
 对于次表面散射的计算，Disney BRDF并未使用人们所熟知的Jensen BSSRDF等复杂模型（否则计算效率也太低了），而是用一个BRDF来近似计算。他们的次表面散射公式是从Hanrahan-Krueger BRDF Approximation Of Isotropic BSSRDF改进而来的：
 
