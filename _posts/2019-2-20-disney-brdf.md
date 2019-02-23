@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Disney Principled BRDF：原理与实现
+title: Disney Principled BRDF实现笔记
 key: t20190220
 tags:
   - Atrc
@@ -9,9 +9,9 @@ tags:
 
 Physically Based Rendering（PBR）是个很美好的概念，意为在物理意义上有据可依的渲染技术。PBR在物体材质上的应用主要立足于各种反射/折射模型上，然而，诸如微表面法线分布函数、导体的复数折射率等花里胡哨的公式和概念对使用者极不友好。Disney Principled BRDF（以后简称Disney BRDF）为PBR材质提供一组直观的参数和编辑方式，在“直观”、“多样”和“基于物理”三者间取得了很好的均衡。
 
-本文将记叙我在实现Disney BRDF过程中的推导和所使用的公式，而不是解释一些PBR相关的基础知识。本文大部分内容以[Disney BRDF Shader](https://github.com/wdas/brdf/blob/master/src/brdfs/disney.brdf)和[Disney Principled BRDF文档](https://disney-animation.s3.amazonaws.com/library/s2012_pbs_disney_brdf_notes_v2.pdf)为参考。
-
 <!--more-->
+
+本文记叙了我在实现Disney BRDF过程中的推导和所使用的公式，而不是解释一些PBR相关的基础知识。本文大部分内容以[Disney BRDF Shader](https://github.com/wdas/brdf/blob/master/src/brdfs/disney.brdf)和[Disney Principled BRDF文档](https://disney-animation.s3.amazonaws.com/library/s2012_pbs_disney_brdf_notes_v2.pdf)为参考。
 
 ## 参数概览
 
@@ -35,15 +35,9 @@ Physically Based Rendering（PBR）是个很美好的概念，意为在物理意
 
 ## 漫反射
 
-中学物理课本告诉我们，漫反射是由于物体表面粗糙不平，会把入射光反射到各个不同方向上造成的反射现象。然而在PBR中，这正是微表面理论所建模的对象。微表面模型通常用于模拟高光，和漫反射的实际效果八竿子打不着，可见中学物理中的漫反射和PBR中的漫反射不是同一个概念。
+[漫反射](https://en.wikipedia.org/wiki/Diffuse_reflection)是光进入材质表面以下发生浅层散射后再从离入射点非常近的位置射出的结果，在物理意义上和次表面散射是相同的（只是尺度不同）。正因如此，许多材质模型会用fresnel公式计算折射光比例作为漫反射分量的乘积因子。
 
-[“漫反射”](https://en.wikipedia.org/wiki/Diffuse_reflection)可以认为是光进入材质表面以下发生浅层散射后再射出表面后的结果，在物理意义上和次表面散射是相同的。正因如此，许多材质模型会用fresnel公式计算折射光比例作为漫反射分量的乘积因子：
-
-$$
-(1 - F_r(\theta_i))(1 - F_r(\theta_o))
-$$
-
-乘积中的两项分别对应光进入材质中和离开材质时的折射比例。不过，Disney BRDF使用了魔改的fresnel公式——他们使用Schlick公式来作为fresnel项的近似，并且丢弃了折射率的概念，转而让fresnel项和物体表面的粗糙度挂钩。我没看出这有什么道理，不过原文称“这能很好地拟合实际数据，对artists也很友好”，那就暂且接受吧。公式如下：
+不过，Disney BRDF使用了魔改的fresnel公式——他们使用Schlick公式来作为fresnel项的近似，并且丢弃了折射率的概念，转而让fresnel项和物体表面的粗糙度挂钩。我没看出这有什么道理，不过原文称“这能很好地拟合实际数据，对artists也很友好”，那就暂且接受吧。公式如下：
 
 $$
 \begin{aligned}
@@ -404,5 +398,7 @@ $$
 ## 重要性采样
 
 之前我们讨论了两个高光项的重要性采样，然鹅这并不是针对整个Disney BRDF的，因此需要将这些采样技术统合到一个采样方案中。
+
+Sheen在整个BRDF中占比太小，所以不参与采样。我们主要考虑的采样对象有三个：漫反射，高光和清漆。我们简单地以正比于强度的离散分布律来选择采样哪一种反射，然后用[多重重要性采样]({{site.url}}/2018/10/15/multiple-importance-sampling.html)技术将其概率密度函数值结合起来。
 
 （施工中……）
