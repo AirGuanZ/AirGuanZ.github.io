@@ -84,8 +84,8 @@ $$
 
 $$
 \begin{aligned}
-\alpha_x &= \mathrm{roughness}^2 a \\
-\alpha_y &= \mathrm{roughness}^2 / a \\
+\alpha_x &= \mathrm{roughness}^2 / a \\
+\alpha_y &= \mathrm{roughness}^2 * a \\
 a &= \sqrt{1 - 0.9\mathrm{anisotropic}}
 \end{aligned}
 $$
@@ -370,8 +370,8 @@ $D_s$是高光的微表面法线分布函数，采用各向异性GTR2函数（�
 $$
 \begin{aligned}
 D_s(\boldsymbol \omega_h) &= \frac 1 {\pi\alpha_x\alpha_y\left(\sin^2\theta_h\left(\frac{\cos^2\phi}{\alpha_x^2} + \frac{\sin^2\phi}{\alpha_y^2}\right) + \cos^2\theta_h\right)^2} \\
-\alpha_x &= \sigma_r^2 a \\
-\alpha_y &= \sigma_r^2 / a \\
+\alpha_x &= \sigma_r^2 / a \\
+\alpha_y &= \sigma_r^2 a \\
 a &= \sqrt{1 - 0.9\sigma_a}
 \end{aligned}
 $$
