@@ -13,6 +13,8 @@ Physically Based Rendering（PBR）是个很美好的概念，意为在物理意
 
 本文记叙了我在实现Disney BRDF过程中的推导和所使用的公式，而不是解释一些PBR相关的基础知识。本文大部分内容以[Disney BRDF Shader](https://github.com/wdas/brdf/blob/master/src/brdfs/disney.brdf)和[Disney Principled BRDF文档](https://disney-animation.s3.amazonaws.com/library/s2012_pbs_disney_brdf_notes_v2.pdf)为参考。
 
+初入图形学，如有错误，欢迎指正。
+
 ## 参数概览
 
 ![PICTURE]({{site.url}}/postpics/disney-brdf-parameters.png)
@@ -29,7 +31,7 @@ Physically Based Rendering（PBR）是个很美好的概念，意为在物理意
 7. sheen，布料、纺织物材质的分量大小。
 8. sheenTint，sheen分量的颜色向基本颜色靠拢的程度。
 9. clearCoat，一个额外的高光项，用于模拟清漆的效果。
-10. clearGloss，清漆的粗糙度。
+10. clearGloss，清漆的光滑程度。
 
 以上所有参数的有效取值范围均为[0, 1]，该范围内的任何取值组合都被认为是合法的（valid）材质。下面依次解析Disney BRDF的各分量模型以及上述参数在其中起到的作用。
 
@@ -227,7 +229,7 @@ $$
 \mathrm{roughness}_g = \frac{1 + \mathrm{roughness}}{2}
 $$
 
-并称这样能够更好地拟合MERL数据库中的材质数据。后来随着理论分析的进步，他们去掉了这一trick，并认为MERL中对光滑材料的数据测量并不准确。
+并称这样能够更好地拟合MERL数据库中的材质数据。后来随着理论分析的进步，他们认为MERL中对光滑材料的数据测量并不准确，去掉了这一trick。
 
 ## 边缘处的光泽
 
@@ -366,7 +368,12 @@ $$
 $D_s$是高光的微表面法线分布函数，采用各向异性GTR2函数（其实就是GGX）：
 
 $$
-D_s(\boldsymbol \omega_h) = \frac 1 {\pi\alpha_x\alpha_y\left(\sin^2\theta_h\left(\frac{\cos^2\phi}{\alpha_x^2} + \frac{\sin^2\phi}{\alpha_y^2}\right) + \cos^2\theta_h\right)^2}
+\begin{aligned}
+D_s(\boldsymbol \omega_h) &= \frac 1 {\pi\alpha_x\alpha_y\left(\sin^2\theta_h\left(\frac{\cos^2\phi}{\alpha_x^2} + \frac{\sin^2\phi}{\alpha_y^2}\right) + \cos^2\theta_h\right)^2} \\
+\alpha_x &= \sigma_r^2 a \\
+\alpha_y &= \sigma_r^2 / a \\
+a &= \sqrt{1 - 0.9\sigma_a}
+\end{aligned}
 $$
 
 $F_c$是清漆的fresnel项，采用折射率固定为1.5的绝缘体对应的Schlick公式：
@@ -390,15 +397,32 @@ $G_c$居然没和$\sigma_{cg}$挂钩，官方解释是这样效果看起来很�
 $D_c$是清漆的微表面法线分布，采用各向同性的GTR1函数：
 
 $$
-D_c(\boldsymbol \omega_h) = \frac {\alpha^2 - 1} {2\pi\ln\alpha(\alpha^2\cos^2\theta_h + \sin^2\theta_h)}
+\begin{aligned}
+D_c(\boldsymbol \omega_h) &= \frac {\alpha^2 - 1} {2\pi\ln\alpha(\alpha^2\cos^2\theta_h + \sin^2\theta_h)} \\
+\alpha &= \mathrm{mix}(0.1, 0.01, \sigma_{cg})
+\end{aligned}
 $$
 
 至此，Disney BRDF的计算就介绍完毕，可以在Shader中实现了。
 
 ## 重要性采样
 
-之前我们讨论了两个高光项的重要性采样，然鹅这并不是针对整个Disney BRDF的，因此需要将这些采样技术统合到一个采样方案中。
+之前我们讨论了两个高光项的重要性采样，然鹅这并不是针对整个Disney BRDF的，因此需要将这些采样技术统合到一个采样方案中。现假设给定了$\boldsymbol \omega_o$，需要采样入射光的方向$\boldsymbol \omega_i$。
 
 Sheen在整个BRDF中占比太小，所以不参与采样。我们主要考虑的采样对象有三个：漫反射，高光和清漆。我们简单地以正比于强度的离散分布律来选择采样哪一种反射，然后用[多重重要性采样]({{site.url}}/2018/10/15/multiple-importance-sampling.html)技术将其概率密度函数值结合起来。
 
+令baseColor为白色（具体数值不重要，重要的是各颜色通道相同），保持其他参数不变，此时的$(1 - \sigma_m)$，$F_s(\theta_d)$和$\sigma_cF_c(\theta_d)/4$将被作为三种采样对象的权重。设这三个权重在归一化后分别为$w_d, w_s, w_c$，$p_d, p_s, p_c$分别为漫反射、高光和清漆在采样$\boldsymbol \omega_i$时的概率密度函数，那么总的概率密度函数为：
+
+$$
+p(\boldsymbol \omega_i) = w_dp_d(\boldsymbol \omega_i) + w_sp_s(\boldsymbol \omega_i) + w_cp_c(\boldsymbol \omega_i)
+$$
+
+对漫反射，我们可以对法线所在的半球立体角使用cosine-weighted采样；对高光和清漆，可以分别使用之前推导的GTR2采样与GTR1采样技术。这样一来，就得到了对Disney BRDF进行采样的方法，可以将其实现在离线渲染中。
+
+## 实现效果
+
 （施工中……）
+
+## NEXT STEP
+
+Disney BRDF的一个显著缺点是无法处理透明和半透明的材质，这在之后的扩展版——Disney Principled BSDF中得到了解决。BSDF版本不仅引入了透射，还支持了介质吸收和Normalized Diffusion BSSRDF，这需要渲染算法加以支持。不出意外的话，我以后会有一篇关于它的实现笔记。
