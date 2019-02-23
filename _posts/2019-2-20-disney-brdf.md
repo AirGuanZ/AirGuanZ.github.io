@@ -11,7 +11,7 @@ Physically Based Rendering（PBR）是个很美好的概念，意为在物理意
 
 <!--more-->
 
-本文记叙了我在实现Disney BRDF过程中的推导和所使用的公式，而不是解释一些PBR相关的基础知识。本文大部分内容以[Disney BRDF Shader](https://github.com/wdas/brdf/blob/master/src/brdfs/disney.brdf)和[Disney Principled BRDF文档](https://disney-animation.s3.amazonaws.com/library/s2012_pbs_disney_brdf_notes_v2.pdf)为参考。
+本文记叙了我在实现Disney BRDF过程中的推导和所使用的公式，而不是解释一些PBR相关的基础知识。大部分内容以[Disney BRDF Shader](https://github.com/wdas/brdf/blob/master/src/brdfs/disney.brdf)和[Disney Principled BRDF文档](https://disney-animation.s3.amazonaws.com/library/s2012_pbs_disney_brdf_notes_v2.pdf)为参考。
 
 初入图形学，如有错误，欢迎指正。
 
@@ -39,7 +39,7 @@ Physically Based Rendering（PBR）是个很美好的概念，意为在物理意
 
 [漫反射](https://en.wikipedia.org/wiki/Diffuse_reflection)是光进入材质表面以下发生浅层散射后再从离入射点非常近的位置射出的结果，在物理意义上和次表面散射是相同的（只是尺度不同）。正因如此，许多材质模型会用fresnel公式计算折射光比例作为漫反射分量的乘积因子。
 
-不过，Disney BRDF使用了魔改的fresnel公式——他们使用Schlick公式来作为fresnel项的近似，并且丢弃了折射率的概念，转而让fresnel项和物体表面的粗糙度挂钩。我没看出这有什么道理，不过原文称“这能很好地拟合实际数据，对artists也很友好”，那就暂且接受吧。公式如下：
+Disney BRDF使用了魔改的Schlick公式——他们丢弃了折射率的概念，转而让fresnel项和物体表面的粗糙度挂钩。我没看出这有什么道理，不过原文称“这能很好地拟合实际数据，对artists也很友好”，那就暂且接受吧。公式如下：
 
 $$
 \begin{aligned}
@@ -62,7 +62,7 @@ $$
 \end{aligned}
 $$
 
-## 高光项
+## 高光
 
 如今几乎所有的PBR材质模型中的高光都是用Torrance-Sparrow微表面模型来模拟的，其形式如下：
 
@@ -235,7 +235,7 @@ $$
 
 当我们从几乎垂直于法线的方向去观察诸如丝绸或一些布料时，它们会显得比普通的漫反射更明亮一些。Disney BRDF直接用一个缩放后的Schlick公式去模拟这一现象，即$(1 - \cos\theta_d)^5\mathrm{sheen}$。
 
-## 清漆项
+## 清漆
 
 诸如车漆、木质地板等材料可以通过一个两层模型来渲染：上面是一层透明材料，通常比较光滑，下面则是漫反射或金属等其他材料。如果要仔细地渲染这一模型，我们需要考虑两层间的多次反射和折射，并用fresnel公式来分配每次反射/折射的比例。Disney BRDF采用的方案要简单粗暴得多——加上一个额外的高光，称为清漆（clearcoat）项。
 
