@@ -7,11 +7,11 @@ tags:
   - Graphics
 ---
 
-Physically Based Rendering（PBR）是个很美好的概念，意为在物理意义上有据可依的渲染技术。PBR在物体材质上的应用主要体现在各种材质模型上，旨在建立统一规范的材质workflow，以及减少美术工作者在调参上花费的时间。然而，诸如微表面法线分布函数、导体的复数折射率等花里胡哨的公式和概念对使用者极不友好。此时，为PBR材质提供一组直观的参数和编辑方式，就成了推广该项技术的当务之急。Disney Principled BRDF（以后简称Disney BRDF）就是这样一项成果，在“直观”、“多样”和“基于物理”三者间取得了很好的均衡。本文将介绍其原理和实现方法。
+Physically Based Rendering（PBR）是个很美好的概念，意为在物理意义上有据可依的渲染技术。PBR在物体材质上的应用主要立足于各种反射/折射模型上，然而，诸如微表面法线分布函数、导体的复数折射率等花里胡哨的公式和概念对使用者极不友好。Disney Principled BRDF（以后简称Disney BRDF）为PBR材质提供一组直观的参数和编辑方式，在“直观”、“多样”和“基于物理”三者间取得了很好的均衡。
+
+本文将记叙我在实现Disney BRDF过程中的推导和所使用的公式，而不是解释一些PBR相关的基础知识。本文大部分内容以[Disney BRDF Shader](https://github.com/wdas/brdf/blob/master/src/brdfs/disney.brdf)和[Disney Principled BRDF文档](https://disney-animation.s3.amazonaws.com/library/s2012_pbs_disney_brdf_notes_v2.pdf)为参考。
 
 <!--more-->
-
-本文大部分内容基于[Disney BRDF Shader](https://github.com/wdas/brdf/blob/master/src/brdfs/disney.brdf)和[Disney Principled BRDF文档](https://disney-animation.s3.amazonaws.com/library/s2012_pbs_disney_brdf_notes_v2.pdf)。
 
 ## 参数概览
 
@@ -84,7 +84,7 @@ $$
 D(\theta_h, \phi_h) = \frac{c}{\left(\sin^2\theta_h\left(\dfrac{\cos^2\phi}{\alpha_x^2} + \dfrac{\sin^2\phi}{\alpha_y^2}\right) + \cos^2\theta_h\right)^\gamma}
 $$
 
-其中c是归一化常数；$\alpha_x$和$\alpha_y$是衡量表面粗糙度的参数，它们相等时材料为各向同性，不等时则为各向异性；$\gamma$是一个用来调整函数曲线的参数，为2时就恰好等价于近来流行的GGX（Trowbridge-Reitz）函数。由于这一函数在Trowbridge-Reitz的基础上添加了$\gamma$参数，因此被称为Generalized-Trowbridge-Reitz函数，简称GTR。Disney BRDF中有两处使用了GTR函数，一处是这里的高光项，另一处是清漆的反射。在高光项中，$\gamma$值恰好被设定为2。$\alpha_x$、$\alpha_y$与Disney BRDF参数间的关系为：
+其中$c$是归一化常数；$\alpha_x$和$\alpha_y$是衡量表面粗糙度的参数，它们相等时材料为各向同性，不等时则为各向异性；$\gamma$是一个用来调整函数曲线的参数，为2时就恰好等价于近来流行的GGX（Trowbridge-Reitz）函数。由于这一函数在Trowbridge-Reitz的基础上添加了$\gamma$参数，因此被称为Generalized-Trowbridge-Reitz函数，简称GTR。Disney BRDF中有两处使用了GTR函数，一处是这里的高光项，另一处是清漆的反射。在高光项中，$\gamma$值恰好被设定为2。$\alpha_x$、$\alpha_y$与Disney BRDF参数间的关系为：
 
 $$
 \begin{aligned}
@@ -141,7 +141,7 @@ $$
 两边在$[0, \pi/2]$上对$\theta_h$积分，得：
 
 $$
-\int_0^{\pi/2}p_h(\theta_h, \phi_h)d\theta_h = \int_0^{\pi/2}D(\theta_h, \phi_h)\sin\theta_h\cos\theta_hd\theta_h~\Rightarrow~p_h(\phi_h) = \frac 1 {2\pi\alpha_x\alpha_y\Phi(\phi)}
+\int_0^{\pi/2}p_h(\theta_h, \phi_h)d\theta_h = \int_0^{\pi/2}D(\theta_h, \phi_h)\sin\theta_h\cos\theta_hd\theta_h~\Rightarrow~p_h(\phi_h) = \frac 1 {2\pi\alpha_x\alpha_y\Phi(\phi_h)}
 $$
 
 自然而然地：
@@ -208,6 +208,8 @@ $$
 p(\boldsymbol \omega_i) = p(\boldsymbol \omega_h)\frac{d\omega_h}{d\omega_i} = \frac{p(\boldsymbol \omega_h)}{4\cos\theta_h} = \frac{D(\theta_h, \phi_h)}{4}
 $$
 
+我在对高光进行采样的时候没有考虑fresnel项和遮蔽项，主要原因是考虑了之后我就推不出来了，emmmm……
+
 ### 遮蔽项
 
 接下来是Torrance-Sparrow公式中的$G$，Disney BRDF选择了Smith遮蔽函数：
@@ -225,6 +227,182 @@ $$
 \end{aligned}
 $$
 
-注意到我们对高光进行采样的时候没有考虑$G$的影响，其主要原因是，emmm，考虑了$G$之后我就推不出来了……
+其中的$\alpha_x$和$\alpha_y$还是按之前的方法通过roughness和anisotropic计算出来的。值得一提的是，最初的Disney BRDF在计算高光的遮蔽项时将roughness做了如下变换：
+
+$$
+\mathrm{roughness}_g = \frac{1 + \mathrm{roughness}}{2}
+$$
+
+并称这样能够更好地拟合MERL数据库中的材质数据。后来随着理论分析的进步，他们去掉了这一trick，并认为MERL中对光滑材料的数据测量并不准确。
+
+## 边缘处的光泽
+
+当我们从几乎垂直于法线的方向去观察诸如丝绸或一些布料时，它们会显得比普通的漫反射更明亮一些。Disney BRDF直接用一个缩放后的Schlick公式去模拟这一现象，即$(1 - \cos\theta_d)^5\mathrm{sheen}$。
+
+## 清漆项
+
+诸如车漆、木质地板等材料可以通过一个两层模型来渲染：上面是一层透明材料，通常比较光滑，下面则是漫反射或金属等其他材料。如果要仔细地渲染这一模型，我们需要考虑两层间的多次反射和折射，并用fresnel公式来分配每次反射/折射的比例。Disney BRDF采用的方案要简单粗暴得多——加上一个额外的高光，称为清漆（clearcoat）项。
+
+清漆项同样采用Torrance-Sparrow模型，其遮蔽项是固定取粗糙度为0.25的GGX遮蔽项，fresnel项固定取折射率为1.5的绝缘体，微表面法线分布函数则是取$\gamma = 1$的各向同性GTR函数（记作GTR1）。下面稍微推以下GTR1的归一化系数和采样方法。
+
+### GTR1函数
+
+GTR1具有如下形式：
+
+$$
+D(\theta_h) = \frac c {\alpha^2\cos^2\theta_h + \sin^2\theta_h}
+$$
+
+其中$c$是归一化系数。利用归一化约束：
+
+$$
+\int_{\mathcal H^2}D(\theta_h)\cos\theta_hd\omega_h = c\int_0^{2\pi}\int_0^{\pi/2}\frac{\sin\theta_h\cos\theta_h}{\alpha^2\cos^2\theta_h + \sin^2\theta_h}d\theta_hd\phi_h = \frac{2\pi c}{\alpha^2 - 1}\ln\alpha = 1
+$$
+
+解得$c = (\alpha^2 - 1)/(2\pi\ln\alpha)$，于是：
+
+$$
+D(\theta_h) = \frac {\alpha^2 - 1} {2\pi\ln\alpha(\alpha^2\cos^2\theta_h + \sin^2\theta_h)}
+$$
+
+接下来是重要性采样。由于GTR1对$\phi_h$而言是各向同性的，我们可以直接取$\phi_h = 2\pi\xi_1$，并且$\theta_h$和$\phi_h$相互独立，于是可以求出$p_h(\theta_h)$：
+
+$$
+p_h(\theta_h) = \frac{p_h(\theta_h, \phi_h)}{p_h(\phi_h)} = 2\pi D(\theta_h)\cos\theta_h\sin\theta_h = \frac {(\alpha^2 - 1)\cos\theta_h\sin\theta_h} {(\alpha^2\cos^2\theta_h + \sin^2\theta_h)\ln\alpha}
+$$
+
+积分之：
+
+$$
+\begin{aligned}
+&P_h(\theta_h) = \int_0^{\theta_h}p_h(t)dt = \int_0^{\theta_h}\frac {(\alpha^2 - 1)\cos t\sin t} {(\alpha^2\cos^2 t + \sin^2 t)\ln\alpha}dt \\
+= &\frac 1 {2\ln\alpha}\ln\left[\frac{2\alpha^2}{(\alpha^2 - 1)\cos(2\theta_h) + (\alpha^2 + 1)}\right]
+\end{aligned}
+$$
+
+令$P_h(\theta_h) = \xi_2$，解得：
+
+$$
+\theta_h = \arccos\left(\sqrt{\frac{\alpha^{2 - 2\xi_2} - 1}{\alpha^2 - 1}}\right)
+$$
+
+## BRDF
+
+上面说了这么多“项”，我们还需要将它们融合起来变成一个BRDF。能量守恒这种高端要求是不指望了（像Smith G这种函数本身就会带来能量损失），但至少看起来不能太离谱。设：
+
+$$
+\begin{aligned}
+C &= \mathrm{baseColor} \\
+\sigma_m &= \mathrm{metallic} \\
+\sigma_{ss} &= \mathrm{subsurface} \\
+\sigma_s &= \mathrm{specular} \\
+\sigma_{st} &= \mathrm{specularTint} \\
+\sigma_r &= \mathrm{roughness} \\
+\sigma_a &= \mathrm{anisotropic} \\
+\sigma_{sh} &= \mathrm{sheen} \\
+\sigma_{sht} &= \mathrm{sheenTint} \\
+\sigma_{c} &= \mathrm{clearcoat} \\
+\sigma_{cg} &= \mathrm{clearcoatGloss}
+\end{aligned}
+$$
+
+并设入射方向$\boldsymbol \omega_i$为$(\theta_i, \phi_i)$，出射方向$\boldsymbol \omega_o$为$(\theta_o, \phi_o)$，half vector $\boldsymbol \omega_h$为$(\theta_h, \phi_h)$，$\boldsymbol \omega_i$与$\boldsymbol \omega_h$的夹角为$\theta_d$，则Disney BRDF为：
+
+$$
+\begin{aligned}
+f_\text{disney}(\boldsymbol \omega_i, \boldsymbol \omega_o) =~&(1 - \sigma_m)\left(\frac{C}{\pi}\mathrm{mix}(f_d(\boldsymbol \omega_i, \boldsymbol \omega_o), f_{ss}(\boldsymbol \omega_i, \boldsymbol \omega_o), \sigma_{ss}) + f_{sh}(\boldsymbol \omega_i, \boldsymbol \omega_o)\right) \\
++~&\frac{F_s(\theta_d)G_s(\boldsymbol \omega_i, \boldsymbol \omega_o)D_s(\boldsymbol \omega_h)}{4\cos\theta_i\cos\theta_o} \\
++~&\frac {\sigma_c} 4 \frac{F_c(\theta_d)G_c(\boldsymbol \omega_i, \boldsymbol \omega_o)D_c(\boldsymbol \omega_i, \boldsymbol \omega_o)}{4\cos\theta_i\cos\theta_o}
+\end{aligned}
+$$
+
+其中$f_d$为漫反射：
+
+$$
+\begin{aligned}
+f_d(\boldsymbol \omega_i, \boldsymbol \omega_o) &= (1 + (F_{D90} - 1)(1 - \cos\theta_i)^5)(1 + (F_{D90} - 1)(1 - \cos\theta_o)^5) \\
+F_{D90} &= 0.5 + 2\cos^2\theta_d\sigma_r
+\end{aligned}
+$$
+
+$f_{ss}$为次表面散射项：
+
+$$
+\begin{aligned}
+f_{ss}(\boldsymbol \omega_i, \boldsymbol \omega_o) &= 1.25(F_{ss} (1 / (\cos\theta_i + \cos\theta_o) - 0.5) + 0.5) \\
+F_{ss} &= (1 + (F_{ss90} - 1)(1 - \cos\theta_i)^5)(1 + (F_{ss90} - 1)(1 - \cos\theta_o)^5) \\
+F_{ss90} &= \cos^2\theta_d\sigma_r
+\end{aligned}
+$$
+
+$f_{sh}$为sheen项：
+
+$$
+\begin{aligned}
+f_{sh}(\boldsymbol \omega_i, \boldsymbol \omega_o) &= \mathrm{mix}(\mathrm{one}, C_{tint}, \sigma_{sht})\sigma_{sh}(1 - \cos\theta_d)^5 \\
+C_{tint} &= \frac{C}{\mathrm{lum}(C)}
+\end{aligned}
+$$
+
+$\mathrm{lum}$是求[相对亮度](https://en.wikipedia.org/wiki/Relative_luminance)的函数，对线性颜色空间中的RGB值$C$，有：
+
+$$
+\mathrm{lum}(C) \approx 0.2126 \times C.r + 0.7152 \times C.g + 0.0722 \times C.b
+$$
+
+$F_s$是高光的frensel项，用Schlick公式做了近似。对绝缘体而言，Schlick公式中的$R_0$可以用一个实数表示；而对金属而言，$R_0$是带有颜色信息的，因此Disney BRDF利用金属度参数在两种情况间进行了插值：
+
+$$
+\begin{aligned}
+F_s(\theta_d) &= C_s + (1 - C_s)(1 - \cos\theta_d)^5 \\
+C_s &= \mathrm{mix}(0.08\sigma_s\mathrm{mix}(\mathrm{one}, C_{tint}, \sigma_{st}), C, \sigma_m)
+\end{aligned}
+$$
+
+$G_s$是高光的遮蔽项，采用各向异性GGX对应的Smith函数：
+
+$$
+\begin{aligned}
+G_s(\boldsymbol \omega_i, \boldsymbol \omega_o) &= G_{s1}(\boldsymbol \omega_i)G_{s1}(\boldsymbol \omega_o) \\
+G_{s1}(\boldsymbol \omega) &= \frac 1 {1 + \Lambda_s(\boldsymbol \omega)} \\
+\Lambda_s(\boldsymbol \omega) &= -\frac 1 2 + \frac 1 2 \sqrt{1 + (\alpha_x^2\cos^2\phi + \alpha_y^2\sin^2\phi)\tan^2\theta}
+\end{aligned}
+$$
+
+$D_s$是高光的微表面法线分布函数，采用各向异性GTR2函数（其实就是GGX）：
+
+$$
+D_s(\boldsymbol \omega_h) = \frac 1 {\pi\alpha_x\alpha_y\left(\sin^2\theta_h\left(\frac{\cos^2\phi}{\alpha_x^2} + \frac{\sin^2\phi}{\alpha_y^2}\right) + \cos^2\theta_h\right)^2}
+$$
+
+$F_c$是清漆的fresnel项，采用折射率固定为1.5的绝缘体对应的Schlick公式：
+
+$$
+F_c(\theta_d) = 0.04 + 0.96(1 - \cos\theta_d)^5
+$$
+
+$G_c$是清漆的遮蔽项，采用粗糙度为0.25的各向同性GGX对应的Smith函数：
+
+$$
+\begin{aligned}
+G_c(\boldsymbol \omega_i, \boldsymbol \omega_o) &= G_{c1}(\boldsymbol \omega_i)G_{c1}(\boldsymbol \omega_o) \\
+G_{c1}(\boldsymbol \omega) &= \frac 1 {1 + \Lambda_c(\boldsymbol \omega)} \\
+\Lambda_c(\boldsymbol \omega) &= -\frac 1 2 + \frac 1 2 \sqrt{1 + \alpha^2\tan^2\theta}
+\end{aligned}
+$$
+
+$G_c$居然没和$\sigma_{cg}$挂钩，官方解释是这样效果看起来很好，太真实了……
+
+$D_c$是清漆的微表面法线分布，采用各向同性的GTR1函数：
+
+$$
+D_c(\boldsymbol \omega_h) = \frac {\alpha^2 - 1} {2\pi\ln\alpha(\alpha^2\cos^2\theta_h + \sin^2\theta_h)}
+$$
+
+至此，Disney BRDF的计算就介绍完毕，可以在Shader中实现了。
+
+## 重要性采样
+
+之前我们讨论了两个高光项的重要性采样，然鹅这并不是针对整个Disney BRDF的，因此需要将这些采样技术统合到一个采样方案中。
 
 （施工中……）
