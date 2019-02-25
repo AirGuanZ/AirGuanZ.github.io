@@ -198,10 +198,10 @@ $$
 p(\boldsymbol \omega_h)d\omega_h = p(\theta_h, \phi_h)d\theta_hd\phi_h \Rightarrow p(\boldsymbol \omega_h) = D(\theta_h, \phi_h)\cos\theta_h
 $$
 
-又根据$d\omega_i = 4\cos\theta_hd\omega_h$，有：
+又根据$d\omega_i = 4\cos\theta_dd\omega_h$，有：
 
 $$
-p(\boldsymbol \omega_i) = p(\boldsymbol \omega_h)\frac{d\omega_h}{d\omega_i} = \frac{p(\boldsymbol \omega_h)}{4\cos\theta_h} = \frac{D(\theta_h, \phi_h)}{4}
+p(\boldsymbol \omega_i) = p(\boldsymbol \omega_h)\frac{d\omega_h}{d\omega_i} = \frac{p(\boldsymbol \omega_h)}{4\cos\theta_h} = \frac{D(\theta_h, \phi_h)\cos\theta_h}{4\cos\theta_d}
 $$
 
 我在对高光进行采样的时候没有考虑fresnel项和遮蔽项，主要原因是考虑了之后我就推不出来了，emmmm……
