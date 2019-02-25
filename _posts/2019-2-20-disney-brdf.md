@@ -405,23 +405,13 @@ $$
 
 至此，Disney BRDF的计算就介绍完毕，可以在Shader中实现了。
 
-## 重要性采样
-
-之前我们讨论了两个高光项的重要性采样，然鹅这并不是针对整个Disney BRDF的，因此需要将这些采样技术统合到一个采样方案中。现假设给定了$\boldsymbol \omega_o$，需要采样入射光的方向$\boldsymbol \omega_i$。
-
-Sheen在整个BRDF中占比太小，所以不参与采样。我们主要考虑的采样对象有三个：漫反射，高光和清漆。我们简单地以正比于强度的离散分布律来选择采样哪一种反射，然后用[多重重要性采样]({{site.url}}/2018/10/15/multiple-importance-sampling.html)技术将其概率密度函数值结合起来。
-
-令baseColor为白色（具体数值不重要，重要的是各颜色通道相同），保持其他参数不变，此时的$(1 - \sigma_m)$，$F_s(\theta_d)$和$\sigma_cF_c(\theta_d)/4$将被作为三种采样对象的权重。设这三个权重在归一化后分别为$w_d, w_s, w_c$，$p_d, p_s, p_c$分别为漫反射、高光和清漆在采样$\boldsymbol \omega_i$时的概率密度函数，那么总的概率密度函数为：
-
-$$
-p(\boldsymbol \omega_i) = w_dp_d(\boldsymbol \omega_i) + w_sp_s(\boldsymbol \omega_i) + w_cp_c(\boldsymbol \omega_i)
-$$
-
-对漫反射，我们可以对法线所在的半球立体角使用cosine-weighted采样；对高光和清漆，可以分别使用之前推导的GTR2采样与GTR1采样技术。这样一来，就得到了对Disney BRDF进行采样的方法，可以将其实现在离线渲染中。
-
 ## 实现效果
 
-（施工中……）
+我依次实现了Disney BRDF中的各个部分，最终才将它们组合起来。第一步是漫反射部分：
+
+![PICTURE]({{site.url}}/postpics/Atrc/Diary/Misc/2019_02_25_DisneyDiffuse.png)
+
+（施工中）
 
 ## NEXT STEP
 
