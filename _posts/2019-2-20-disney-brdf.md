@@ -7,7 +7,7 @@ tags:
   - Graphics
 ---
 
-Physically Based Rendering（PBR）是个很美好的概念，意为在物理意义上有据可依的渲染技术。PBR在物体材质上的应用主要立足于各种反射/折射模型上，然而，诸如微表面法线分布函数、导体的复数折射率等花里胡哨的公式和概念对使用者极不友好。Disney Principled BRDF（以后简称Disney BRDF）为PBR材质提供一组直观的参数和编辑方式，在“直观”、“多样”和“基于物理”三者间取得了很好的均衡。
+Physically Based Rendering（PBR）是个很美好的概念，意为在物理意义上有据可依的渲染技术。PBR在物体材质上的应用主要立足于各种反射/折射模型上，然而，诸如微表面法线分布函数、导体的复数折射率等花里胡哨的公式和概念对使用者极不友好。Disney Principled BRDF（以后简称Disney BRDF）为PBR材质提供一组直观的参数和编辑方式，在“直观”、“多样”和“基于物理”三者间取得了很好的均衡。我寒假在家无事，决定实现一下看看效果。
 
 <!--more-->
 
@@ -21,25 +21,25 @@ Physically Based Rendering（PBR）是个很美好的概念，意为在物理意
 
 如上图所示，Disney BRDF有11项用于调节材质外观的参数，它们分别是：
 
-1. baseColor，材质的基本颜色，通常设定为常数或由贴图提供。
+1. baseColor，材质的基本颜色，通常设定为常数或由纹理提供。
 2. subsurface，用于控制材质的漫反射成分向次表面散射靠拢的程度。
 3. metallic，金属度，指材质的外观向金属靠拢的程度。
-4. specular，高光度，用于替代PBR中常见的折射率参数。
+4. specular，高光度，控制材质中非金属部分的高光明亮程度。
 5. specularTint，高光颜色向基本颜色靠拢的程度。
 6. roughness，材质粗糙程度。
-6. anisotropic，各向异性度，即材质反射的非对称程度。
-7. sheen，布料、纺织物材质的分量大小。
-8. sheenTint，sheen分量的颜色向基本颜色靠拢的程度。
-9. clearCoat，一个额外的高光项，用于模拟清漆的效果。
-10. clearGloss，清漆的光滑程度。
+7. anisotropic，各向异性度，即材质反射的非对称程度。
+8. sheen，模拟一些纺织物边缘的明亮效果。
+9. sheenTint，sheen分量的颜色向基本颜色靠拢的程度。
+10. clearCoat，一个额外的高光项，用于模拟清漆的效果。
+11. clearGloss，清漆的光滑程度。
 
 以上所有参数的有效取值范围均为[0, 1]，该范围内的任何取值组合都被认为是合法的（valid）材质。下面依次解析Disney BRDF的各分量模型以及上述参数在其中起到的作用。
 
 ## 漫反射
 
-[漫反射](https://en.wikipedia.org/wiki/Diffuse_reflection)是光进入材质表面以下发生浅层散射后再从离入射点非常近的位置射出的结果，在物理意义上和次表面散射是相同的（只是尺度不同）。正因如此，许多材质模型会用fresnel公式计算折射光比例作为漫反射分量的乘积因子。
+[漫反射](https://en.wikipedia.org/wiki/Diffuse_reflection)是光进入材质表面以下发生浅层散射后再从离入射点非常近的位置射出的结果，在物理意义上和[次表面散射](https://en.wikipedia.org/wiki/Subsurface_scattering)是相同的（只是尺度不同）。正因如此，许多材质模型会用fresnel公式计算折射光比例作为漫反射分量的乘积因子。
 
-Disney BRDF使用了魔改的Schlick公式——他们丢弃了折射率的概念，转而让fresnel项和物体表面的粗糙度挂钩。我没看出这有什么道理，不过原文称“这能很好地拟合实际数据，对artists也很友好”，那就暂且接受吧。公式如下：
+Disney BRDF使用了魔改的[Schlick公式](https://en.wikipedia.org/wiki/Schlick%27s_approximation)——他们丢弃了折射率的概念，转而让fresnel项和物体表面的粗糙度挂钩。我没看出这有什么道理，不过原文称“这能很好地拟合实际数据，对artists也很友好”，那就暂且接受吧。公式如下：
 
 $$
 \begin{aligned}
@@ -52,7 +52,7 @@ $$
 
 既然漫反射和次表面散射具有类似的原理，那么就可以用一个参数来在二者之间过渡，也就是Disney BRDF中的subsurface参数。Disney BRDF会计算出一个漫反射值和一个次表面散射值，然后用subsurface在二者间进行插值。
 
-对于次表面散射的计算，Disney BRDF并未使用人们所熟知的Jensen BSSRDF等复杂模型（否则计算效率也太低了），而是用一个BRDF来近似计算。他们的次表面散射公式是从Hanrahan-Krueger BRDF Approximation Of Isotropic BSSRDF改进而来的：
+对于次表面散射的计算，Disney BRDF并未使用人们所熟知的[Jensen BSSRDF](https://graphics.stanford.edu/papers/bssrdf/bssrdf.pdf)等复杂模型（否则计算效率也太低了），而是用一个BRDF来近似计算。他们的次表面散射公式是从[Hanrahan-Krueger BRDF](https://cseweb.ucsd.edu/~ravir/6998/papers/p165-hanrahan.pdf)改进而来的：
 
 $$
 \begin{aligned}
@@ -70,7 +70,7 @@ $$
 f = F_r(\theta_d)\frac{D(\theta_h)G(\theta_i, \theta_o)}{4\cos\theta_i\cos\theta_o}
 $$
 
-其中$F_r(\theta_d)$是fresnel项；$D(\theta_h, \phi_h)$是微表面法线分布函数值，$\theta_h$为$\boldsymbol w_h$与法线的夹角，$\phi_h$为$\boldsymbol w_h$的水平极角；$G(\theta_i, \theta_o)$为法线为$\boldsymbol w_h$的微表面中没有被其他微表面遮蔽的比例。$D$和$G$在不同的材质模型中有不同的选择，下方的$4\cos\theta_i\cos\theta_o$则是Torrance-Sparrow模型固有的一部分。Torrance-Sparrow模型的来历可简单参见[这里]({{site.url}}/2018/10/22/reflection-models.html#torrance-sparrow-model)。
+其中$F_r(\theta_d)$是fresnel项；$D(\theta_h, \phi_h)$是微表面法线分布函数值，$\theta_h$为$\boldsymbol w_h$与法线的夹角，$\phi_h$为$\boldsymbol w_h$的水平极角；$G(\theta_i, \theta_o)$为法线为$\boldsymbol w_h$的微表面中没有被其他微表面遮蔽的比例。$D$和$G$在不同的材质模型中有不同的选择，下方的$4\cos\theta_i\cos\theta_o$则是Torrance-Sparrow模型固有的一部分。Torrance-Sparrow模型的来历可简单参见[这里]({{site.url}}/2018/10/22/reflection-models.html#torrance-sparrow-model)（该公式框架最早来自[此文](http://www.graphics.cornell.edu/~westin/pubs/TorranceSparrowJOSA1967.pdf)，[Cook-Torrance](https://en.wikipedia.org/wiki/Cook%E2%80%93Torrance)改变了其中的归一化常数，给出的式子在图形学中更加常用）。
 
 ### 微表面法线分布
 
@@ -239,7 +239,7 @@ $$
 
 诸如车漆、木质地板等材料可以通过一个两层模型来渲染：上面是一层透明材料，通常比较光滑，下面则是漫反射或金属等其他材料。如果要仔细地渲染这一模型，我们需要考虑两层间的多次反射和折射，并用fresnel公式来分配每次反射/折射的比例。Disney BRDF采用的方案要简单粗暴得多——加上一个额外的高光，称为清漆（clearcoat）项。
 
-清漆项同样采用Torrance-Sparrow模型，其遮蔽项是固定取粗糙度为0.25的GGX遮蔽项，fresnel项固定取折射率为1.5的绝缘体，微表面法线分布函数则是取$\gamma = 1$的各向同性GTR函数（记作GTR1）。下面稍微推以下GTR1的归一化系数和采样方法。
+清漆项同样采用Torrance-Sparrow模型，其遮蔽项是取粗糙度为定值0.25的GGX遮蔽项，fresnel项固定取折射率为1.5的绝缘体，微表面法线分布函数则是取$\gamma = 1$的各向同性GTR函数（记作GTR1），其中1 - clearcoatGloss被映射到$[0.01, 0.1]$范围内作为粗糙度。下面稍微推一下GTR1的归一化系数和采样方法。
 
 ### GTR1函数
 
@@ -420,18 +420,33 @@ $$
 1. 粗糙度越大，物体表面显得越暗。
 2. 粗糙度较大时，物体边缘显得比中间更暗。
 
-对此我尝试在自己的知识范围内作出解释。第一个现象的原因应该是随着粗糙程度的增加，Smith遮蔽函数的值会越来越小；此时微表面间的间接反射也会增加，Torrance-Sparrow并没有把这部分反射纳入考虑，从而导致物体显得暗淡。至于第二个现象，fresnel现象会增加金属物体边缘的亮度，但这里的参数恰好将fresnel现象的影响降得极低；而当光从几乎垂直于物体表面法线的方向入射时，其对应的微表面法线分布函数值很小，也就造成了金属物体边缘的暗淡。
+对此我尝试在自己的知识范围内作出解释。第一个现象的原因应该是随着粗糙程度的增加，Smith遮蔽函数的值会越来越小；此时微表面间的间接反射也会增加，Torrance-Sparrow模型忽略了这部分反射，从而导致物体显得暗淡。至于第二个现象，fresnel现象会增加金属物体边缘的亮度，但这里的参数恰好将fresnel现象的影响降得极低；而当光从几乎垂直于物体表面法线的方向入射时，部分反射光方向是朝向表面下方的，这部分也应该作为被微表面间的间接反射进行处理的光没有被模型纳入考虑，也就造成了金属物体边缘的暗淡。
 
-最后是清漆，它和高光非常相似，就不放图了。
+最后是清漆，它是另一个弱一些的高光项，就不放图了。清漆的强度参数取值范围是$[0, 1]$，实际使用时被映射到了$[0, 0.25]$，我在使用时一直觉得很难看出来，这可能是由于我所使用的环境光中的高频能量不够，使得清漆的高光效果不明显。
 
-在将各部分结合起来时，需要对各部分进行重要性采样。我们以$(1 - \sigma_m)$的概率采样漫反射，以$\sigma_m/(1+\sigma_c/2)$的概率采样高光，并以剩下的概率采样清漆。至于sheen项，它的能量占比太小，就忽略好了。在最终计算概率密度函数值时，设漫反射、高光和清漆对应的pdf分别为$p_d, p_s, p_c$，则根据全概率公式：
+在将各部分结合起来时，需要对各部分进行重要性采样。我们以$\min(0.8, 1 - \sigma_m)$的概率采样漫反射；若未采样漫反射，又以$1/(1+\sigma_c/2)$的条件概率采样高光，并以最后剩下的概率采样清漆。至于sheen项，它的能量占比太小，就忽略好了。在最终计算概率密度函数值时，设漫反射、高光和清漆对应的pdf分别为$p_d, p_s, p_c$，则根据全概率公式：
 
 $$
-p = (1 - \sigma_m)p_d + \frac{2\sigma_m}{2 + \sigma_c}p_s + \frac{\sigma_m\sigma_c}{2 + \sigma_c}p_c
+p = \min(0.8, 1 - \sigma_m)p_d + (1 - \min(0.8, 1 - \sigma_m))\left(\frac{2}{2 + \sigma_c}p_s + \frac{\sigma_c}{2 + \sigma_c}p_c\right)
 $$
 
-（施工中）
+这里显然是可以改进的，不过我已经等不及要看看效果了，就先这样吧。实现过程完全是抄公式，没什么好说的。现在来展示一下。首先我们把metallic和specular设为0，分别取roughness为0.1, 0.35, 0.65和1，来画一只茶壶：
+
+![PICTURE]({{site.url}}/postpics/Atrc/Diary/Misc/2019_02_26_DisneyBRDF.png)
+
+然后再把roughness固定为0.25，调整metallic来观察茶壶外观的变化：
+
+![PICTURE]({{site.url}}/postpics/Atrc/Diary/Misc/2019_02_26_DisneyBRDF2.png)
+
+也可以加上法线贴图、通过纹理来指定物体表面各点的Disney BRDF参数，不过这个茶壶模型没有纹理坐标，所以就到这里吧。最后放个东西多一点的场景（茶壶材质来自[这篇paper](https://www.cs.cornell.edu/~srm/publications/EGSR07-btdf.pdf)）：
+
+![PICTURE]({{site.url}}/postpics/Atrc/Diary/Misc/2019_02_26_ShowTime.png)
+
+这颜色……我的审美还有救，配色能力是没救了。
+
+以上渲染使用的佛像来自[Stanford 3D Scanning Repository](http://graphics.stanford.edu/data/3Dscanrep/)，人像和螃蟹来自[3D Scans](http://threedscans.com/)，茶壶来自[Benedikt Bitterli](https://benedikt-bitterli.me/resources/)，环境光来自[HDRI Heaven](https://hdrihaven.com/)。代码可以在[我的github](https://github.com/AirGuanZ/Atrc/blob/master/Source/Atrc/Lib/Material/BxDF/BxDF_DisneyReflection.cpp)上找到，水平比较渣，见笑了。
 
 ## NEXT STEP
+
 
 Disney BRDF的一个显著缺点是无法处理透明和半透明的材质，这在之后的扩展版——Disney Principled BSDF中得到了解决。BSDF版本不仅引入了透射，还支持了介质吸收和Normalized Diffusion BSSRDF，这需要渲染算法加以支持。不出意外的话，我以后会有一篇关于它的实现笔记。
