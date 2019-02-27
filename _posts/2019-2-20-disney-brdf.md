@@ -30,8 +30,8 @@ Physically Based Rendering（PBR）是个很美好的概念，意为在物理意
 7. anisotropic，各向异性度，即材质反射的非对称程度。
 8. sheen，模拟一些纺织物边缘的明亮效果。
 9. sheenTint，sheen分量的颜色向基本颜色靠拢的程度。
-10. clearCoat，一个额外的高光项，用于模拟清漆的效果。
-11. clearGloss，清漆的光滑程度。
+10. clearcoat，一个额外的高光项，用于模拟清漆的效果。
+11. clearcoatGloss，清漆的光滑程度。
 
 以上所有参数的有效取值范围均为[0, 1]，该范围内的任何取值组合都被认为是合法的（valid）材质。下面依次解析Disney BRDF的各分量模型以及上述参数在其中起到的作用。
 
