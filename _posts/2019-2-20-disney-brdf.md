@@ -177,9 +177,9 @@ $$
 
 $$
 \begin{aligned}
-P_h(\theta_h\mid\phi_h) &= \int_0^{\theta_h}2\pi\alpha_x\alpha_y\Phi(\phi)D(x, \phi_h)\sin x\cos xdx \\
+P_h(\theta_h\mid\phi_h) &= \int_0^{\theta_h}2\pi\alpha_x\alpha_y\Phi(\_h_)D(x, \phi_h)\sin x\cos xdx \\
 &= \int_0^{\theta_h}\frac {2\Phi(\phi_h)\sin x\cos x} {\left(\sin^2x\Phi(\phi_h) + \cos^2x\right)^2}dx \\
-&= \frac{\Phi(\phi_h)(1 - \cos(2\theta_h))}{(1 - \Phi(\theta_h))\cos(2\theta_h) + (1 + \Phi(\theta_h))}
+&= \frac{\Phi(\phi_h)(1 - \cos(2\theta_h))}{(1 - \Phi(\phi_h))\cos(2\theta_h) + (1 + \Phi(\phi_h))}
 \end{aligned}
 $$
 
@@ -187,7 +187,7 @@ $$
 
 $$
 \begin{aligned}
-&\frac{\Phi(\phi_h)(1 - \cos(2\theta_h))}{(1 - \Phi(\theta_h))\cos(2\theta_h) + (1 + \Phi(\theta_h))} = \xi_2 \\
+&\frac{\Phi(\phi_h)(1 - \cos(2\theta_h))}{(1 - \Phi(\phi_h))\cos(2\theta_h) + (1 + \Phi(\phi_h))} = \xi_2 \\
 \Rightarrow~&\theta_h = \arccos\left(\sqrt{\frac{\Phi(\phi_h)(1 - \xi_2)}{(1 - \Phi(\phi_h))\xi_2 + \Phi(\phi_h)}}\right)
 \end{aligned}
 $$
