@@ -1,5 +1,4 @@
 ---
-layout: post
 title: Light Tracing：算法概述和实现
 key: t20181202
 tags:

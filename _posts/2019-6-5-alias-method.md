@@ -1,5 +1,4 @@
 ---
-layout: post
 title: Alias Method
 key: t20190605
 tags:

@@ -1,5 +1,4 @@
 ---
-layout: post
 title: Disney Principled BRDF实现笔记
 key: t20190220
 tags:

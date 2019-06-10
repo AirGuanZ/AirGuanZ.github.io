@@ -1,5 +1,4 @@
 ---
-layout: post
 title: 为什么要学Rust
 key: t20180713
 tags:

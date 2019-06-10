@@ -1,5 +1,4 @@
 ---
-layout: post
 title: 如何写一个路径追踪器
 key: t20181021
 tags:

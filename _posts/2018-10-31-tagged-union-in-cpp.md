@@ -1,5 +1,4 @@
 ---
-layout: post
 title: C++中的Tagged Union
 key: t20181031
 tags:

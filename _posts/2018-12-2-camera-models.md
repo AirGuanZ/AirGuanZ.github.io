@@ -1,5 +1,4 @@
 ---
-layout: post
 title: 摄像机模型小结
 key: t20181202
 tags:

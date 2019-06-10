@@ -1,5 +1,4 @@
 ---
-layout: post
 title: Weingarten Equations
 key: t20180911
 tags:

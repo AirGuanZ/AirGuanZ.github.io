@@ -1,5 +1,4 @@
 ---
-layout: post
 title: delta函数积分换元时的放缩
 key: t20181117
 tags:

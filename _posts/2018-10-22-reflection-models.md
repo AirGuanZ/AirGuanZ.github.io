@@ -1,5 +1,4 @@
 ---
-layout: post
 title: 物理材质模型
 key: t20181022
 tags:

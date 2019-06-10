@@ -1,5 +1,4 @@
 ---
-layout: post
 title: Monte Carlo Integration in Graphics
 key: t20180820
 tags:

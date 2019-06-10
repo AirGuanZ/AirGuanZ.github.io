@@ -1,5 +1,4 @@
 ---
-layout: post
 title: 字符串类实现心得
 key: 20180817
 tags:

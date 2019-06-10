@@ -1,5 +1,4 @@
 ---
-layout: post
 title: C++重载决议
 key: t20181011
 tags:

@@ -1,5 +1,4 @@
 ---
-layout: post
 title: 读书笔记：A Primer on Memory Consistency and Cache Coherence
 key: t20180814
 tags:

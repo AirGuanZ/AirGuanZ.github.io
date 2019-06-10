@@ -1,5 +1,4 @@
 ---
-layout: post
 title: Atrc日志（一）几何对象接口
 key: t20180910
 tags:

@@ -1,5 +1,4 @@
 ---
-layout: post
 title: OS kernel实现日记
 key: 20180423
 tags:

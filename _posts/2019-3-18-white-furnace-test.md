@@ -1,5 +1,4 @@
 ---
-layout: post
 title: White Furnace Test
 key: t20190318
 tags:

@@ -1,5 +1,4 @@
 ---
-layout: post
 title: 读书笔记：光照传输杂项
 key: t20180816
 tags:

@@ -1,5 +1,4 @@
 ---
-layout: post
 title: Light Tracing初探
 key: t20190530
 tags:

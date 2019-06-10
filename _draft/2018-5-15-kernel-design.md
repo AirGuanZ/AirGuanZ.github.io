@@ -1,5 +1,4 @@
 ---
-layout: post
 title: OS kernel设计概述
 key: 20180515
 tags:

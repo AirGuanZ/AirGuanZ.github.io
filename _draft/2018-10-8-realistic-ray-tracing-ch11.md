@@ -1,5 +1,4 @@
 ---
-layout: post
 title: Radiometry
 key: t20181008
 tags:

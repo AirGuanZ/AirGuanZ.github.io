@@ -1,5 +1,4 @@
 ---
-layout: post
 title: 介质渲染
 key: t20181028
 tags:

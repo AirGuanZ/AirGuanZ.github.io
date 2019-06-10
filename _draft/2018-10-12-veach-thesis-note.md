@@ -1,5 +1,4 @@
 ---
-layout: post
 title: A General Operator Formulation of Light Transport
 key: t20181012
 tags:

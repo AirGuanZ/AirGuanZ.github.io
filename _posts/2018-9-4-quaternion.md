@@ -1,5 +1,4 @@
 ---
-layout: post
 title: 四元数基础
 key: t20180904
 tags:

@@ -1,5 +1,4 @@
 ---
-layout: post
 title: 一个比较浮点数是否相等的方案
 key: t20180910
 tags:

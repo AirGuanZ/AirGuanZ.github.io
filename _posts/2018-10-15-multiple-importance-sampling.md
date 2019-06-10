@@ -1,5 +1,4 @@
 ---
-layout: post
 title: 多重重要性采样
 key: t20181015
 tags:

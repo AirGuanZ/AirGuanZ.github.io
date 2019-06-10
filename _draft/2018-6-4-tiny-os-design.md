@@ -1,5 +1,4 @@
 ---
-layout: post
 title: TinyOS实现总结
 key: 20180604
 tags:

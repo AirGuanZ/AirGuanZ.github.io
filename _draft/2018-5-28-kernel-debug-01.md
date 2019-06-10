@@ -1,5 +1,4 @@
 ---
-layout: post
 title: 记自制OS过程中的一个诡异的bug
 key: 20180528
 tags:

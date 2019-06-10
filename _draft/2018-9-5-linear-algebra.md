@@ -1,5 +1,4 @@
 ---
-layout: post
 title: 线性代数复习
 key: t20180905
 tags:
