@@ -99,3 +99,7 @@ T bsearch_sampler_t<F, T>::sample(F u) const noexcept
     return static_cast<T>(upper - partial_sum_.begin());
 }
 ```
+
+## Alias Method
+
+
