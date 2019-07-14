@@ -15,7 +15,7 @@ tags:
 我们用来做path tracing的理论基础一般是所谓的rendering equation和measurement equation。非volumetric的rendering equation长这样：
 
 $$
-L(x \to \omega_o) = L_e(x \to \omega_o) + \int_{\mathcal S^2}f_s(\omega_i \to x \to \omega_o)L(x \to \omega_i)|\cos\langle n_x, \omega_i\rangle|d\omega_i
+L(x \to \omega_o) = L_e(x \to \omega_o) + \int_{\mathcal S^2}f_s(\omega_i \to x \to \omega_o)L(x \leftarrow \omega_i)|\cos\langle n_x, \omega_i\rangle|d\omega_i
 $$
 
 其中$L(x \to \omega_o)$是场景中从$x$点向方向$\omega_o$传播的辐射亮度（radiance），$L_e$是$x$点的自发光，$\mathcal S^2$表示整个单位球面对应的立体角，$f_s$是BSDF，$n_x$是$x​$点的法线。一些基本概念在这里就不再解释了，总之这个方程告诉了我们如何求在场景中任意一点朝任意一个方向观察到的亮度。
@@ -31,13 +31,13 @@ $$
 现在我们理想化地在场景中某点$p​$放置一小束朝向$\omega​$方向的光，如果这束光恰好朝向传感器，那么它的radiance乘上传感器上对应点$x​$的$W_e(x \to -\omega)​$，就是它让$x​$点产生的直接响应。而如果这束光没有照射到传感器，那么它也会在场景中的物体间散射，并有可能在多次散射后击中传感器，让其产生间接响应。由此可见，“响应”可以定义在场景中的每个点和方向上，表示此处的光源对摄像机传感器的影响有多大。我们把“响应比”记作$W(x, p \leftarrow \omega)​$，其含义是一小束光源$L(p \to \omega)d\omega dA_p^\perp​$对传感器上的$x​$点会造成的响应与$L(p \to \omega)​$的比值。这样一来，下述积分可以求出传感器上的$x​$点对整个场景中的光源产生的响应：
 
 $$
-\int_{\text{light area}}\int_{\mathcal S^2}L_e(x \to \omega)W(x, p \leftarrow \omega)|\cos\langle n_p, \omega\rangle|d\omega dA_p
+\int_{\text{light area}}\int_{\mathcal S^2}L_e(p \to \omega)W(x, p \leftarrow \omega)|\cos\langle n_p, \omega\rangle|d\omega dA_p
 $$
 
 而$I_j​$也就可以从measurement equation变形出来了：
 
 $$
-I_j = \int_{\text{sensor}}f_j(x \to \omega)\left(\int_{\text{light area}}\int_{\mathcal S^2}L_e(x \to \omega)W(x, p \leftarrow \omega)|\cos\langle n_p, \omega\rangle|d\omega dA_p\right)dA_x
+I_j = \int_{\text{sensor}}f_j(x)\left(\int_{\text{light area}}\int_{\mathcal S^2}L_e(p \to \omega)W(x, p \leftarrow \omega)|\cos\langle n_p, \omega\rangle|d\omega dA_p\right)dA_x
 $$
 
 早在超过20年前，学界就给“响应比”$W$起了个名字——importance function，并且指出$W, W_e$间的关系与$L, L_e$间的关系非常相似，按下面的规律传播：
