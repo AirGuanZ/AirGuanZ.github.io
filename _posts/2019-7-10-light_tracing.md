@@ -91,7 +91,6 @@ for i = 1 to N
 
 总的来说，我感觉light tracing的思想很简单，正确实现起来却比path tracing费力多了。下面看看效果：
 
-
 ![PICTURE]({{site.url}}/postpics/Atrc/Diary/Misc/2019_07_10_LightTracing.png)
 
 好像还不错？等等，我们和mis path tracing对比一下，虽然有实现水平的干扰，不过结果还是很明确的：
