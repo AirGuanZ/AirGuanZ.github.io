@@ -6,7 +6,9 @@ tags:
   - Graphics
 ---
 
-果然决定效果好不好的主要是美术而不是技术啊……一个什么优化也不带的path tracer也能画得有模有样：
+果然决定效果好不好的主要是美术而不是技术啊……一个什么优化也不带的path tracer也能画得有模有样。
+
+<!--more-->
 
 ![PICTURE]({{site.url}}/postpics/Atrc/Diary/Misc/2019_07_26_9000spp.png)
 
