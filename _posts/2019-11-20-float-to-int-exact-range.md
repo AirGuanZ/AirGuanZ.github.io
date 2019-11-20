@@ -1,5 +1,5 @@
 ---
-title: 哪个范围内的整数可以用浮点数精确表示
+title: 多大范围内的整数可以用浮点数精确表示
 key: t20191120
 tags:
   - Mathematics
