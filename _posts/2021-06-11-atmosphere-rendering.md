@@ -35,11 +35,11 @@ $$
 T(a, b) = \exp\left(-\int_a^b \sigma_t(p)dl_p\right)
 $$
 
-$\sigma_s$为介质散射系数，$\sigma_t$为介质衰减系数。更多关于此渲染方程的相关内容可见文【】，这里只是回顾一下符号，不再赘述。
+$\sigma_s$为介质散射系数，$\sigma_t$为介质衰减系数。更多关于此渲染方程的相关内容可见文(介质渲染)[https://airguanz.github.io/2018/10/28/LTE-with-participating-medium.html]，这里只是回顾一下符号，不再赘述。
 
 ### Rayleigh
 
-在大气层中，空气分子带来的散射可以用Rayleigh theory【】描述：
+在大气层中，空气分子带来的散射可以用[Rayleigh theory](https://en.wikipedia.org/wiki/Rayleigh_scattering)描述：
 
 $$
 \begin{aligned}
@@ -53,7 +53,7 @@ $$
 
 ### Mie
 
-除了Rayleigh散射外，大气中还存在小颗粒（气溶胶）带来的散射与吸收现象，由Mie theory【】描述：
+除了Rayleigh散射外，大气中还存在小颗粒（气溶胶，小水珠等）带来的散射与吸收现象，由[Mie theory](https://en.wikipedia.org/wiki/Mie_scattering)描述：
 
 $$
 \begin{aligned}
