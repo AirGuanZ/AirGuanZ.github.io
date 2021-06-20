@@ -35,7 +35,7 @@ $$
 T(a, b) = \exp\left(-\int_a^b \sigma_t(p)dl_p\right)
 $$
 
-$\sigma_s$为介质散射系数，$\sigma_t$为介质衰减系数。更多关于此渲染方程的相关内容可见文(介质渲染)[https://airguanz.github.io/2018/10/28/LTE-with-participating-medium.html]，这里只是回顾一下符号，不再赘述。
+$\sigma_s$为介质散射系数，$\sigma_t$为介质衰减系数。更多关于此渲染方程的相关内容可见文[介质渲染](https://airguanz.github.io/2018/10/28/LTE-with-participating-medium.html)，这里只是回顾一下符号，不再赘述。
 
 ### Rayleigh
 
