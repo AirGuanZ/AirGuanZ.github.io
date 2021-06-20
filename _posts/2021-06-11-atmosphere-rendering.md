@@ -1,5 +1,5 @@
 ---
-title: 预计算大气散射模型
+title: 预计算大气散射模型：原理与实现
 key: t20210611
 tags:
   - Graphics
@@ -134,10 +134,10 @@ L_s(p\leftarrow\omega) &= \int_p^{p_e}T(p, q)\sigma_s(h_q)\rho(\cos\langle\omega
 \end{aligned}
 $$
 
-在实现中，$V_\text{sun}$可以通过Shadow Mapping技术求出，外层积分则在ray marching过程中近似计算：
+在实现中，$V_\text{sun}$可以通过Shadow Mapping技术求出，外层积分则在ray marching过程中近似计算，$T(p, q)$也在ray marching时一并求出：
 
 $$
-L_s(p \leftarrow \omega) = \sum_q \frac{\mathbb T(r_p, \theta_{p\omega_{pq}})}{\mathbb T(r_q, \theta_{q\omega_{pq}})}\sigma_s(h_q)\rho(\cos\langle \omega_{\text{sun}}, \omega\rangle)E_e\mathbb T(r_q, \theta_{q\omega_\text{sun}})V_\text{sun}(q)\Delta l_q
+L_s(p \leftarrow \omega) = \sum_q T(p, q)\sigma_s(h_q)\rho(\cos\langle \omega_{\text{sun}}, \omega\rangle)E_e\mathbb T(r_q, \theta_{q\omega_\text{sun}})V_\text{sun}(q)\Delta l_q
 $$
 
 ### 单次反射项
@@ -146,8 +146,8 @@ $$
 
 $$
 \begin{aligned}
-L_r(p \leftarrow \omega) &= T(p, x)f_s(\omega_\text{sun} \to x \to -\omega)E_eV_\text{sun}(x)T(x, \mathrm{raycast}(x, \omega_\text{sun})) \\
-&= \mathbb T(r_p, \theta_{p\omega_{px}})f_s(\omega_\text{sun} \to x \to -\omega)E_eV_\text{sun}(x)\mathbb T(r_x, \theta_{x\omega_\text{sun}})
+L_r(p \leftarrow \omega) &= T(p, x)f_s(\omega_\text{sun} \to x \to -\omega)\cos\langle n_x, \omega_\text{sun}\rangle E_eV_\text{sun}(x)T(x, \mathrm{raycast}(x, \omega_\text{sun})) \\
+&= T(p, x)f_s(\omega_\text{sun} \to x \to -\omega)\cos\langle n_x, \omega_\text{sun}\rangle E_eV_\text{sun}(x)\mathbb T(r_x, \theta_{x\omega_\text{sun}})
 \end{aligned}
 $$
 
@@ -168,7 +168,7 @@ $$
 对应地，三次散射项为：
 
 $$
-L_3(p) = \int_{\mathcal S^2}\left(\int_0^D T(p, q)\sigma_s(q)L_2(p)dl_q\right)d\omega~~~\text{where}~~~D = |\mathrm{raycast}(p, \omega) - p|
+L_3(p) = \int_{\mathcal S^2}\left(\int_0^D T(p, q)\sigma_s(q)L_2(p)dl_q\right)\rho_ud\omega~~~\text{where}~~~D = |\mathrm{raycast}(p, \omega) - p|
 $$
 
 这里忽略了地面在多次散射中贡献的能量。四次散射项、五次散射项等均可以通过与上式相似的公式计算，只需要把其中的$L_2$对应地替换为$L_3, L_4$即可。
@@ -177,9 +177,9 @@ $$
 
 $$
 \begin{aligned}
-L_3(p) &= L_2(p)\int_{\mathcal S^2}\left(\int_0^DT(p, q)\sigma_s(q)dl_q\right)d\omega \\
-L_4(p) &= L_3(p)\int_{\mathcal S^2}\left(\int_0^DT(p, q)\sigma_s(q)dl_q\right)d\omega \\
-L_5(p) &= L_4(p)\int_{\mathcal S^2}\left(\int_0^DT(p, q)\sigma_s(q)dl_q\right)d\omega \\
+L_3(p) &= L_2(p)\int_{\mathcal S^2}\left(\int_0^DT(p, q)\sigma_s(q)dl_q\right)\rho_ud\omega \\
+L_4(p) &= L_3(p)\int_{\mathcal S^2}\left(\int_0^DT(p, q)\sigma_s(q)dl_q\right)\rho_ud\omega \\
+L_5(p) &= L_4(p)\int_{\mathcal S^2}\left(\int_0^DT(p, q)\sigma_s(q)dl_q\right)\rho_ud\omega \\
 &\cdots\cdots
 \end{aligned}
 $$
@@ -189,7 +189,7 @@ $$
 现令：
 
 $$
-f = \int_{\mathcal S^2}\left(\int_0^DT(p, q)\sigma_s(q)dl_q\right)d\omega
+f = \int_{\mathcal S^2}\left(\int_0^DT(p, q)\sigma_s(q)dl_q\right)\rho_ud\omega
 $$
 
 那么$L_3(p) = L_2(p)f, L_4(p) = L_2(p)f^2$。然后把上面的多次散射项都加起来：
@@ -209,16 +209,18 @@ $$
 $$
 \begin{aligned}
 L(p\leftarrow\omega) &= L_eV_\text{sun}(p)\mathbb T(r_p, \theta_{p\omega}) &\text{太阳本身} \\
-&+~\mathbb T(r_p, \theta_{p\omega_{px}})f_s(\omega_\text{sun} \to x \to -\omega)E_eV_\text{sun}(x)\mathbb T(r_x, \theta_{x\omega_\text{sun}})  &\text{地表反射}\\
-&+~\sum_q \frac{\mathbb T(r_p, \theta_{p\omega_{pq}})}{\mathbb T(r_q, \theta_{q\omega_{pq}})}\sigma_s(h_q)\left(\rho(\cos\langle \omega_{\text{sun}}, \omega\rangle)E_e\mathbb T(r_q, \theta_{q\omega_\text{sun}})V_\text{sun}(q))+\mathbb M(h_q, \omega_\text{sun})\right)\Delta l_q &\text{单/多次散射}
+&+~T(p, x)f_s(\omega_\text{sun} \to x \to -\omega)E_eV_\text{sun}(x)\mathbb T(r_x, \theta_{x\omega_\text{sun}})  &\text{地表反射}\\
+&+~\sum_q T(p, q)\sigma_s(h_q)\left(\rho(\cos\langle \omega_{\text{sun}}, \omega\rangle)E_e\mathbb T(r_q, \theta_{q\omega_\text{sun}})V_\text{sun}(q))+\mathbb M(h_q, \omega_\text{sun})\right)\Delta l_q &\text{单/多次散射}
 \end{aligned}
 $$
 
-其中太阳本身作为一个“圆盘”，可以在大气绘制完成之后单独叠加上去；地表反射项可以在绘制地表时计算，单次散射和多次散射则需要通过一个ray marching过程计算。
+其中太阳本身作为一个“圆盘”，可以在大气绘制完成之后单独叠加上去；地表反射项可以在绘制地表时计算，单次散射和多次散射则需要通过一个ray marching过程计算。此外，有的透射率项被写成$\mathbb T$，表示它的值通过查表获得，而有的则被保留成$T(a, b)$的形式，这表示它的值是在ray marching时累积得到的。
 
-## 杂项
+## 实现
 
-### 天空LUT
+我用C++和DirectX 11实现了本文所述的大气渲染模型，代码仓库位于[AtmosphereRenderer](https://github.com/AirGuanZ/AtmosphereRenderer)。
+
+### 低分辨率计算
 
 由于天空颜色分布比较低频，可以计算一个低分辨率的天空纹理，然后在渲染时采样它，以此提高性能。在靠近地平线的角度，天空的颜色变化往往会比其他区域要剧烈一些，因此可以通过调整天空纹理坐标和方向的关系来改善其效果，譬如：
 
@@ -226,12 +228,39 @@ $$
 v = 0.5\left(1 + \mathrm{sign}(l)\sqrt{\frac{|l|}{\pi/2}}\right)~~~~~(l \in [-\pi/2, \pi/2])
 $$
 
-其中$l$是方向向量与水平面的夹角。
+其中$l$是方向向量与水平面的夹角。这个纹理只需要在太阳角度改变时重新计算，其计算代价也不高，即使每帧进行也不会带来很严重的负担。典型的天空纹理如下图所示：
 
-### 空气透视（Aerial Perspective）LUT
+<p align="center">
+<img width="30%" height="30%" src="{{site.url}}/postpics/par/04.png">
+</p>
 
-在渲染场景中的物体时，我们需要从摄像机到物体表面进行ray marching，以计算这段路径上的积分。为了提高效率，可以预先将摄像机视锥体划分到一个较低分辨率的三维表格上，然后填充每个表项对应的位置到摄像机的透射率和散射积分结果，然后在渲染场景中的物体时直接查表即可。
+在渲染场景中的物体时，我们需要从摄像机到物体表面进行ray marching，以计算这段路径上的积分。为了提高效率，可以预先将摄像机视锥体划分为一个较低分辨率的三维表格$A$，然后填充每个表项对应的位置与摄像机之间的透射率和内散射积分。在渲染场景中的物体时，直接查表即可。
 
-## 实现
+在考虑了遮蔽项（$V_\text{sun}$）时，如果表格$A$的分辨率太低，其中的体积阴影容易产生“锯齿感”，如下图：
 
-（施工中）
+<p align="center">
+<img width="50%" height="50%" src="{{site.url}}/postpics/par/02.png">
+</p>
+
+提高$A$的分辨率自然可以改善这一现象，但要将其完全掩盖，需要相对较高的分辨率，这会带来不小的计算开销。因此，我们退而求其次，抖动$A$的采样点位置来掩盖锯齿。将每个采样点在一定范围内随机抖动可得：
+
+<p align="center">
+<img width="50%" height="50%" src="{{site.url}}/postpics/par/03.png">
+</p>
+
+这把锯齿状的artifact转化成了噪声，更容易被人眼所忽略。此外，采用屏幕空间的蓝噪声可以起到更好的效果。
+
+### 效果图
+
+<p align="center">
+<img src="{{site.url}}/postpics/par/gallery/00.png">
+</p>
+<p align="center">
+<img src="{{site.url}}/postpics/par/gallery/01.png">
+</p>
+<p align="center">
+<img src="{{site.url}}/postpics/par/gallery/02.png">
+</p>
+<p align="center">
+<img src="{{site.url}}/postpics/par/gallery/03.png">
+</p>
