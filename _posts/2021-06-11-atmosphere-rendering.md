@@ -261,6 +261,3 @@ $$
 <p align="center">
 <img src="{{site.url}}/postpics/par/gallery/02.png">
 </p>
-<p align="center">
-<img src="{{site.url}}/postpics/par/gallery/03.png">
-</p>
