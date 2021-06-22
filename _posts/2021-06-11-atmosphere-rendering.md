@@ -5,7 +5,7 @@ tags:
   - Graphics
 ---
 
-用自己的语言整理一下最近阅读的实时大气渲染方法，主要参考《A Scalable and Production Ready Sky and Atmosphere Rendering Technique》和《Precomputed Atmospheric Scattering》两文。
+最近在学习实时渲染的常见技术。这里用自己的语言整理一下最近阅读和实现的实时大气渲染方法，主要参考《A Scalable and Production Ready Sky and Atmosphere Rendering Technique》和《Precomputed Atmospheric Scattering》两文。
 
 <!--more-->
 
@@ -39,7 +39,7 @@ $\sigma_s$为介质散射系数，$\sigma_t$为介质衰减系数。更多关于
 
 ### Rayleigh
 
-在大气层中，空气分子带来的散射可以用[Rayleigh theory](https://en.wikipedia.org/wiki/Rayleigh_scattering)描述：
+在大气层中，空气分子带来的散射可以用[Rayleigh theory](https://en.wikipedia.org/wiki/Rayleigh_scattering)近似描述：
 
 $$
 \begin{aligned}
@@ -53,7 +53,7 @@ $$
 
 ### Mie
 
-除了Rayleigh散射外，大气中还存在小颗粒（气溶胶，小水珠等）带来的散射与吸收现象，由[Mie theory](https://en.wikipedia.org/wiki/Mie_scattering)描述：
+除了Rayleigh散射外，大气中还存在小颗粒（气溶胶，小水珠等）带来的散射与吸收现象，由[Mie theory](https://en.wikipedia.org/wiki/Mie_scattering)近似描述：
 
 $$
 \begin{aligned}
@@ -68,7 +68,7 @@ $$
 
 ### Ozone
 
-臭氧层对地球大气层外观也有较大的影响，当太阳靠近地平线时，是臭氧的吸收效应使得天空的大部分区域呈现为蓝色。其吸收率可以由下式近似表示：
+臭氧层对地球大气层外观也有较大的影响，当太阳靠近地平线时，是臭氧的吸收效应使得天空的大部分区域呈现为蓝色。在本文中，其吸收率由下式近似表示：
 
 $$
 \sigma_{Oa}(h, \lambda) = \sigma_{O0}(\lambda)\max\{0, 1 - \frac{|h - 25km|}{15km}\}
@@ -101,7 +101,7 @@ $$
 我们将这一信息记录在预计算的表格$\mathbb T(r, \theta)$中。对大气中的任意两点$a, b$，$T(a, b)$都可以根据这个表格计算出来：
 
 $$
-T(a, b) = T(a, c) / T(b, c) = \mathbb T(r_a, \theta_{a\omega_{ab}}) / \mathbb T(r_b, \theta_{b\omega_{ab}})
+T(a, b) = T(a, c) / T(b, c) = \mathbb T(r_a, \theta_{a}) / \mathbb T(r_b, \theta_{b})
 $$
 
 <p align="center">
@@ -109,6 +109,10 @@ $$
 </p>
 
 ### 零散射项
+
+<p align="center">
+<img width="70%" height="70%" src="{{site.url}}/postpics/par/07.png">
+</p>
 
 设想从大气中某一点$p$向$\omega$发射一条射线，正好可以命中太阳，那么$L(p \leftarrow \omega)$无疑包含了从太阳直接发出的光。这部分辐射亮度可以由下式给出：
 
@@ -120,13 +124,17 @@ $$
 
 ### 单次散射项
 
+<p align="center">
+<img width="70%" height="70%" src="{{site.url}}/postpics/par/05.png">
+</p>
+
 所谓单次散射，是指光自光源出发以来仅经过了一次介质散射后就进入了观察者的眼睛。大气层的散射率不高，因此我们观察到的光的大部分能量都来自单次散射光线。记单次散射的辐射亮度为$L_s$，那么：
 
 $$
 L_s(p\leftarrow\omega)=\int_p^{p_e}T(p, q)\sigma_s(h_q)\left(\int_\mathcal S^2\rho(\cos\langle \omega_i, \omega\rangle)L_0(p\leftarrow \omega_i)V_\text{sun}(q, \omega_i)d\omega_i\right)dl_q
 $$
 
-其中$V_\text{sun}$表示$q$点$\omega_i$方向上太阳的可见性（取值为0或1）。如果我们做一个简化，假设太阳在这里可以被视为一个理想方向光，用狄拉克函数$\delta_\text{sun}$用于选出太阳相对于$q$点的方向$\omega_\text{sun}$，$L_e$被替换为$E_e\delta_\text{sun}$，那么上式可以简化为：
+其中$V_\text{sun}$表示$q$点$\omega_i$方向上太阳的可见性（取值为0或1）。如果我们做一个简化，假设太阳在这里可以被视为一个理想方向光，$L_e$被替换为$E_e\delta_\text{sun}$，那么上式可以简化为：
 
 $$
 \begin{aligned}
@@ -142,16 +150,21 @@ $$
 
 ### 单次反射项
 
+<p align="center">
+<img width="70%" height="70%" src="{{site.url}}/postpics/par/06.png">
+</p>
+
 单次反射项是指从太阳出发，仅在地表反射一次，然后就进入观察者眼中的光。和之前一样，我们假设太阳光是方向光。记单次反射项为$L_r(p \leftarrow \omega)$，从$p$点往$\omega$方向观察到的地面点为$x$，地表BSDF为$f_s$，那么：
 
 $$
-\begin{aligned}
-L_r(p \leftarrow \omega) &= T(p, x)f_s(\omega_\text{sun} \to x \to -\omega)\cos\langle n_x, \omega_\text{sun}\rangle E_eV_\text{sun}(x)T(x, \mathrm{raycast}(x, \omega_\text{sun})) \\
-&= T(p, x)f_s(\omega_\text{sun} \to x \to -\omega)\cos\langle n_x, \omega_\text{sun}\rangle E_eV_\text{sun}(x)\mathbb T(r_x, \theta_{x\omega_\text{sun}})
-\end{aligned}
+L_r(p \leftarrow \omega) = T(p, x)f_s(\omega_\text{sun} \to x \to -\omega)\cos\langle n_x, \omega_\text{sun}\rangle E_eV_\text{sun}(x)\mathbb T(r_x, \theta_{x\omega_\text{sun}})
 $$
 
 ### 多次散射项
+
+<p align="center">
+<img width="70%" height="70%" src="{{site.url}}/postpics/par/08.png">
+</p>
 
 多次散射项确实比较难算，我们先引入几个简化：
 
@@ -220,7 +233,7 @@ $$
 
 我用C++和DirectX 11实现了本文所述的大气渲染模型，代码仓库位于[AtmosphereRenderer](https://github.com/AirGuanZ/AtmosphereRenderer)。
 
-### 低分辨率计算
+### 天空纹理
 
 由于天空颜色分布比较低频，可以计算一个低分辨率的天空纹理，然后在渲染时采样它，以此提高性能。在靠近地平线的角度，天空的颜色变化往往会比其他区域要剧烈一些，因此可以通过调整天空纹理坐标和方向的关系来改善其效果，譬如：
 
@@ -234,6 +247,8 @@ $$
 <img width="30%" height="30%" src="{{site.url}}/postpics/par/04.png">
 </p>
 
+### 空气透视表
+
 在渲染场景中的物体时，我们需要从摄像机到物体表面进行ray marching，以计算这段路径上的积分。为了提高效率，可以预先将摄像机视锥体划分为一个较低分辨率的三维表格$A$，然后填充每个表项对应的位置与摄像机之间的透射率和内散射积分。在渲染场景中的物体时，直接查表即可。
 
 在考虑了遮蔽项（$V_\text{sun}$）时，如果表格$A$的分辨率太低，其中的体积阴影容易产生“锯齿感”，如下图：
@@ -242,13 +257,13 @@ $$
 <img width="50%" height="50%" src="{{site.url}}/postpics/par/02.png">
 </p>
 
-提高$A$的分辨率自然可以改善这一现象，但要将其完全掩盖，需要相对较高的分辨率，这会带来不小的计算开销。因此，我们退而求其次，抖动$A$的采样点位置来掩盖锯齿。将每个采样点在一定范围内随机抖动可得：
+提高$A$的分辨率自然可以改善这一现象，但要将其完全掩盖，需要相对较高的分辨率，这会带来不小的计算开销。因此，我们退而求其次，抖动$A$的采样点位置来掩盖锯齿。依照屏幕空间的蓝噪声将每个采样点在一定范围内随机抖动可得：
 
 <p align="center">
 <img width="50%" height="50%" src="{{site.url}}/postpics/par/03.png">
 </p>
 
-这把锯齿状的artifact转化成了噪声，更容易被人眼所忽略。此外，采用屏幕空间的蓝噪声可以起到更好的效果。
+这把锯齿状的artifact转化成了噪声，更容易被人眼忽略。
 
 ### 效果图
 
@@ -261,3 +276,26 @@ $$
 <p align="center">
 <img src="{{site.url}}/postpics/par/gallery/02.png">
 </p>
+
+调整大气参数可以观察到一些信息：
+* 在自然情形下，除非有比较强的雾/霾，否则地形遮蔽产生的体阴影应该是很难看出来的（我是没在现实中见到过）。可以把阳光调得更亮或削减大气层的厚度会使得体积阴影显得更为明显
+* 太阳周围那一圈灰白色的光晕主要是Mie散射带来的
+* Rayleigh散射是大气颜色的主要决定者。白天散射蓝光较多，使得天空呈蓝色；黄昏/日出时光路变长，蓝光更多地被散射到其他方向上了，于是太阳附近呈橙色
+* Ozone吸收会使得天空更加偏向蓝色，在黄昏/日出时尤为明显
+
+### 性能
+
+渲染质量和耗时之间存在tradeoff，这里仅以我自己认为视觉质量可以接受的参数做性能测试。在GTX 1060上，用Nsight Graphics测得的数据如下：
+
+* 天空纹理（64 * 64分辨率）：0.03~0.04 ms
+* 空气透视表（无体阴影，64 * 64 * 32分辨率，积分步数32）：0.03 ms
+* 空气透视表（有体阴影，200 * 150 * 32分辨率，积分步数32）：0.2 ms
+
+其他渲染阶段只是查这两个表，比如渲染地形时查空气透视表，或者把天空纹理铺到屏幕上等等，它们的性能消耗主要不在大气系统上，故不进行测试。
+
+在启用地形遮蔽造成的体阴影时，空气透视表的分辨率过低会产生严重的artifact，因此需要适当提高其分辨率，并且在光线步进过程中需要频繁读取太阳对应的shadow map，因此其性能相比无体阴影的版本会大幅下降。
+
+### 不足
+
+* 需要path tracing产生reference，以判断结果的正确性和衡量误差。
+* 没有考虑星球尺度的渲染，代码都是以摄像机在大气层内为假设而编写的，因此把摄像机抬高到大气层之外时效果会暴毙
