@@ -11,6 +11,8 @@ tags:
 
 ## 引言
 
+[本文相关代码](https://github.com/AirGuanZ/Rtrc/tree/main/Samples/08.FADM)，注意我用的optimal transport第三方实现因为license的问题，暂时没有以代码的形式放在里边儿，以后可能会换个别的实现包含进去。
+
 所谓vector displacement map，就是把普通displacement map的每个元素给换成一个三维向量，使得被displace的表面不仅能向法线方向移动，也能在切平面上移动，就像这样：
 
 ![WhatsVDM]({{site.url}}/postpics/VDM/what_is_vdm.gif)
