@@ -69,4 +69,6 @@ using SelfTypeResult = std::remove_pointer_t<decltype(GetSelfTypeADL(SelfTypeRea
 
 `SelfTypeTag`的存在只是为了确保不同对每个不同的类型，都有唯一对应的`SelfTypeReader/SelfTypeWriter`。
 
+这套做法令人十分眼熟……仔细一想，这不就是臭名昭著的Stateful Metaprogramming吗……没想到我还挺需要的。
+
 C++，很奇妙吧~
