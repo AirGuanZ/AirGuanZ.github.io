@@ -87,7 +87,7 @@ $$
    * 以每个顶点为中心，以其重要度为强度，随便选个kernel，把所有顶点splat到参数空间，得到一个importance field。
    * 把importance field归一化成一个概率分布，在固定边界点的情况下计算均匀分布到它的optimal transport，得到一个bijective transport map，那么transport的目标位置就是uniform grid的采样位置。
 
-方案2的optimal transport虽然也很难求解，但这是个标准问题，可以直接用第三方实现，不像方案1那样需要自己修改parameterization metric。
+方案2的optimal transport虽然也很难求解，但这是个标准问题，可以直接用第三方实现，不像方案1那样需要自己修改parameterization metric。 事实上，“用相对简单的方式做平面参数化，再在参数空间中进行调整”也是一种经典的参数化流程，其目的正是降低优化的难度。
 
 来看看效果，第一步得到的importance field如下：
 
