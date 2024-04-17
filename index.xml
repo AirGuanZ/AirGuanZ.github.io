@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<rss version="2.0">
+    <channel>
+      <title>Automorphism</title>
+      <link>https://quartz.jzhao.xyz</link>
+      <description>Last 10 notes on Automorphism</description>
+      <generator>Quartz -- quartz.jzhao.xyz</generator>
+      <item>
+    <title>Automorphism</title>
+    <link>https://quartz.jzhao.xyz/</link>
+    <guid>https://quartz.jzhao.xyz/</guid>
+    <description>欢迎来到AirGuanZ的个人主页！ GitHub 2024 Fast Marching Methods Vector Displacement Map生成二三事 旧文 2022 在C++中获得当前类的类型 关于HLSL中的矩阵传参 Lightweight Photon Mapping 2021 符号距离场生成 预计算大气散射模型：原理与实现 ...</description>
+    <pubDate>Tue, 16 Apr 2024 00:45:00 GMT</pubDate>
+  </item><item>
+    <title>Fast Marching Methods</title>
+    <link>https://quartz.jzhao.xyz/2024/2024.04.13.Fast-Marching-Methods</link>
+    <guid>https://quartz.jzhao.xyz/2024/2024.04.13.Fast-Marching-Methods</guid>
+    <description>Eikonal Equation 考虑一团以一定的速度往外扩散的东西，需要计算空间中每个地方p被这东西覆盖的时刻T(p)（称为抵达时间）。将扩散速度记作F (F&gt;0)，显然有： ∣∇T∣F=1, T=0 on Γ 其中Γ是起始区域。说人话就是距离 = 速度 x 时间，且起始区域的“抵达时间”为0。如果F仅依赖于p，那么就得到了Eikonal ...</description>
+    <pubDate>Fri, 12 Apr 2024 16:00:00 GMT</pubDate>
+  </item><item>
+    <title>Vector Displacement Map生成二三事</title>
+    <link>https://quartz.jzhao.xyz/2024/2024.02.23.VDM-Baking</link>
+    <guid>https://quartz.jzhao.xyz/2024/2024.02.23.VDM-Baking</guid>
+    <description>小结一下春节在家搞的玩具。 引言 本文相关代码，注意我用的optimal transport第三方实现因为license的问题，暂时没有以代码的形式放在里边儿，以后可能会换个别的实现包含进去。 所谓vector displacement map，就是把普通displacement map的每个元素给换成一个三维向量，使得被displace的表面不仅能向法线方向移动，也能在切平面上移动，就像这样： ...</description>
+    <pubDate>Thu, 22 Feb 2024 16:00:00 GMT</pubDate>
+  </item><item>
+    <title>在C++中获得当前类的类型</title>
+    <link>https://quartz.jzhao.xyz/%E6%97%A7%E6%96%87%E5%BD%92%E6%A1%A3/2022/2023.07.02.Statically-Get-Class-Type</link>
+    <guid>https://quartz.jzhao.xyz/%E6%97%A7%E6%96%87%E5%BD%92%E6%A1%A3/2022/2023.07.02.Statically-Get-Class-Type</guid>
+    <description>比我一开始以为的要困难许多，不知道有无更简单的方法。 来看一个C++填空题： // 完善此宏，使下面的断言成立 #define DEFINE_SELF ? struct A { DEFINE_SELF }; struct B { DEFINE_SELF }; static_assert(std::is_same_v&lt;A::Self, ...</description>
+    <pubDate>Sat, 01 Jul 2023 16:00:00 GMT</pubDate>
+  </item><item>
+    <title>关于HLSL中的矩阵传参</title>
+    <link>https://quartz.jzhao.xyz/%E6%97%A7%E6%96%87%E5%BD%92%E6%A1%A3/2022/2022.05.28.DX-Matrix-Storage</link>
+    <guid>https://quartz.jzhao.xyz/%E6%97%A7%E6%96%87%E5%BD%92%E6%A1%A3/2022/2022.05.28.DX-Matrix-Storage</guid>
+    <description>一个非常简单的问题，但是网上的资料群魔乱舞，这里备忘一下。 首先定义好数学意义上的两种写法，和存储方式无关： TL​=​1000​0100​0010​xyz1​​ TR​=​100x​010y​001z​0001​​ 利用它们对点进行变换的方式分别是u′=TL​u和v′=vTR​，其中u是列向量，v是行向量。 ...</description>
+    <pubDate>Fri, 27 May 2022 16:00:00 GMT</pubDate>
+  </item><item>
+    <title>Lightweight Photon Mapping</title>
+    <link>https://quartz.jzhao.xyz/%E6%97%A7%E6%96%87%E5%BD%92%E6%A1%A3/2022/2022.04.03.LPM</link>
+    <guid>https://quartz.jzhao.xyz/%E6%97%A7%E6%96%87%E5%BD%92%E6%A1%A3/2022/2022.04.03.LPM</guid>
+    <description>我们知道，VCM（Vertex Connection &amp; Merging）把PM（Photon Mapping）和BDPT（Bidirectional Path Tracing）融合了起来，可以鲁棒地handle一些比较难的场景。但是对大多数应用来说VCM的overhead实在太大了，大多数时候我们只需要用PT（Path ...</description>
+    <pubDate>Sat, 02 Apr 2022 16:00:00 GMT</pubDate>
+  </item><item>
+    <title>符号距离场生成</title>
+    <link>https://quartz.jzhao.xyz/%E6%97%A7%E6%96%87%E5%BD%92%E6%A1%A3/2021/2021.06.28.SDF-Gen</link>
+    <guid>https://quartz.jzhao.xyz/%E6%97%A7%E6%96%87%E5%BD%92%E6%A1%A3/2021/2021.06.28.SDF-Gen</guid>
+    <description>3D SDF的快速生成 本文所述内容的GPU实现：SDFGenerator SDF 给定封闭表面M，可以根据M定义一个空间中的标量函数： u(p)=q∈Mmin​∣p−q∣ u(p)表示网格表面到p的最近距离，称为无符号距离场（unsigned distance field，UDF）。基于u，我们可以定义出另一个函数： ...</description>
+    <pubDate>Sun, 27 Jun 2021 16:00:00 GMT</pubDate>
+  </item><item>
+    <title>预计算大气散射模型：原理与实现</title>
+    <link>https://quartz.jzhao.xyz/%E6%97%A7%E6%96%87%E5%BD%92%E6%A1%A3/2021/2021.06.011.Atmosphere-Rendering</link>
+    <guid>https://quartz.jzhao.xyz/%E6%97%A7%E6%96%87%E5%BD%92%E6%A1%A3/2021/2021.06.011.Atmosphere-Rendering</guid>
+    <description>最近在学习实时渲染的常见技术。这里用自己的语言整理一下最近阅读和实现的实时大气渲染方法，主要参考《A Scalable and Production Ready Sky and Atmosphere Rendering Technique》和《Precomputed Atmospheric Scattering》两文。 大气散射模型 ...</description>
+    <pubDate>Thu, 10 Jun 2021 16:00:00 GMT</pubDate>
+  </item><item>
+    <title>取模运算</title>
+    <link>https://quartz.jzhao.xyz/%E6%97%A7%E6%96%87%E5%BD%92%E6%A1%A3/2021/2021.05.013.Mod-Operator</link>
+    <guid>https://quartz.jzhao.xyz/%E6%97%A7%E6%96%87%E5%BD%92%E6%A1%A3/2021/2021.05.013.Mod-Operator</guid>
+    <description>对常见取模运算规则的总结。 Intro 给定整数a和b，在几乎所有的编程语言中，r=a%m都符合以下条件： qa∣r∣​∈Z=qb+r≤∣b∣​ 但是，这还不足以严格地定义r——其符号仍然是未知的。不同的编程语言中亦有不同的决定符号的方法，本文对这些方法稍做总结。 Truncated Division 一种常见的方法是通过： ...</description>
+    <pubDate>Wed, 12 May 2021 16:00:00 GMT</pubDate>
+  </item><item>
+    <title>C++中的一个由析构顺序引发的bug</title>
+    <link>https://quartz.jzhao.xyz/%E6%97%A7%E6%96%87%E5%BD%92%E6%A1%A3/2020/2020.02.02.An-Interesting-Bug</link>
+    <guid>https://quartz.jzhao.xyz/%E6%97%A7%E6%96%87%E5%BD%92%E6%A1%A3/2020/2020.02.02.An-Interesting-Bug</guid>
+    <description>今天刚解决的一个小bug，觉得很有意思，记录一下。 本文有一些事实错误，待修改 在C++中的构造/析构函数里调用虚函数通常不是个好主意。考虑如下代码： class A { public: ~A() { cout &lt;&lt; &quot;A destructor&quot; &lt;&lt; endl; } }; class Base ...</description>
+    <pubDate>Sat, 01 Feb 2020 16:00:00 GMT</pubDate>
+  </item>
+    </channel>
+  </rss>
