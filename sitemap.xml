@@ -1,108 +1,111 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml"><url>
-    <loc>https://airguanz.github.io/blogs/2018.04.05.C99-Inline-Keyword</loc>
+    <loc>https://airguanz.github.io/articles/2018.04.05.C99-Inline-Keyword</loc>
     <lastmod>2018-04-04T16:00:00.000Z</lastmod>
   </url><url>
-    <loc>https://airguanz.github.io/blogs/2018.04.27.Makefile-Dependency</loc>
+    <loc>https://airguanz.github.io/articles/2018.04.27.Makefile-Dependency</loc>
     <lastmod>2018-04-26T16:00:00.000Z</lastmod>
   </url><url>
-    <loc>https://airguanz.github.io/blogs/2018.06.23.CompGeoNote</loc>
+    <loc>https://airguanz.github.io/articles/2018.06.23.CompGeoNote</loc>
     <lastmod>2018-06-22T16:00:00.000Z</lastmod>
   </url><url>
-    <loc>https://airguanz.github.io/blogs/2018.07.13.Cpp-Sucks</loc>
+    <loc>https://airguanz.github.io/articles/2018.07.13.Cpp-Sucks</loc>
     <lastmod>2018-07-12T16:00:00.000Z</lastmod>
   </url><url>
-    <loc>https://airguanz.github.io/blogs/2018.08.14.Coherence-and-Consistency</loc>
+    <loc>https://airguanz.github.io/articles/2018.08.14.Coherence-and-Consistency</loc>
     <lastmod>2018-08-13T16:00:00.000Z</lastmod>
   </url><url>
-    <loc>https://airguanz.github.io/blogs/2018.08.16.AGI-Capter-4</loc>
+    <loc>https://airguanz.github.io/articles/2018.08.16.AGI-Capter-4</loc>
     <lastmod>2018-08-15T16:00:00.000Z</lastmod>
   </url><url>
-    <loc>https://airguanz.github.io/blogs/2018.08.20.Monte-Carlo-Integration-Review</loc>
+    <loc>https://airguanz.github.io/articles/2018.08.20.Monte-Carlo-Integration-Review</loc>
     <lastmod>2018-08-19T16:00:00.000Z</lastmod>
   </url><url>
-    <loc>https://airguanz.github.io/blogs/2018.08.27.WC</loc>
-    <lastmod>2018-08-26T16:00:00.000Z</lastmod>
-  </url><url>
-    <loc>https://airguanz.github.io/blogs/2018.09.04.Quaternion</loc>
+    <loc>https://airguanz.github.io/articles/2018.09.04.Quaternion</loc>
     <lastmod>2018-09-03T16:00:00.000Z</lastmod>
   </url><url>
-    <loc>https://airguanz.github.io/blogs/2018.09.11.Weingarten-Equations</loc>
-    <lastmod>2018-09-10T16:00:00.000Z</lastmod>
-  </url><url>
-    <loc>https://airguanz.github.io/blogs/2018.10.12.Direct-Indirect-Path-Tracing</loc>
+    <loc>https://airguanz.github.io/articles/2018.10.12.Direct-Indirect-Path-Tracing</loc>
     <lastmod>2018-10-11T16:00:00.000Z</lastmod>
   </url><url>
-    <loc>https://airguanz.github.io/blogs/2018.10.15.Multiple-Importance-Sampling</loc>
+    <loc>https://airguanz.github.io/articles/2018.10.15.Multiple-Importance-Sampling</loc>
     <lastmod>2018-10-14T16:00:00.000Z</lastmod>
   </url><url>
-    <loc>https://airguanz.github.io/blogs/2018.10.22.Reflection-Models</loc>
+    <loc>https://airguanz.github.io/articles/2018.10.22.Reflection-Models</loc>
     <lastmod>2018-10-21T16:00:00.000Z</lastmod>
   </url><url>
-    <loc>https://airguanz.github.io/blogs/2018.10.28.LTE-with-Participating-Medium</loc>
+    <loc>https://airguanz.github.io/articles/2018.10.28.LTE-with-Participating-Medium</loc>
     <lastmod>2018-10-27T16:00:00.000Z</lastmod>
   </url><url>
-    <loc>https://airguanz.github.io/blogs/2018.10.31.Tagged-Union-in-C++</loc>
+    <loc>https://airguanz.github.io/articles/2018.10.31.Tagged-Union-in-C++</loc>
     <lastmod>2018-10-30T16:00:00.000Z</lastmod>
   </url><url>
-    <loc>https://airguanz.github.io/blogs/2018.11.13.BDPT</loc>
+    <loc>https://airguanz.github.io/articles/2018.11.13.BDPT</loc>
     <lastmod>2018-11-12T16:00:00.000Z</lastmod>
   </url><url>
-    <loc>https://airguanz.github.io/blogs/2018.11.17.Delta-Geometry-Factor</loc>
+    <loc>https://airguanz.github.io/articles/2018.11.17.Delta-Geometry-Factor</loc>
     <lastmod>2018-11-16T16:00:00.000Z</lastmod>
   </url><url>
-    <loc>https://airguanz.github.io/blogs/2018.11.20.SH-PRT</loc>
+    <loc>https://airguanz.github.io/articles/2018.11.20.SH-PRT</loc>
     <lastmod>2018-11-19T16:00:00.000Z</lastmod>
   </url><url>
-    <loc>https://airguanz.github.io/blogs/2018.12.02.Camera-Models</loc>
+    <loc>https://airguanz.github.io/articles/2018.12.02.Camera-Models</loc>
     <lastmod>2018-12-01T16:00:00.000Z</lastmod>
   </url><url>
-    <loc>https://airguanz.github.io/blogs/2019.02.20.Disney-BRDF</loc>
+    <loc>https://airguanz.github.io/articles/2019.02.20.Disney-BRDF</loc>
     <lastmod>2019-02-19T16:00:00.000Z</lastmod>
   </url><url>
-    <loc>https://airguanz.github.io/blogs/2019.03.18.White-Furnace-Test</loc>
+    <loc>https://airguanz.github.io/articles/2019.03.18.White-Furnace-Test</loc>
     <lastmod>2019-03-17T16:00:00.000Z</lastmod>
   </url><url>
-    <loc>https://airguanz.github.io/blogs/2019.07.10.Light-Tracing</loc>
+    <loc>https://airguanz.github.io/articles/2019.07.10.Light-Tracing</loc>
     <lastmod>2019-07-09T16:00:00.000Z</lastmod>
   </url><url>
-    <loc>https://airguanz.github.io/blogs/2019.07.26.Breakfast-Room</loc>
+    <loc>https://airguanz.github.io/articles/2019.07.26.Breakfast-Room</loc>
     <lastmod>2019-07-09T16:00:00.000Z</lastmod>
   </url><url>
-    <loc>https://airguanz.github.io/blogs/2019.11.20.Float-to-Int-Exact-Range</loc>
+    <loc>https://airguanz.github.io/articles/2019.11.20.Float-to-Int-Exact-Range</loc>
     <lastmod>2019-11-19T16:00:00.000Z</lastmod>
   </url><url>
-    <loc>https://airguanz.github.io/blogs/2020.02.02.An-Interesting-Bug</loc>
+    <loc>https://airguanz.github.io/articles/2020.02.02.An-Interesting-Bug</loc>
     <lastmod>2020-02-01T16:00:00.000Z</lastmod>
   </url><url>
-    <loc>https://airguanz.github.io/blogs/2021.05.013.Mod-Operator</loc>
+    <loc>https://airguanz.github.io/articles/2021.05.013.Mod-Operator</loc>
     <lastmod>2021-05-12T16:00:00.000Z</lastmod>
   </url><url>
-    <loc>https://airguanz.github.io/blogs/2021.06.011.Atmosphere-Rendering</loc>
+    <loc>https://airguanz.github.io/articles/2021.06.011.Atmosphere-Rendering</loc>
     <lastmod>2021-06-10T16:00:00.000Z</lastmod>
   </url><url>
-    <loc>https://airguanz.github.io/blogs/2021.06.28.SDF-Gen</loc>
+    <loc>https://airguanz.github.io/articles/2021.06.28.SDF-Gen</loc>
     <lastmod>2021-06-27T16:00:00.000Z</lastmod>
   </url><url>
-    <loc>https://airguanz.github.io/blogs/2022.04.03.LPM</loc>
+    <loc>https://airguanz.github.io/articles/2022.04.03.LPM</loc>
     <lastmod>2022-04-02T16:00:00.000Z</lastmod>
   </url><url>
-    <loc>https://airguanz.github.io/blogs/2022.05.28.DX-Matrix-Storage</loc>
+    <loc>https://airguanz.github.io/articles/2022.05.28.DX-Matrix-Storage</loc>
     <lastmod>2022-05-27T16:00:00.000Z</lastmod>
   </url><url>
-    <loc>https://airguanz.github.io/blogs/2023.07.02.Statically-Get-Class-Type</loc>
+    <loc>https://airguanz.github.io/articles/2023.07.02.Statically-Get-Class-Type</loc>
     <lastmod>2023-07-01T16:00:00.000Z</lastmod>
   </url><url>
-    <loc>https://airguanz.github.io/blogs/2024.02.23.VDM-Baking</loc>
+    <loc>https://airguanz.github.io/articles/2024.02.23.VDM-Baking</loc>
     <lastmod>2024-02-22T16:00:00.000Z</lastmod>
   </url><url>
-    <loc>https://airguanz.github.io/blogs/2024.04.13.Fast-Marching-Methods</loc>
+    <loc>https://airguanz.github.io/articles/2024.04.13.Fast-Marching-Methods</loc>
     <lastmod>2024-04-12T16:00:00.000Z</lastmod>
   </url><url>
-    <loc>https://airguanz.github.io/blogs/2024.04.17.Differential-Forms</loc>
+    <loc>https://airguanz.github.io/articles/2024.04.17.Differential-Forms</loc>
     <lastmod>2024-04-16T16:00:00.000Z</lastmod>
   </url><url>
-    <loc>https://airguanz.github.io/blogs/</loc>
+    <loc>https://airguanz.github.io/articles/</loc>
     <lastmod>2024-04-18T18:11:13.597Z</lastmod>
+  </url><url>
+    <loc>https://airguanz.github.io/categories/Article</loc>
+    <lastmod>2024-04-20T07:47:16.191Z</lastmod>
+  </url><url>
+    <loc>https://airguanz.github.io/categories/Note</loc>
+    <lastmod>2024-04-20T07:50:43.604Z</lastmod>
+  </url><url>
+    <loc>https://airguanz.github.io/categories/Old</loc>
+    <lastmod>2024-04-20T07:51:31.920Z</lastmod>
   </url><url>
     <loc>https://airguanz.github.io/</loc>
     <lastmod>2024-04-16T00:45:00.569Z</lastmod>

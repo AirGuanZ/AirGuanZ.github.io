@@ -6,65 +6,65 @@
       <description>Last 10 notes on Automorphism</description>
       <generator>Quartz -- quartz.jzhao.xyz</generator>
       <item>
+    <title>旧文归档</title>
+    <link>https://airguanz.github.io/categories/Old</link>
+    <guid>https://airguanz.github.io/categories/Old</guid>
+    <description>怀念通宵debug民科自制OS的日子。.</description>
+    <pubDate>Sat, 20 Apr 2024 07:51:31 GMT</pubDate>
+  </item><item>
+    <title>学习笔记</title>
+    <link>https://airguanz.github.io/categories/Note</link>
+    <guid>https://airguanz.github.io/categories/Note</guid>
+    <description>不要在意可读性。.</description>
+    <pubDate>Sat, 20 Apr 2024 07:50:43 GMT</pubDate>
+  </item><item>
+    <title>文章列表</title>
+    <link>https://airguanz.github.io/categories/Article</link>
+    <guid>https://airguanz.github.io/categories/Article</guid>
+    <description>离开校园后的技术写作。.</description>
+    <pubDate>Sat, 20 Apr 2024 07:47:16 GMT</pubDate>
+  </item><item>
     <title>Automorphism</title>
-    <link>https://airguanz.github.io/blogs/</link>
-    <guid>https://airguanz.github.io/blogs/</guid>
-    <description>欢迎来到AirGuanZ的个人主页！ GitHub.</description>
+    <link>https://airguanz.github.io/articles/</link>
+    <guid>https://airguanz.github.io/articles/</guid>
+    <description>欢迎来到AirGuanZ的个人主页！ 文章 笔记 旧文归档 GitHub 汇总.</description>
     <pubDate>Thu, 18 Apr 2024 18:11:13 GMT</pubDate>
   </item><item>
     <title>Differential Forms</title>
-    <link>https://airguanz.github.io/blogs/2024.04.17.Differential-Forms</link>
-    <guid>https://airguanz.github.io/blogs/2024.04.17.Differential-Forms</guid>
-    <description>参考资料 Differential forms crash course. Jiří Lebl. Introduction to differential forms. Donu Arapura. CS 15-458/858: Discrete Differential Geometry. Keenan Crane 定义/规则备忘 一些基本规则： df=n∑​∂xi​∂f​dxi​ f:Rn→R dx∧dy=−dy∧dx d(fdx)=df∧dx d(fg)=gdf+fdg 在此基础上可以进行一些推导，比如： (fdx+gdy+hdz)∧(adx+bdy+cdz)=(gc−hb)dy∧dz+(ha−fc)dz∧dx+(fb−ga)dx∧dy d(fdx+gdy+hdz)=(∂y∂h​−∂z∂g​)dy∧dz+(∂z∂f​−∂x∂h​)dz∧dx+(∂x∂g​−∂y∂f​)dy∧dx 卧槽，叉乘和旋度！所以根据经典的∇×∇f=0，可以导出： d(df)=0 1-form 所以到底什么是dx？这取决于我们是在什么样的上下文中进行的这一系列演算，换言之，演算出来的结果是拿来干嘛的。 定义Rn中的1-formω为具有如下形式的表达式： ω=n∑​fi​dxi​ 这里先把dxi​看作无特殊含义的记号，其意义要在确定了它能进行什么样的运算后才会浮现。现考虑某条性质良好的曲线C，定义ω在C上的积分为： ∫C​ω=∫C​⟨f1​,…,fn​⟩⋅t^ds 设想我们把曲线参数化为ϕ:D→S，则此积分可以被写成： ∫C​ω=∫D​⟨f1​,…fn​⟩⋅⟨dtdx1​​,…,dtdxn​​⟩dt=∫D​(n∑​fi​dtdxi​​)dt 其中ϕ(t)=(x1​,⋯,xn​)。可以看到，当使用参数t进行积分时，dxi​将被替换为： dxi​⟶dtdxi​​dt 右侧的xi​是货真价实的Rn​中的坐标值。注意这里的dt也没什么特别含义，其意义仅仅是由积分运算赋予的，指明我们是在用什么来进行积分。（这符号系统也太垃圾了，上文中的dx,df,dt各具有不同的类型，真是整蛊小能手……） 在这种诠释下，dx是由对它进行的积分定义的，对dx施加的一切运算规则都需要确保积分结果不变。 这个诠释相当不错，dx在进行变量代换时不会受到影响，直到最后真的要用某个变量t进行积分时，才展开成与t有关的形式，不管中间进行了多复杂的变量代换，都蕴含在dx/dt中了。 2-form 考虑简化的情形： ω=adx1​∧dx2​ 对参数化曲面ϕ:D→S，定义： ∫S​ω=∫D​adx1​∧dx2​(∂y1​∂ϕ​,∂y2​∂ϕ​)dy1​dy2​ 其中， dx1​∧dx2​(v1​,v2​)=det(dx1​(v1​)dx1​(v2​)​dx2​(v1​)dx2​(v2​)​) dx1​(v1​)是v1​在dx1​方向上的长度。 这就是说，dx1​∧dx2​在用dy1​dy2​积分时会变成： ∫S​dx1​dx2​⟶∫D​∂(y1​,y2​)∂(x1​,x2​)​dy1​dy2​ 很容易将这套定义推广到k-form。 验证运算规则 上面的定义看起来很不错，还需要验证一下它是否满足我们熟悉的运算规则，这样才能大胆地用它来算东西。 比如这是大家都喜欢的分配律： dx1​∧(dx2​+dx3​)=dx1​∧dx2​+dx1​∧dx3​ 验证如下： ∫S​dx1​∧(dx2​+dx3​)​=∫D​det​dx1​(∂y1​∂ϕ​)dx1​(∂y2​∂ϕ​)​(dx2​+dx3​)(∂y1​∂ϕ​)(dx2​+dx3​)(∂y2​∂ϕ​)​​dy1​dy2​=∫D​det​dx1​(∂y1​∂ϕ​)dx1​(∂y2​∂ϕ​)​dx2​(∂y1​∂ϕ​)+dx3​(∂y1​∂ϕ​)dx2​(∂y2​∂ϕ​)+dx3​(∂y2​∂ϕ​)​​dy1​dy2​=∫D​det​dx1​(∂y1​∂ϕ​)dx1​(∂y2​∂ϕ​)​dx2​(∂y1​∂ϕ​)dx2​(∂y2​∂ϕ​)​​dy1​dy2​+∫D​det​dx1​(∂y1​∂ϕ​)dx1​(∂y2​∂ϕ​)​dx3​(∂y1​∂ϕ​)dx3​(∂y2​∂ϕ​)​​dy1​dy2​=∫S​dx1​∧dx2​+dx1​∧dx3​​ 这里省略了一些平凡的定义，比如2-forms之间的加法。在明确了各种定义后，这堆公式与其说是证明，不如说是平凡的同义反复。不过话说回来，整个数学都是同义反复（ 总而言之，透过积分和jacobian矩阵，我们终于可以拿着dx到处晃荡了。只是需要注意，differential k-forms的意义是由k维表面上的积分赋予的，如果我们处在一个相应的积分无数学意义的context中，就不能随意使用这些运算规则。.</description>
+    <link>https://airguanz.github.io/articles/2024.04.17.Differential-Forms</link>
+    <guid>https://airguanz.github.io/articles/2024.04.17.Differential-Forms</guid>
+    <description>参考资料 比较严谨的介绍： Differential forms crash course. Jiří Lebl. Introduction to differential forms. Donu Arapura. 几何图像： CS 15-458/858: Discrete Differential Geometry.</description>
     <pubDate>Tue, 16 Apr 2024 16:00:00 GMT</pubDate>
   </item><item>
     <title>Automorphism</title>
     <link>https://airguanz.github.io/</link>
     <guid>https://airguanz.github.io/</guid>
-    <description>欢迎来到AirGuanZ的个人主页！ Blogs.</description>
+    <description>欢迎来到AirGuanZ的个人主页！ Articles.</description>
     <pubDate>Tue, 16 Apr 2024 00:45:00 GMT</pubDate>
   </item><item>
     <title>Fast Marching Methods</title>
-    <link>https://airguanz.github.io/blogs/2024.04.13.Fast-Marching-Methods</link>
-    <guid>https://airguanz.github.io/blogs/2024.04.13.Fast-Marching-Methods</guid>
+    <link>https://airguanz.github.io/articles/2024.04.13.Fast-Marching-Methods</link>
+    <guid>https://airguanz.github.io/articles/2024.04.13.Fast-Marching-Methods</guid>
     <description>Eikonal Equation 考虑一团以一定的速度往外扩散的东西，需要计算空间中每个地方p被这东西覆盖的时刻T(p)（称为抵达时间）。将扩散速度记作F (F&gt;0)，显然有： ∣∇T∣F=1, T=0 on Γ 其中Γ是起始区域。说人话就是距离 = 速度 x 时间，且起始区域的“抵达时间”为0。如果F仅依赖于p，那么就得到了Eikonal ...</description>
     <pubDate>Fri, 12 Apr 2024 16:00:00 GMT</pubDate>
   </item><item>
     <title>Vector Displacement Map生成二三事</title>
-    <link>https://airguanz.github.io/blogs/2024.02.23.VDM-Baking</link>
-    <guid>https://airguanz.github.io/blogs/2024.02.23.VDM-Baking</guid>
+    <link>https://airguanz.github.io/articles/2024.02.23.VDM-Baking</link>
+    <guid>https://airguanz.github.io/articles/2024.02.23.VDM-Baking</guid>
     <description>小结一下春节在家搞的玩具。 引言 本文相关代码，注意我用的optimal transport第三方实现因为license的问题，暂时没有以代码的形式放在里边儿，以后可能会换个别的实现包含进去。 所谓vector displacement map，就是把普通displacement map的每个元素给换成一个三维向量，使得被displace的表面不仅能向法线方向移动，也能在切平面上移动，就像这样： ...</description>
     <pubDate>Thu, 22 Feb 2024 16:00:00 GMT</pubDate>
   </item><item>
     <title>在C++中获得当前类的类型</title>
-    <link>https://airguanz.github.io/blogs/2023.07.02.Statically-Get-Class-Type</link>
-    <guid>https://airguanz.github.io/blogs/2023.07.02.Statically-Get-Class-Type</guid>
+    <link>https://airguanz.github.io/articles/2023.07.02.Statically-Get-Class-Type</link>
+    <guid>https://airguanz.github.io/articles/2023.07.02.Statically-Get-Class-Type</guid>
     <description>比我一开始以为的要困难许多，不知道有无更简单的方法。 来看一个C++填空题： // 完善此宏，使下面的断言成立 #define DEFINE_SELF ? struct A { DEFINE_SELF }; struct B { DEFINE_SELF }; static_assert(std::is_same_v&lt;A::Self, ...</description>
     <pubDate>Sat, 01 Jul 2023 16:00:00 GMT</pubDate>
   </item><item>
     <title>关于HLSL中的矩阵传参</title>
-    <link>https://airguanz.github.io/blogs/2022.05.28.DX-Matrix-Storage</link>
-    <guid>https://airguanz.github.io/blogs/2022.05.28.DX-Matrix-Storage</guid>
+    <link>https://airguanz.github.io/articles/2022.05.28.DX-Matrix-Storage</link>
+    <guid>https://airguanz.github.io/articles/2022.05.28.DX-Matrix-Storage</guid>
     <description>一个非常简单的问题，但是网上的资料群魔乱舞，这里备忘一下。 首先定义好数学意义上的两种写法，和存储方式无关： TL​=​1000​0100​0010​xyz1​​ TR​=​100x​010y​001z​0001​​ 利用它们对点进行变换的方式分别是u′=TL​u和v′=vTR​，其中u是列向量，v是行向量。 ...</description>
     <pubDate>Fri, 27 May 2022 16:00:00 GMT</pubDate>
-  </item><item>
-    <title>Lightweight Photon Mapping</title>
-    <link>https://airguanz.github.io/blogs/2022.04.03.LPM</link>
-    <guid>https://airguanz.github.io/blogs/2022.04.03.LPM</guid>
-    <description>我们知道，VCM（Vertex Connection &amp; Merging）把PM（Photon Mapping）和BDPT（Bidirectional Path Tracing）融合了起来，可以鲁棒地handle一些比较难的场景。但是对大多数应用来说VCM的overhead实在太大了，大多数时候我们只需要用PT（Path ...</description>
-    <pubDate>Sat, 02 Apr 2022 16:00:00 GMT</pubDate>
-  </item><item>
-    <title>符号距离场生成</title>
-    <link>https://airguanz.github.io/blogs/2021.06.28.SDF-Gen</link>
-    <guid>https://airguanz.github.io/blogs/2021.06.28.SDF-Gen</guid>
-    <description>3D SDF的快速生成 本文所述内容的GPU实现：SDFGenerator SDF 给定封闭表面M，可以根据M定义一个空间中的标量函数： u(p)=q∈Mmin​∣p−q∣ u(p)表示网格表面到p的最近距离，称为无符号距离场（unsigned distance field，UDF）。基于u，我们可以定义出另一个函数： ...</description>
-    <pubDate>Sun, 27 Jun 2021 16:00:00 GMT</pubDate>
-  </item><item>
-    <title>预计算大气散射模型：原理与实现</title>
-    <link>https://airguanz.github.io/blogs/2021.06.011.Atmosphere-Rendering</link>
-    <guid>https://airguanz.github.io/blogs/2021.06.011.Atmosphere-Rendering</guid>
-    <description>最近在学习实时渲染的常见技术。这里用自己的语言整理一下最近阅读和实现的实时大气渲染方法，主要参考《A Scalable and Production Ready Sky and Atmosphere Rendering Technique》和《Precomputed Atmospheric Scattering》两文。 大气散射模型 ...</description>
-    <pubDate>Thu, 10 Jun 2021 16:00:00 GMT</pubDate>
   </item>
     </channel>
   </rss>
