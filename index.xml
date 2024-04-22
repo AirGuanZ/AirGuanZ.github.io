@@ -45,7 +45,7 @@
     <title>Fast Marching Methods</title>
     <link>https://airguanz.github.io/articles/2024.04.13.Fast-Marching-Methods</link>
     <guid>https://airguanz.github.io/articles/2024.04.13.Fast-Marching-Methods</guid>
-    <description>Eikonal Equation 考虑一团以一定的速度往外扩散的东西，需要计算空间中每个地方p被这东西覆盖的时刻T(p)（称为抵达时间）。将扩散速度记作F (F&gt;0)，显然有： ∣∇T∣F=1, T=0 on Γ 其中Γ是起始区域。说人话就是距离 = 速度 x 时间，且起始区域的“抵达时间”为0。如果F仅依赖于p，那么就得到了Eikonal ...</description>
+    <description>参考资料 A Fast Marching Level Set Method for Monotinically Advancing Fronts A Second-Order Fast Marching Eikonal Solver On the Implementation of Fast Marching Methods for 3d Lattices ...</description>
     <pubDate>Fri, 12 Apr 2024 16:00:00 GMT</pubDate>
   </item><item>
     <title>Vector Displacement Map生成二三事</title>
