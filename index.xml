@@ -6,13 +6,19 @@
       <description>Last 10 notes on Automorphism</description>
       <generator>Quartz -- quartz.jzhao.xyz</generator>
       <item>
+    <title>个人菜谱分享</title>
+    <link>https://airguanz.github.io/articles/2024.04.27.Cookbook</link>
+    <guid>https://airguanz.github.io/articles/2024.04.27.Cookbook</guid>
+    <description>长期更新中…… 食无定味，适口者珍，我只看喜好，不求正宗。 有的菜不会完整记录，只写踩过的坑。 刀口辣椒/花椒 每次铡刀口辣椒都四处飞溅，打扫不易。可以用食品袋把焙香的干辣椒/花椒装起来，然后擀碎，再倒出来用刀铡。焙花椒面时同理。 猪油 猪板油切大块焯水。 切均匀小块，凉水下锅，加大葱、去皮姜片，[加白酒、香料]，大火烧开，水蒸发得不多后转中小火。 ...</description>
+    <pubDate>Fri, 26 Apr 2024 16:00:00 GMT</pubDate>
+  </item><item>
     <title>旧文归档</title>
     <link>https://airguanz.github.io/categories/Old</link>
     <guid>https://airguanz.github.io/categories/Old</guid>
-    <description>怀念通宵debug民科自制OS的日子。.</description>
+    <description>怀念通宵debug的日子。.</description>
     <pubDate>Sat, 20 Apr 2024 07:51:31 GMT</pubDate>
   </item><item>
-    <title>学习笔记</title>
+    <title>个人笔记</title>
     <link>https://airguanz.github.io/categories/Note</link>
     <guid>https://airguanz.github.io/categories/Note</guid>
     <description>不要在意可读性。.</description>
@@ -59,12 +65,6 @@
     <guid>https://airguanz.github.io/articles/2023.07.02.Statically-Get-Class-Type</guid>
     <description>比我一开始以为的要困难许多，不知道有无更简单的方法。 来看一个C++填空题： // 完善此宏，使下面的断言成立 #define DEFINE_SELF ? struct A { DEFINE_SELF }; struct B { DEFINE_SELF }; static_assert(std::is_same_v&lt;A::Self, ...</description>
     <pubDate>Sat, 01 Jul 2023 16:00:00 GMT</pubDate>
-  </item><item>
-    <title>关于HLSL中的矩阵传参</title>
-    <link>https://airguanz.github.io/articles/2022.05.28.DX-Matrix-Storage</link>
-    <guid>https://airguanz.github.io/articles/2022.05.28.DX-Matrix-Storage</guid>
-    <description>一个非常简单的问题，但是网上的资料群魔乱舞，这里备忘一下。 首先定义好数学意义上的两种写法，和存储方式无关： TL​=​1000​0100​0010​xyz1​​ TR​=​100x​010y​001z​0001​​ 利用它们对点进行变换的方式分别是u′=TL​u和v′=vTR​，其中u是列向量，v是行向量。 ...</description>
-    <pubDate>Fri, 27 May 2022 16:00:00 GMT</pubDate>
   </item>
     </channel>
   </rss>
