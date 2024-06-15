@@ -6,6 +6,12 @@
       <description>Last 10 notes on Automorphism</description>
       <generator>Quartz -- quartz.jzhao.xyz</generator>
       <item>
+    <title>Intrinsic Delaunay Triangulation</title>
+    <link>https://airguanz.github.io/articles/2024.06.15.Intrinsic-Delaunay-Triangulation</link>
+    <guid>https://airguanz.github.io/articles/2024.06.15.Intrinsic-Delaunay-Triangulation</guid>
+    <description>参考： Geometry Processing with Intrinsic Triangulations Navigating Intrinsic Triangulations A Laplacian for Nonmanifold Triangle Meshes 容易实现，效果还好，太帅了。 Delaunay Triangulation ...</description>
+    <pubDate>Fri, 14 Jun 2024 16:00:00 GMT</pubDate>
+  </item><item>
     <title>硬件纹理插值的精度问题</title>
     <link>https://airguanz.github.io/articles/2024.05.18.Bilinear-Interpolation-Precision</link>
     <guid>https://airguanz.github.io/articles/2024.05.18.Bilinear-Interpolation-Precision</guid>
@@ -42,9 +48,9 @@
     <description>欢迎来到AirGuanZ的个人主页！ 文章 笔记 旧文归档 GitHub 汇总.</description>
     <pubDate>Thu, 18 Apr 2024 18:11:13 GMT</pubDate>
   </item><item>
-    <title>Discrete Differential Geometry</title>
-    <link>https://airguanz.github.io/articles/2024.04.17.Discrete-Differential-Geometry</link>
-    <guid>https://airguanz.github.io/articles/2024.04.17.Discrete-Differential-Geometry</guid>
+    <title>Discrete Differential Forms</title>
+    <link>https://airguanz.github.io/articles/2024.04.17.Discrete-Differential-Forms</link>
+    <guid>https://airguanz.github.io/articles/2024.04.17.Discrete-Differential-Forms</guid>
     <description>参考资料 CS 15-458/858: Discrete Differential Geometry. Keenan Crane Differential forms crash course. Jiří Lebl. Introduction to differential forms. Donu Arapura.</description>
     <pubDate>Tue, 16 Apr 2024 16:00:00 GMT</pubDate>
   </item><item>
@@ -59,12 +65,6 @@
     <guid>https://airguanz.github.io/articles/2024.04.13.Fast-Marching-Methods</guid>
     <description>参考资料 A Fast Marching Level Set Method for Monotinically Advancing Fronts A Second-Order Fast Marching Eikonal Solver On the Implementation of Fast Marching Methods for 3d Lattices ...</description>
     <pubDate>Fri, 12 Apr 2024 16:00:00 GMT</pubDate>
-  </item><item>
-    <title>Vector Displacement Map生成二三事</title>
-    <link>https://airguanz.github.io/articles/2024.02.23.VDM-Baking</link>
-    <guid>https://airguanz.github.io/articles/2024.02.23.VDM-Baking</guid>
-    <description>小结一下春节在家搞的玩具。 引言 本文相关代码，注意我用的optimal transport第三方实现因为license的问题，暂时没有以代码的形式放在里边儿，以后可能会换个别的实现包含进去。 所谓vector displacement map，就是把普通displacement map的每个元素给换成一个三维向量，使得被displace的表面不仅能向法线方向移动，也能在切平面上移动，就像这样： ...</description>
-    <pubDate>Thu, 22 Feb 2024 16:00:00 GMT</pubDate>
   </item>
     </channel>
   </rss>
