@@ -9,7 +9,7 @@
     <title>Discrete Differential Operators for Triangle Mesh</title>
     <link>https://airguanz.github.io/articles/2024.06.25.Differential-Operators-for-Triangle-Mesh</link>
     <guid>https://airguanz.github.io/articles/2024.06.25.Differential-Operators-for-Triangle-Mesh</guid>
-    <description>Hat Function 对一个有∣V∣个顶点的三角形mesh，定义∣V∣个对应的基函数，每个函数ϕv​和一个顶点v对应。ϕv​的值由下式定义： ϕv​(v)ϕv​(w)ϕv​(p)​:=1:=0,:=ϕv​(i)Bi​(p)+ϕv​(j)Bj​(p)+ϕv​(k)Bk​(p),​w∈Vp∈triangle ...</description>
+    <description>Hat Function 对一个有∣V∣个顶点的三角形mesh，定义∣V∣个对应的基函数，每个函数ϕv​和一个顶点v对应。ϕv​的值由下式定义： ϕv​(v)ϕv​(w)ϕv​(p)​:=1:=0,:=ϕv​(i)Bi​(p)+ϕv​(j)Bj​(p)+ϕv​(k)Bk​(p),​w∈V−{v}p∈triangle ...</description>
     <pubDate>Mon, 24 Jun 2024 16:00:00 GMT</pubDate>
   </item><item>
     <title>Intrinsic Delaunay Triangulation</title>
