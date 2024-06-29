@@ -9,7 +9,7 @@
     <title>Heat Method</title>
     <link>https://airguanz.github.io/articles/2024.06.29.Heat-Method</link>
     <guid>https://airguanz.github.io/articles/2024.06.29.Heat-Method</guid>
-    <description>给一个triangle mesh M，以及上面的一组点S，求M上其他所有顶点到S的测地距离。 参考资料：The Heat Method for Distance Computation。 本文代码： Heat Method 理论 如果以某个点x为热源在M表面做heat diffusion，将经过时间t后y点的热量记作kt,x​(y)，那么根据Varadhan’s ...</description>
+    <description>给一个triangle mesh M，以及上面的一组点S，求M上其他所有顶点到S的测地距离。 参考资料：The Heat Method for Distance Computation 本文代码：Rtrc Sample 15.HeatMethod Heat Method 理论 如果以某个点x为热源在M表面做heat diffusion，将经过时间t后y点的热量记作kt,x​(y)，那么根据Varadhan’s ...</description>
     <pubDate>Fri, 28 Jun 2024 16:00:00 GMT</pubDate>
   </item><item>
     <title>Discrete Differential Operators for Triangle Mesh</title>
