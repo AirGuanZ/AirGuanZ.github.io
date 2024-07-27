@@ -6,6 +6,12 @@
       <description>Last 10 notes on Automorphism</description>
       <generator>Quartz -- quartz.jzhao.xyz</generator>
       <item>
+    <title>Differential Geometry Note</title>
+    <link>https://airguanz.github.io/articles/2024.07.25.Differential-Geometry-Note</link>
+    <guid>https://airguanz.github.io/articles/2024.07.25.Differential-Geometry-Note</guid>
+    <description>Note. 如非专门说明，以下涉及到的函数均为任意阶可导。 方向导数 f在p点沿v的方向导数： vp​[f]=t→0lim​dtd​f(p+tv) Tangent Map 设F:Rn→Rm，对Rn中的tangent vector vp​，定义tangent map F∗，它将vp​映射至F(p)∈Rm处的tangent vector，向量部分则是： t→0lim​tF(p+tv)−F(p)​ 即：在p处向v方向挪一点，对应地在经F映射后会向哪个方向挪多少。显然tangent map对向量部分是线性的。 1-form 1-form：定义在Rn中的全体tangent vector上，在每一点的tangent vector间满足线性性的函数： ϕ(avp​+bwp​)=aϕ(vp​)+bϕ(wp​) Differential 1-form df： df(vp​):=vp​[f] Exterior derivative: d(∑fi​dxi​)=∑dfi​∧dxi​ Regular Mapping 称映射F:Rn→Rm是regular的，当且仅当对任意p∈Rn，F∗p​是一一对应的。根据tangent map的线性性，以下三句话互相等价： F∗p​是一一对应的 F∗(vp​)=0⇒vp​=0 F在p处的Jacobian矩阵秩为n Frenet formulas 对unit-speed curve： T′N′B′​==−κT=​​+κN−τN​+τB​ 对非unit-speed curve，右边所有项乘以速率v即可。 对R3中的regular curve α： TNBκτ​=∣α′∣α′​=N×T=α′×α′′α′×α′′​=∣α′∣3∣α′×α′′∣​=∣α′×α′′∣2(α′×α′′)⋅α′′′​​ Covariant Derivatives 设W是vector field，v是p处的tangent vector，那么： ∇v​W=W(p+tv)′(0) 可以认为这就是向量版的方向导数，毕竟： ∇v​W=∑v[wi​]Ui​(p) Connection Forms 考虑空间中的frame field E1​,E2​,E3​，把它沿tangent vector v的变化率用它自己表达出来： ∇v​Ei​=j∑​ωij​(v)Ej​(p) 其中ωij​(v):=∇v​Ei​⋅Ej​(p)，可以证明ωij​是1-form，这些1-form被称为E1​,E2​,E3​的connection forms。 由此衍生的connection equation： ∇V​Ei​=j∑​ωij​(V)Ej​ 注意到ωij​=−ωji​，由此可以把R3中的9个ωij​归并成三个： ω=​0−ω12​−ω13​​ω12​0−ω23​​ω13​ω23​0​​ 注意frenet formula与此式是一致的。 记Ei​=∑j​aij​Uj​，容易证明： ωij​=k∑​ajk​daik​ 或者说： ω=dAAT 其中dA是对A=[aij​]逐元素求differential。 Dual 1-Forms E1​,E2​,E3​的dual 1-forms θ1​,θ2​,θ3​如下定义： θi​(v)=v⋅Ei​(p) θi​(v)丈量了v在Ei​方向上有多大。 Cartan Structural Equations 根据dual 1-forms的定义，可以把connection equations改写成： dθi​=j∑​ωij​∧θj​ 称为the first structural equation。The second structural equation则是： dωij​=k∑​ωik​∧ωkj​ Isometry 如果对任意F:R3→R3对任意p,q∈Rn，都满足： d(F(p),F(q))=d(p,q) 就称F是R3中的一个等距映射（isometry）。 省流：旋转C + 平移T，渲染人再熟悉不过了。 Isometry的tangent map： F∗(vp​)=C(v)F(p)​ 其中C是F的旋转部分，也就是平移部分作用在p上，旋转部分作用在方向v上。 Surface Patch.</description>
+    <pubDate>Fri, 26 Jul 2024 16:00:00 GMT</pubDate>
+  </item><item>
     <title>Heat Method</title>
     <link>https://airguanz.github.io/articles/2024.06.29.Heat-Method</link>
     <guid>https://airguanz.github.io/articles/2024.06.29.Heat-Method</guid>
@@ -54,17 +60,11 @@
     <description>离开校园后的技术写作。.</description>
     <pubDate>Sat, 20 Apr 2024 07:47:16 GMT</pubDate>
   </item><item>
-    <title>Automorphism</title>
+    <title>汇总</title>
     <link>https://airguanz.github.io/articles/</link>
     <guid>https://airguanz.github.io/articles/</guid>
-    <description>欢迎来到AirGuanZ的个人主页！ 文章 笔记 旧文归档 GitHub 汇总.</description>
+    <description>欢迎来到AirGuanZ的个人主页！ 文章 笔记 旧文归档 GitHub.</description>
     <pubDate>Thu, 18 Apr 2024 18:11:13 GMT</pubDate>
-  </item><item>
-    <title>Discrete Differential Forms</title>
-    <link>https://airguanz.github.io/articles/2024.04.17.Discrete-Differential-Forms</link>
-    <guid>https://airguanz.github.io/articles/2024.04.17.Discrete-Differential-Forms</guid>
-    <description>参考资料 CS 15-458/858: Discrete Differential Geometry. Keenan Crane Differential forms crash course. Jiří Lebl. Introduction to differential forms. Donu Arapura.</description>
-    <pubDate>Tue, 16 Apr 2024 16:00:00 GMT</pubDate>
   </item>
     </channel>
   </rss>
