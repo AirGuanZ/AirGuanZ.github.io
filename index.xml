@@ -6,6 +6,18 @@
       <description>Last 10 notes on Automorphism</description>
       <generator>Quartz -- quartz.jzhao.xyz</generator>
       <item>
+    <title>2025.07.22.豊橋の夏</title>
+    <link>https://airguanz.github.io/articles/2025.07.22.%E8%B1%8A%E6%A9%8B%E3%81%AE%E5%A4%8F</link>
+    <guid>https://airguanz.github.io/articles/2025.07.22.%E8%B1%8A%E6%A9%8B%E3%81%AE%E5%A4%8F</guid>
+    <description> 名古屋神宮前 从名古屋到丰桥的列车上 丰桥站前 丰桥站 道の駅もっくる新城 附近 同上 丰川河畔，花火大会序幕 花火大会 回程航班 .</description>
+    <pubDate>Tue, 22 Jul 2025 12:44:14 GMT</pubDate>
+  </item><item>
+    <title>无意义</title>
+    <link>https://airguanz.github.io/categories/Life</link>
+    <guid>https://airguanz.github.io/categories/Life</guid>
+    <description></description>
+    <pubDate>Tue, 22 Jul 2025 12:36:50 GMT</pubDate>
+  </item><item>
     <title>文章列表</title>
     <link>https://airguanz.github.io/categories/Article</link>
     <guid>https://airguanz.github.io/categories/Article</guid>
@@ -33,7 +45,7 @@
     <title>Automorphism</title>
     <link>https://airguanz.github.io/</link>
     <guid>https://airguanz.github.io/</guid>
-    <description>欢迎来到AirGuanZ的个人主页！ 文章 笔记 旧文归档 GitHub.</description>
+    <description>欢迎来到AirGuanZ的个人主页！ 文章 笔记 旧文归档 生活 GitHub.</description>
     <pubDate>Mon, 05 May 2025 07:59:28 GMT</pubDate>
   </item><item>
     <title>Differential Geometry Note</title>
@@ -53,18 +65,6 @@
     <guid>https://airguanz.github.io/articles/2024.06.25.Differential-Operators-for-Triangle-Mesh</guid>
     <description>Hat Function 对一个有∣V∣个顶点的三角形mesh，定义∣V∣个对应的基函数，每个函数ϕv​和一个顶点v对应。ϕv​的值由下式定义： ϕv​(v)ϕv​(w)ϕv​(p)​:=1:=0,:=ϕv​(i)Bi​(p)+ϕv​(j)Bj​(p)+ϕv​(k)Bk​(p),​w∈V−{v}p∈triangle ...</description>
     <pubDate>Mon, 24 Jun 2024 16:00:00 GMT</pubDate>
-  </item><item>
-    <title>Intrinsic Delaunay Triangulation</title>
-    <link>https://airguanz.github.io/articles/2024.06.15.Intrinsic-Delaunay-Triangulation</link>
-    <guid>https://airguanz.github.io/articles/2024.06.15.Intrinsic-Delaunay-Triangulation</guid>
-    <description>参考： Geometry Processing with Intrinsic Triangulations Navigating Intrinsic Triangulations A Laplacian for Nonmanifold Triangle Meshes 容易实现，效果还好，太帅了。 Delaunay Triangulation ...</description>
-    <pubDate>Fri, 14 Jun 2024 16:00:00 GMT</pubDate>
-  </item><item>
-    <title>硬件纹理插值的精度问题</title>
-    <link>https://airguanz.github.io/articles/2024.05.18.Bilinear-Interpolation-Precision</link>
-    <guid>https://airguanz.github.io/articles/2024.05.18.Bilinear-Interpolation-Precision</guid>
-    <description>在GPU硬件提供的纹理线性插值中，与具体硬件相关地，插值系数的精度可能相当有限。譬如，CUDA文档明确指出其插值系数以9bits定点数存储（文档链接），其中8bits是分数位。 本文代码 来做个小实验。在Rtrc中构造一个简单的一维纹理，宽度为2，纹素值为[0.0, 1.0]—— const float texData[2] ...</description>
-    <pubDate>Fri, 17 May 2024 16:00:00 GMT</pubDate>
   </item>
     </channel>
   </rss>
