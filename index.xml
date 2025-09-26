@@ -6,6 +6,12 @@
       <description>Last 10 notes on Automorphism</description>
       <generator>Quartz -- quartz.jzhao.xyz</generator>
       <item>
+    <title>東京 &amp; 鎌倉</title>
+    <link>https://airguanz.github.io/articles/2025.09.01.tokyo-to-kamakura</link>
+    <guid>https://airguanz.github.io/articles/2025.09.01.tokyo-to-kamakura</guid>
+    <description> R1 [鎌倉] [円覚寺] R2 [鎌倉] [江ノ島] R3 [鎌倉] R4 [東京] [うしごろ表参道] R5 [東京] [晴空塔] R6 [東京] [六本木ヒルズ &amp; 渋谷] 关于うしごろ表参道：没啥大毛病，但与其说是烧肉店，不如说是以牛肉为主题的漂亮饭。.</description>
+    <pubDate>Sat, 30 Aug 2025 16:00:00 GMT</pubDate>
+  </item><item>
     <title>无意义</title>
     <link>https://airguanz.github.io/categories/Life</link>
     <guid>https://airguanz.github.io/categories/Life</guid>
@@ -15,7 +21,7 @@
     <title>豊橋の夏</title>
     <link>https://airguanz.github.io/articles/2025.07.22.toyohasi-no-natu</link>
     <guid>https://airguanz.github.io/articles/2025.07.22.toyohasi-no-natu</guid>
-    <description> 名古屋神宮前 从名古屋到丰桥的列车上 丰桥站前 丰桥站 道の駅もっくる新城附近 同上 丰川河畔，花火大会 花火大会 回程航班 .</description>
+    <description> R1 [豊橋駅] R2 [道の駅もっくる新城] R3 [豊川] .</description>
     <pubDate>Sun, 20 Jul 2025 16:00:00 GMT</pubDate>
   </item><item>
     <title>文章列表</title>
@@ -59,12 +65,6 @@
     <guid>https://airguanz.github.io/articles/2024.06.29.Heat-Method</guid>
     <description>给一个triangle mesh M，以及上面的一组点S，求M上其他所有顶点到S的测地距离。 参考资料：The Heat Method for Distance Computation 本文代码：Rtrc Sample 15.HeatMethod Heat Method 理论 如果以某个点x为热源在M表面做heat diffusion，将经过时间t后y点的热量记作kt,x​(y)，那么根据Varadhan’s ...</description>
     <pubDate>Fri, 28 Jun 2024 16:00:00 GMT</pubDate>
-  </item><item>
-    <title>Discrete Differential Operators for Triangle Mesh</title>
-    <link>https://airguanz.github.io/articles/2024.06.25.Differential-Operators-for-Triangle-Mesh</link>
-    <guid>https://airguanz.github.io/articles/2024.06.25.Differential-Operators-for-Triangle-Mesh</guid>
-    <description>Hat Function 对一个有∣V∣个顶点的三角形mesh，定义∣V∣个对应的基函数，每个函数ϕv​和一个顶点v对应。ϕv​的值由下式定义： ϕv​(v)ϕv​(w)ϕv​(p)​:=1:=0,:=ϕv​(i)Bi​(p)+ϕv​(j)Bj​(p)+ϕv​(k)Bk​(p),​w∈V−{v}p∈triangle ...</description>
-    <pubDate>Mon, 24 Jun 2024 16:00:00 GMT</pubDate>
   </item>
     </channel>
   </rss>
