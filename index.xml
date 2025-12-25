@@ -6,18 +6,6 @@
       <description>Last 10 notes on Automorphism</description>
       <generator>Quartz -- quartz.jzhao.xyz</generator>
       <item>
-    <title>2025.05.18 kyoto to uji</title>
-    <link>https://airguanz.github.io/articles/2025.05.18-kyoto-to-uji</link>
-    <guid>https://airguanz.github.io/articles/2025.05.18-kyoto-to-uji</guid>
-    <description>--- title: 京都 &amp; 宇治 date: 2025.05.18 draft: false tags: Life cats: Life .</description>
-    <pubDate>Wed, 29 Oct 2025 16:39:01 GMT</pubDate>
-  </item><item>
-    <title>2025.04.06.wakayama</title>
-    <link>https://airguanz.github.io/articles/2025.04.06.wakayama</link>
-    <guid>https://airguanz.github.io/articles/2025.04.06.wakayama</guid>
-    <description>--- title: 和歌山 date: 2025.04.06 draft: false tags: Life cats: Life R1 [和歌山城] R2 [白浜] R3 [白浜] R4 [那智勝浦] R5 [那智勝浦] .</description>
-    <pubDate>Sat, 27 Sep 2025 07:44:01 GMT</pubDate>
-  </item><item>
     <title>東京 &amp; 鎌倉</title>
     <link>https://airguanz.github.io/articles/2025.09.01.tokyo-to-kamakura</link>
     <guid>https://airguanz.github.io/articles/2025.09.01.tokyo-to-kamakura</guid>
@@ -35,6 +23,12 @@
     <guid>https://airguanz.github.io/articles/2025.07.22.toyohasi-no-natu</guid>
     <description> R1 [豊橋駅] R2 [道の駅もっくる新城] R3 [豊川] .</description>
     <pubDate>Sun, 20 Jul 2025 16:00:00 GMT</pubDate>
+  </item><item>
+    <title>京都 &amp; 宇治</title>
+    <link>https://airguanz.github.io/articles/2025.05.18-kyoto-to-uji</link>
+    <guid>https://airguanz.github.io/articles/2025.05.18-kyoto-to-uji</guid>
+    <description></description>
+    <pubDate>Sat, 17 May 2025 16:00:00 GMT</pubDate>
   </item><item>
     <title>文章列表</title>
     <link>https://airguanz.github.io/categories/Article</link>
@@ -65,6 +59,12 @@
     <guid>https://airguanz.github.io/</guid>
     <description>欢迎来到AirGuanZ的个人主页！ 文章 笔记 旧文归档 生活 GitHub.</description>
     <pubDate>Mon, 05 May 2025 07:59:28 GMT</pubDate>
+  </item><item>
+    <title>和歌山</title>
+    <link>https://airguanz.github.io/articles/2025.04.06.wakayama</link>
+    <guid>https://airguanz.github.io/articles/2025.04.06.wakayama</guid>
+    <description> R1 [和歌山城] R2 [白浜] R3 [白浜] R4 [那智勝浦] R5 [那智勝浦] .</description>
+    <pubDate>Sat, 05 Apr 2025 16:00:00 GMT</pubDate>
   </item>
     </channel>
   </rss>
