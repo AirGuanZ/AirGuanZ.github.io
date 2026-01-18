@@ -6,6 +6,18 @@
       <description>Last 10 notes on Automorphism</description>
       <generator>Quartz -- quartz.jzhao.xyz</generator>
       <item>
+    <title>二维点阵图形的周长估算</title>
+    <link>https://airguanz.github.io/articles/2025.12.26.Corfton-Formula</link>
+    <guid>https://airguanz.github.io/articles/2025.12.26.Corfton-Formula</guid>
+    <description>Corfton Formula 任给平面上的一条直线段γ，以及全体与之相交的直线构成的集合L。现将L中的每条直线l参数化为l到原点的距离p以及l与+x的夹角ϕ，则容易证明： length(γ)=41​∬L​dϕdp 工程地说，我们可以随机采样一堆直线，利用这些直线和γ的交点数量以及(p,ϕ)的pdf来估算出γ的长度。 ...</description>
+    <pubDate>Thu, 25 Dec 2025 16:00:00 GMT</pubDate>
+  </item><item>
+    <title>冈山 &amp; 香川</title>
+    <link>https://airguanz.github.io/articles/2025.11.30.shikoku</link>
+    <guid>https://airguanz.github.io/articles/2025.11.30.shikoku</guid>
+    <description> R1 [岡山] [鷲羽山] R2 [琴平] R3 [琴平] R4 [琴平] [金毘羅] R5 [琴平] [金毘羅] R6 [琴平] R7 [高松] [栗林公園] R8 [高松] [屋島寺] R9 [高松] [屋島] R10 [高松] R11 [高松] [高松港] R12 [明石] [舞子] .</description>
+    <pubDate>Sat, 29 Nov 2025 16:00:00 GMT</pubDate>
+  </item><item>
     <title>東京 &amp; 鎌倉</title>
     <link>https://airguanz.github.io/articles/2025.09.01.tokyo-to-kamakura</link>
     <guid>https://airguanz.github.io/articles/2025.09.01.tokyo-to-kamakura</guid>
@@ -53,18 +65,6 @@
     <guid>https://airguanz.github.io/articles/</guid>
     <description></description>
     <pubDate>Mon, 05 May 2025 07:59:29 GMT</pubDate>
-  </item><item>
-    <title>Automorphism</title>
-    <link>https://airguanz.github.io/</link>
-    <guid>https://airguanz.github.io/</guid>
-    <description>欢迎来到AirGuanZ的个人主页！ 文章 笔记 旧文归档 生活 GitHub.</description>
-    <pubDate>Mon, 05 May 2025 07:59:28 GMT</pubDate>
-  </item><item>
-    <title>和歌山</title>
-    <link>https://airguanz.github.io/articles/2025.04.06.wakayama</link>
-    <guid>https://airguanz.github.io/articles/2025.04.06.wakayama</guid>
-    <description> R1 [和歌山城] R2 [白浜] R3 [白浜] R4 [那智勝浦] R5 [那智勝浦] .</description>
-    <pubDate>Sat, 05 Apr 2025 16:00:00 GMT</pubDate>
   </item>
     </channel>
   </rss>
