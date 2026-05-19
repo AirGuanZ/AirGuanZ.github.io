@@ -6,6 +6,12 @@
       <description>Last 10 notes on Automorphism</description>
       <generator>Quartz -- quartz.jzhao.xyz</generator>
       <item>
+    <title>厦门</title>
+    <link>https://airguanz.github.io/articles/2026.04.06.xiamen</link>
+    <guid>https://airguanz.github.io/articles/2026.04.06.xiamen</guid>
+    <description> R1 [厦门大学] [洪溪社] R2 [鼓浪屿] R3 [CHIC1699] [球风珍姐 · 海鲜餐厅] R4 [洪溪社] [环岛东路-翔安大桥] [陈嘉庚故居] .</description>
+    <pubDate>Sun, 05 Apr 2026 16:00:00 GMT</pubDate>
+  </item><item>
     <title>二维点阵图形的周长估算</title>
     <link>https://airguanz.github.io/articles/2025.12.26.Corfton-Formula</link>
     <guid>https://airguanz.github.io/articles/2025.12.26.Corfton-Formula</guid>
@@ -17,6 +23,12 @@
     <guid>https://airguanz.github.io/articles/2025.11.30.shikoku</guid>
     <description> R1 [岡山] [鷲羽山] R2 [琴平] R3 [琴平] R4 [琴平] [金毘羅] R5 [琴平] [金毘羅] R6 [琴平] R7 [高松] [栗林公園] R8 [高松] [屋島寺] R9 [高松] [屋島] R10 [高松] R11 [高松] [高松港] R12 [明石] [舞子] .</description>
     <pubDate>Sat, 29 Nov 2025 16:00:00 GMT</pubDate>
+  </item><item>
+    <title>青海</title>
+    <link>https://airguanz.github.io/articles/2025.10.01.xining</link>
+    <guid>https://airguanz.github.io/articles/2025.10.01.xining</guid>
+    <description> R1 [西宁] [塔尔寺] R2 [拉脊山] R3 [拉脊山-青海湖] R4 [青海湖] R5 [七彩丹霞] R6 [张掖大佛寺] R7 [平江湖峡谷] R8 [平江湖峡谷] .</description>
+    <pubDate>Tue, 30 Sep 2025 16:00:00 GMT</pubDate>
   </item><item>
     <title>東京 &amp; 鎌倉</title>
     <link>https://airguanz.github.io/articles/2025.09.01.tokyo-to-kamakura</link>
@@ -52,18 +64,6 @@
     <link>https://airguanz.github.io/categories/Note</link>
     <guid>https://airguanz.github.io/categories/Note</guid>
     <description>个人备忘，不要在意可读性。.</description>
-    <pubDate>Mon, 05 May 2025 07:59:29 GMT</pubDate>
-  </item><item>
-    <title>旧文归档</title>
-    <link>https://airguanz.github.io/categories/Old</link>
-    <guid>https://airguanz.github.io/categories/Old</guid>
-    <description>怀念通宵debug的日子。.</description>
-    <pubDate>Mon, 05 May 2025 07:59:29 GMT</pubDate>
-  </item><item>
-    <title>汇总</title>
-    <link>https://airguanz.github.io/articles/</link>
-    <guid>https://airguanz.github.io/articles/</guid>
-    <description></description>
     <pubDate>Mon, 05 May 2025 07:59:29 GMT</pubDate>
   </item>
     </channel>
